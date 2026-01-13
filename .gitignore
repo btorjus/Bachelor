@@ -1,0 +1,102 @@
+############################
+# General
+############################
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backup & temp files
+*~
+*.bak
+*.tmp
+*.swp
+*.swo
+*.autosave
+
+# Log files
+*.log
+
+
+############################
+# MATLAB / Simulink / Simscape
+############################
+# MATLAB generated files
+*.asv
+*.m~
+*.mex*
+*.p
+*.slxc
+*.slexp
+*.slx.bak
+
+# Simulink cache and code generation
+slprj/
+codegen/
+*.rtw
+*.html
+
+# MATLAB preferences and paths
+.matlab/
+*.prj
+
+
+############################
+# Simscape
+############################
+# Simscape cache and build artifacts
+sscprj/
+*.ssc.cache
+
+
+############################
+# TwinCAT (Beckhoff)
+############################
+# TwinCAT build and cache folders
+_TwinCAT/
+TwinCAT/
+**/TcBuild/
+**/TcTemp/
+**/TcCache/
+
+# Visual Studio files (used by TwinCAT)
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.opendb
+
+
+############################
+# Generated binaries
+############################
+*.exe
+*.dll
+*.so
+*.obj
+*.o
+*.lib
+
+
+############################
+# Archives
+############################
+*.zip
+*.rar
+*.7z
+
+
+############################
+# Reports / LaTeX build artifacts (if applicable)
+############################
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
