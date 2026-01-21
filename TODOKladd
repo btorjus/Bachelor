@@ -1,5 +1,59 @@
 Fredag 090126 
 - Sett opp en fremdriftsplan, type den vi ser i tidligere bachlor. 
-- Møte med veileder
-- Mappestruktur i GIT
-- 
+
+
+hvilken twincat 3 IDE
+Kontakt are å få hjelp til grønn kran
+Krasjkurs i modelering og simulering i simscape
+Må ha tilbakemelding på sleden
+Skriv intro - PVG på grønner stjel litt av formulering fra emil. mål er for å kjøre så bra så mulig, og fjærne virbasjoner, aktiv dempning.
+CANbus på rød ventil, analog på grønn.
+Denne uke skal det være kurs i simscape neste uke blir det twincat
+model workspace i sim
+
+husk git ignore
+
+\\\\\\\\\\\\\\\\\\\\\\\\\ Møte uke 4: \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+Når vi jobber med kraften til cylinder så kan vi sammenligne teoretisk kraft syklus sammenlignes ed den målte pa1 -pa2, og da evaluere om masse midtpunk er riktig, og alle andre paramenter. for eksempel om det er fleksibelt nok. vi vil at modeler er ritkig på sylinderkraft siden. Gjør også håndberegning  et gitt punkt for å sjekke. altså la oss si 30. eks kraft(theta).
+
+
+
+tre frekvenser, høyfrekvent fra contraventil, lavfrekvent fra hydraulikken og siste er trykket gjennom sylinder som varierer.
+
+- Varierende trykk,altså de høygrekvente vi tar og filtrerer det ut, og bruker det til trykkgradienten for å motvirke svingninger.
+Men vi må ha referanse i posisjon og hastighet.
+
+
+Må få tak i cad modell til kran. Vi må finne massemidtpunkt osv
+
+
+Start med å lage litt figure, skriv litt, det som kan skrives. så at vi får gjrot noe.
+
+Finn ut så mye på egenhånd som mulig, vi skal har kurs, men vi må komme videre.
+
+Første modell vi skal jobbe med er fin enkel modell der alt er enkelt som nevnt tidligere.
+
+
+Test med krana. Lek deg fram i twindcat
+
+
+snakk med JC om kran, vi vet hva profilen er så vi kan plukke fra noe og regne ut alt. må estimere de andre delene. estimerer stemple og sylinder selv om de ikke er med, men det har noe påvirkning, kan bruke stempelarm mulig, vi må bare få den inn på en god måte
+
+
+Kan skrive i rapport: Når betyr dynamikk noe ,det gjør det når akselerasjoner vitkige steder nærmer seg tyngeaskelarajsoner, hvis vi har feks 2-3% av g i et viktig punkt så er det ikke vitkig med dynamikken.
+
+
+De to ørene som sylinder henger på oppe og den på bakken, hvor er bearing til sylinder i forhold til globalt koordinat system
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+BJElKE:
+150mm x 100mm x 6mm
+lengde 1463mm + 215mm
+
+Lodd
+700mm x 300mm x 50mm - utkutt 110mm x 150mm x 50mm
+
+den tynne er 12mm tykk 
+det er fire tykke og en tynn
