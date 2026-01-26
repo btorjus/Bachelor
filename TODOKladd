@@ -3,9 +3,7 @@ Fredag 090126
 
 
 hvilken twincat 3 IDE
-Kontakt are å få hjelp til grønn kran
-Krasjkurs i modelering og simulering i simscape
-Må ha tilbakemelding på sleden
+Kontakt Are å få hjelp til grønn kran
 Skriv intro - PVG på grønner stjel litt av formulering fra emil. mål er for å kjøre så bra så mulig, og fjærne virbasjoner, aktiv dempning.
 CANbus på rød ventil, analog på grønn.
 Denne uke skal det være kurs i simscape neste uke blir det twincat
@@ -42,6 +40,7 @@ snakk med JC om kran, vi vet hva profilen er så vi kan plukke fra noe og regne 
 
 
 Kan skrive i rapport: Når betyr dynamikk noe ,det gjør det når akselerasjoner vitkige steder nærmer seg tyngeaskelarajsoner, hvis vi har feks 2-3% av g i et viktig punkt så er det ikke vitkig med dynamikken.
+Hvorda implementer vi en enkel verjson av deformasjon i bjelken. Med fjærer og splitter opp bjelken i simscape.
 
 
 De to ørene som sylinder henger på oppe og den på bakken, hvor er bearing til sylinder i forhold til globalt koordinat system
@@ -65,4 +64,39 @@ det er fire tykke og en tynn
 21/01/26
 Møte og lagde simpel cad modell av selve bjelke pluss vekt for å finne massesenter og ting.
 Tenker å prøve og opperere kranen i morgen. Og mulig starte med litt simscape modeller.
-KIM MÅ FÅ TIL Å CLONE REPO PÅ GITHUB
+
+
+//////////////////////////////////
+
+twincat fredag
+
+
+velcg cs greia 
+broadcast serach finner noen greier
+passord til pcen boschrexrot 
+andre passor er 1 til admin brukerer til pls
+
+grønn knapp setter pls i run mode
+
+på lab pc så er det mtoion lab 2.0 greencrane bachelorship, der software til are ligger som de kuka med i sommer.
+simple setup i disc er bare for å kjøre.
+
+
+//// må bruke bachelorship enn så legne
+enabe U i g_enables skal være alt
+kan fucke med verdier på ventil
+pid er pid fff er feed forward pfb pressrue feedback
+
+nmode select er autmatiske greier
+litt delay på knapp 
+
+
+g opc er logging
+
+for å finne bvor variabler er brukt klik shift f12
+
+
+
+
+
+
