@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_MotionRef" Id="{354b3a34-d392-4f87-a4eb-f033618b096f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MotionRef
+VAR_INPUT
+	fAmplitude : LREAL;
+	fFrequency : LREAL;
+	fInitialPos : LREAL;
+	fCurrentPos : LREAL;
+	nMotionMode : INT;
+	fMotionTimer 	: LREAL;           // For selve rampen
+END_VAR
+VAR_OUTPUT
+	fXDotRef : LREAL;
+	fXRef : LREAL;
+	fWantedFlow : LREAL;
+END_VAR
+VAR
+	fPI : LREAL := 3.1415;
+	fMean : LREAL;
+	
+	arrBounduary 	: ARRAY[0..1] OF LREAL := [G_Parameter.fPistonStroke * 0.1, G_Parameter.fPistonStroke * 0.9]; // Min, Max [m]
+	fRampTime 	 	: LREAL := 15.0; // [s]
+ 	fTolerance   	: REAL := 0.005;  // ±5 mm
+  	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+CASE nMotionMode OF
+	0:	// Sine
+	
+		fMean := fAmplitude + fInitialPos; 
+		fXRef := fMean - fAmplitude * COS(2*fPI * fFrequency * fMotionTimer);
+		fXDotRef := 2 * fPI *fFrequency * fAmplitude * SIN(2*fPI * fFrequency * fMotionTimer); 
+		
+	1:	// Ramp
+
+
+		IF fMotionTimer <= fRampTime THEN
+			fXDotRef := (arrBounduary[1] - arrBounduary[0]) / fRampTime;
+			fXRef := arrBounduary[0] + fXDotRef * fMotionTimer;
+		ELSIF fMotionTimer <= fRampTime * (4.0/3.0) THEN
+			fXRef := arrBounduary[1];
+			fXDotRef := 0.0;
+		ELSIF fMotionTimer <= (2.0 + 1.0/3.0) * fRampTime AND fMotionTimer > fRampTime * (4.0/3.0) THEN
+			fXDotRef := (arrBounduary[0] - arrBounduary[1]) / fRampTime;
+			fXRef := arrBounduary[1] + fXDotRef * (fMotionTimer - (4.0/3.0) * fRampTime);
+		ELSIF fMotionTimer > (2.0 + 1.0/3.0) * fRampTime THEN
+			fXDotRef := 0.0;
+			fXRef := arrBounduary[0];
+		END_IF
+END_CASE
+
+IF fXDotRef > 0.0 THEN
+	fWantedFlow := fXDotRef * G_Parameter.fAreaUp*6E4;
+ELSIF fXDotRef < 0.0 THEN
+	fWantedFlow := fXDotRef * G_Parameter.fAreaDown*6E4;
+ELSE
+	fWantedFlow := 0.0;
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_MotionRef">
+      <LineId Id="617" Count="0" />
+      <LineId Id="735" Count="0" />
+      <LineId Id="618" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="602" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="590" Count="0" />
+      <LineId Id="701" Count="0" />
+      <LineId Id="632" Count="11" />
+      <LineId Id="707" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="759" Count="0" />
+      <LineId Id="758" Count="0" />
+      <LineId Id="766" Count="0" />
+      <LineId Id="760" Count="0" />
+      <LineId Id="765" Count="0" />
+      <LineId Id="762" Count="1" />
+      <LineId Id="761" Count="0" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

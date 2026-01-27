@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_KvFF" Id="{ae5f0261-6fc9-4fa6-82c4-cf1ec38248cc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_KvFF
+VAR_INPUT
+	fPs 		: LREAL; // [bar]
+	fPa 		: LREAL; // [bar]
+	fPb 		: LREAL; // [bar]
+	
+	fXDotRef 	: LREAL; // [m/s]
+END_VAR
+VAR_OUTPUT
+	fFFTemp		: LREAL; // [-1..1], Wanted spool position, u
+	fFF 		: LREAL; // [-1..1], Spool signal for position, ~u
+	fFlow 		: LREAL; // [l/min]
+	fKv 		: LREAL; // [l/min / bar^0.5]
+END_VAR
+VAR
+	fDeltaP		: LREAL; // [bar]
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+IF fXDotRef > 0.0 THEN
+	IF fKv >= 0.1 THEN
+		fFFTemp := -0.013*EXPT(fKv,5) + 0.1355*EXPT(fKv,4) - 0.5012*EXPT(fKv,3) + 0.7175*EXPT(fKv,2) - 0.0278 * fKv + 0.2684;
+	ELSIF fKv < 0.1 THEN
+		fFFTemp := 0.2325 + 0.0398 * fKv/0.1;
+	ELSE 
+		fFFTemp := G_Parameter.fDeadUp;
+	END_IF
+	fFlow := fXDotRef * G_Parameter.fAreaUp * 6E4;
+	fDeltaP := fPs - fPa;
+	
+	fFF := -(fFFTemp + 0.0151)/1.1224;
+ELSIF fXDotRef < 0.0 THEN
+	IF fKv >= 0.1 THEN
+		fFFTemp := 0.0054*EXPT(fKv,6) - 0.0733*EXPT(fKv,5) + 0.3796*EXPT(fKv,4) - 0.9356*EXPT(fKv,3) + 1.0359*EXPT(fKv,2) - 0.1046 * fKv + 0.2381;
+	ELSIF fKv < 0.1 THEN
+		fFFTemp := 0.2175 + 0.0196 * fKv/0.1;
+	ELSE 
+		fFFTemp := G_Parameter.fDeadDown;
+	END_IF
+	fFlow := fXDotRef * G_Parameter.fAreaDown * 6E4;
+	fDeltaP := fPs - fPb;
+	fFF := (fFFTemp + 0.0398)/1.1079;
+ELSE
+	fFlow := 0.0;
+	fFFTemp := 0.0;
+	fFF := 0.0;
+END_IF
+
+IF fDeltaP <= 0.0 THEN
+	fKv := 4.0;
+ELSE
+	fKv := ABS(fFlow)/SQRT(fDeltaP);
+END_IF
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_KvFF">
+      <LineId Id="1" Count="3" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="5" Count="4" />
+      <LineId Id="35" Count="3" />
+      <LineId Id="58" Count="1" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="13" Count="14" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

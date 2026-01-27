@@ -53,11 +53,14 @@ sscprj/
 # TwinCAT (Beckhoff)
 ############################
 # TwinCAT build and cache folders
-_TwinCAT/
-TwinCAT/
 **/TcBuild/
 **/TcTemp/
 **/TcCache/
+# TwinCAT user- and machine-specific files
+*.tmc
+*.tpy
+*.bak
+
 
 # Visual Studio files (used by TwinCAT)
 .vs/
@@ -65,6 +68,10 @@ TwinCAT/
 *.suo
 *.VC.db
 *.VC.opendb
+# Visual Studio build output
+bin/
+obj/
+
 
 
 ############################

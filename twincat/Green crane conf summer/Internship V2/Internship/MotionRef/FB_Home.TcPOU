@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Home" Id="{56347319-b514-4e59-8d41-b8ed428dde85}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Home
+VAR_INPUT
+	bGoHome : BOOL;
+	fCurrentPos : LREAL; // [m]
+	fTolerance : LREAL; // [m]
+	fMoveTime : LREAL; // [s]
+	fHomePos : LREAL; // [m]
+	fMoveTimer : LREAL; // [s]
+END_VAR
+VAR_OUTPUT
+	fXRef : LREAL; // [m]
+	fXDotRef : LREAL; // [m/s]
+END_VAR
+VAR
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+IF bGoHome AND ABS(fHomePos-fCurrentPos)>fTolerance THEN
+	fXDotRef := (fHomePos-fCurrentPos)/fMoveTime;
+	fXRef := fCurrentPos + fXDotRef * fMoveTimer;
+	IF	ABS(fHomePos-fCurrentPos)<=fTolerance THEN
+		bGoHome := FALSE;
+		fXDotRef := 0.0;
+		fXRef := fCurrentPos;
+	END_IF
+ELSE
+	fXDotRef := 0.0;
+	fXRef := fCurrentPos;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Home">
+      <LineId Id="5" Count="5" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="11" Count="3" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
