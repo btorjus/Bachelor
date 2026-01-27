@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_PressureFeedback" Id="{0804179b-0183-4864-8bc4-e432f54461a1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PressureFeedback
+VAR_INPUT
+	fKf			: LREAL;
+	fTauF		: LREAL; // [s]	
+	state		: INT;
+END_VAR
+VAR_OUTPUT
+	fUpfb 		: LREAL;
+	fUpfbGrad	: LREAL;
+	fPxGrad		: LREAL; // [Bar]
+END_VAR
+VAR
+	fDt			: LREAL := 0.001; // [s]
+	fPx			: LREAL := 0.0; // [Bar]
+	fPxOld		: LREAL; // [Bar]
+	fARatio		: LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+CASE state OF
+	0: // Altering input for Px
+		IF G_OPC.fU < 0.0 THEN
+			fPx := G_OPC.fPa;
+		ELSIF G_OPC.fU > 0.0 THEN
+			fPx := G_OPC.fPb;
+		ELSE
+			fPx := 0.0;
+		END_IF
+	1:	// Px = Pa - phi * Pb
+		fARatio := G_Parameter.fAreaDown/G_Parameter.fAreaUp;
+		fPx := G_OPC.fPa - fARatio * G_OPC.fPb;
+	2:	// Px = Pb
+		fPx := G_OPC.fPb;
+END_CASE
+
+fPxGrad := (fPx - fPxOld)/fDt;
+fUpfbGrad :=  (fKf * fPxGrad - fUpfb)/fTauF;
+fUpfb := fUpfb + fUpfbGrad * fDt;
+
+fPxOld := fPx;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_PressureFeedback">
+      <LineId Id="29" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="36" Count="1" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="55" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

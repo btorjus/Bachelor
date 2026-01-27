@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="G_Parameter" Id="{6529201b-0264-4389-a4a9-6a2e97edbca5}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	// Motion Ref
+	// Sine Parameters
+	fAmplitude 		: LREAL := 0.15;
+	fMean 			: LREAL := 0.2;
+	fFrequency 		: LREAL := 0.05;
+	
+	
+	// Valve Values
+	// Flow
+	fQMaxDown 		: LREAL := 10.0; // [L/min]
+	fQMaxUp 		: LREAL := 10.0; // [L/min]	
+	
+	// Area
+	fAreaUp 		: LREAL := 33.100/1E4; //[m^2]
+	fAreaDown 		: LREAL := 23.560/1E4; //[m^2]
+	
+	// Deadband
+	fDeadUp 		: LREAL := 0.23;
+	fDeadDown 		: LREAL := 0.215;
+	
+	fMaxSpeed 		: LREAL := 0.01; // [m/s] 
+	fDeltaP0 		: LREAL := 8.0; // [Bar]
+	
+	// Deadband test
+	fConst 			: LREAL := 0.0; // [-1, 1]
+
+	fCycleTime 		: LREAL := 0.001; // Time Step [s]
+	fQConst 		: LREAL := 15;
+	fPistonStroke 	: LREAL := 0.5;
+	
+	// PID-constants
+	Kp 				: LREAL := 14.0; 	// P
+	Ki 				: LREAL := 0.0;		// I
+	Kd 				: LREAL := 0.0;		// D
+	
+	// Pressure feedback constants
+	Kf				: LREAL := 2E-4;
+	TauF			: LREAL := 0.1; // [0.05 .. 0.1]
+	PFBstate		: INT 	:= 2; // 0:Switching, 1: Pa-phi*Pb, 2: Pb
+	FFMode			: INT 	:= 1; // 0: Bachelor FF, 1: Kv FF, 2: Naive FF
+
+
+
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

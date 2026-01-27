@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
+	<LicenseInfo>
+		<SystemId>{8BA4A10C-BA99-F751-656E-F61D02C66A28}</SystemId>
+		<IssueTime>2026-01-23T12:52:00</IssueTime>
+		<ExpireTime>2026-01-31T00:00:00</ExpireTime>
+		<LicenseKey>f2789f5508ad929dd58119856d67350bf062ecdc0ef5fb9de0bbce401bdee7e7c688328b69f275080c846aee322e2ccbea5749f0719fdbe942764ae785ed48076e8b491fed36f796a2668fb532ed504b7dedb22cb9b8eff6faea88aecd36364aec945fb192f51d4825cdb25ede4316b4dc75a51d0273c0fccd0f7dd185f39f9561a978f4bce0590b59aac390b848da52a725279d03f9132cf274e8794f20b07fc16f291ec4e834c751feea91d343eb9317fdd5c0678ce484e57a9750d3d0143c0452ec4f77fe9fd7a5d55ca73f87147c7617e246d7c215297eed353ab8f9cc313b8ea9c4dfd32b6ac3228f369050ee10dde0dad98a69fbe8908e295b191b298e</LicenseKey>
+		<License>
+			<LicenseId>{081AC839-28D0-49CA-9792-72680E1F3249}</LicenseId>
+			<Name>TC3 TCP/UDP RT</Name>
+			<OrderNo>TF6311</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{BDCC0070-42D5-49AE-ABF1-1D4434813D60}</LicenseId>
+			<Name>TC3 OPC-UA</Name>
+			<OrderNo>TF6100</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3EBB9639-5FF3-42B6-8847-35C70DC013C8}</LicenseId>
+			<Name>TC3 TCP/IP</Name>
+			<OrderNo>TF6310</OrderNo>
+		</License>
+	</LicenseInfo>
+</TcLicenseInfo>

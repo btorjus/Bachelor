@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_NaiveFF" Id="{ca7bc146-de72-40c0-8b17-2acf5555ebf6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NaiveFF
+VAR_INPUT
+	fPs 		: LREAL; // [bar]
+	fPa 		: LREAL; // [bar]
+	fPb 		: LREAL; // [bar]
+	
+	fXDotRef 	: LREAL; // [m/s]
+END_VAR
+VAR_OUTPUT
+
+	fFF 		: LREAL; // [-1..1], Spool signal for position, u
+	fFlow 		: LREAL; // [l/min]
+	fKv 		: LREAL; // [l/min / bar^0.5]
+END_VAR
+VAR
+	fDeltaP		: LREAL; // [bar]
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+IF fXDotRef > 0.0 THEN
+	fFlow := fXDotRef * G_Parameter.fAreaUp * 6E4;
+	fDeltaP := fPs - fPa;
+	
+	fFF := -(0.2143 + 0.7857 * fKv/3.7796);
+ELSIF fXDotRef < 0.0 THEN
+	fFlow := fXDotRef * G_Parameter.fAreaDown * 6E4;
+	fDeltaP := fPs - fPb;
+	
+	fFF := (0.2143 + 0.7857 * fKv/3.7796);
+ELSE
+	fFlow := 0.0;
+	fFF := 0.0;
+END_IF
+
+IF fDeltaP <= 0.0 THEN
+	fKv := 4.0;
+ELSE
+	fKv := ABS(fFlow)/SQRT(fDeltaP);
+END_IF
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_NaiveFF">
+      <LineId Id="35" Count="3" />
+      <LineId Id="46" Count="4" />
+      <LineId Id="58" Count="1" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="60" Count="2" />
+      <LineId Id="64" Count="9" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

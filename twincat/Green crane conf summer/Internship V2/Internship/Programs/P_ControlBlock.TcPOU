@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="P_ControlBlock" Id="{34b73f17-fb3f-4014-8571-592d49402d29}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_ControlBlock
+VAR
+	fbAutoClock : FB_AutoClock;
+	fbMotionRef : FB_MotionRef;
+	fbControl : FB_ControlSignal;
+	fbInitialPos : FB_InitialPos;
+	nMode : E_Motion;
+	fbPressureFB : FB_PressureFeedback;
+	fbHome : FB_Home;
+	StartTimer : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fbControl(
+	nFFState := G_Parameter.FFMode,	
+
+	bFF := G_Enables.bEnableFF,
+	bPID := G_Enables.bEnablePID,
+	bPFB := G_Enables.bEnablePFB,
+	bU := G_Enables.bEnableU,
+	bValve := TRUE,
+	
+	fDeadBandUp := G_Parameter.fDeadUp,
+	fDeadBandDown := G_Parameter.fDeadDown
+);
+
+fbPressureFB(
+			fKf := G_Parameter.Kf,
+			fTauF := G_Parameter.TauF,
+			state := G_Parameter.PFBstate,
+			
+			fUpfb => G_OPC.fUpfb,
+			fUpfbGrad => G_OPC.fUpfbGrad,
+			fPxGrad => G_OPC.fPxGrad
+		);
+
+IF G_Mode.bAuto AND G_Mode.bRunning THEN
+
+	fbInitialPos(
+		bEnable := G_Inputs.bStartButton,
+		fCurrentPos := G_OPC.fPistonPosition
+	);
+	
+	fbAutoClock(
+		fStart := StartTimer.Q,
+		fRunning := G_Mode.bRunning,
+		fCycle := G_Parameter.fCycleTime
+	);
+	
+	IF G_Inputs.bStartButton THEN
+		StartTimer(IN := TRUE, PT :=T#2S);
+		fbMotionRef();
+		IF StartTimer.Q THEN
+			
+			IF G_Enables.bMove2Home THEN 
+				fbHome(
+					bGoHome := G_Enables.bMove2Home,
+					fCurrentPos := G_OPC.fPistonPosition,
+					fHomePos := 0.05,
+					fMoveTimer := fbAutoClock.fTime,
+					fMoveTime := 10.0,
+					fTolerance := 0.002,
+					
+					fXDotRef => G_OPC.fXDotRef,
+					fXRef => G_OPC.fXRef
+				);
+			ELSE
+			fbMotionRef(
+				nMotionMode := G_Enables.nModeSelect,
+				fMotionTimer := fbAutoClock.fTime,
+				fAmplitude := G_Parameter.fAmplitude,
+				fInitialPos := fbInitialPos.fInitialPos,
+				fFrequency := G_Parameter.fFrequency,
+				fCurrentPos := G_OPC.fPistonPosition,
+				fXDotRef => G_OPC.fXDotRef,
+				fXRef => G_OPC.fXRef,
+				fWantedFlow => G_OPC.fFlowRef
+			);
+			END_IF
+		ELSE 
+			G_OPC.fXDotRef := 0.0;
+			G_OPC.fXRef := G_OPC.fPistonPosition;
+		END_IF
+	ELSE 
+		StartTimer(IN := FALSE);
+		G_OPC.fXDotRef := 0.0;
+		G_OPC.fXRef := G_OPC.fPistonPosition;
+	END_IF
+	
+	
+	G_OPC.fUTest := G_OPC.fU - G_OPC.fUpfb;
+	
+	fbControl(
+		fFF := G_OPC.fFF,
+		fPID := G_OPC.fSignalPID,
+		fPFB := G_OPC.fUpfb,
+		
+		fU => G_OPC.fU
+	);
+		
+		
+	
+	
+
+ELSIF G_Mode.bManual AND G_Mode.bRunning THEN
+
+	fbInitialPos(
+		bEnable := G_Inputs.bStartButton,
+		fCurrentPos := G_OPC.fPistonPosition
+	);
+	
+	IF G_Enables.bCharTesting THEN
+		IF G_OPC.fPistonPosition >= 0.9*0.5 OR G_OPC.fPistonPosition <= 0.1 * 0.5 THEN
+			G_OPC.fU := 0.0;
+		ELSE
+			G_OPC.fU := G_Parameter.fConst - G_OPC.fUpfb * TO_INT(G_Enables.bEnablePFB);
+		END_IF
+	
+	ELSE
+		G_OPC.fU := G_OPC.fJoystick;
+	END_IF
+	
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="P_ControlBlock">
+      <LineId Id="70" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="367" Count="1" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="350" Count="0" />
+      <LineId Id="180" Count="1" />
+      <LineId Id="183" Count="2" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="243" Count="6" />
+      <LineId Id="352" Count="1" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="108" Count="2" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="318" Count="3" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="275" Count="0" />
+      <LineId Id="306" Count="0" />
+      <LineId Id="312" Count="0" />
+      <LineId Id="305" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="278" Count="4" />
+      <LineId Id="322" Count="0" />
+      <LineId Id="283" Count="15" />
+      <LineId Id="366" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="276" Count="0" />
+      <LineId Id="300" Count="2" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="308" Count="3" />
+      <LineId Id="307" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="274" Count="0" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="351" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="223" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="25" Count="1" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="111" Count="2" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="323" Count="1" />
+      <LineId Id="334" Count="0" />
+      <LineId Id="336" Count="1" />
+      <LineId Id="335" Count="0" />
+      <LineId Id="326" Count="2" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

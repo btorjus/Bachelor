@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_FeedForward_NonLinear" Id="{2e5cc649-f982-48da-87b8-a64d39bb47ed}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_FeedForward_NonLinear
+VAR_INPUT
+	fXDotRef 		: LREAL; // Velocity Reference [m/s]
+	fMaxFlowUp 		: LREAL; // Needs to be positive (22)
+	fMaxFlowDown 	: LREAL; // Needs to be positive (15)
+	fDeadUp			: LREAL; // Needs to be positive (0.155)
+	fDeadDown 		: LREAL; // Needs to be positive (0.18)
+
+	fPs 			: LREAL; // [Bar]
+	fPa 			: LREAL; // [Bar]
+	fPb 			: LREAL; // [Bar]
+	fDeltaP0		: LREAL; // [Bar]
+	fAreaUp			: LREAL; // [mm^2]
+	fAreaDown		: LREAL; // [mm^2]
+
+END_VAR
+VAR_OUTPUT
+	fUFF 			: LREAL;
+	fFlow			: LREAL; 	// Wanted Flow
+	fFlowLM			: LREAL;	// Flow [L/min]
+END_VAR
+VAR
+
+	fDeltaP_Norm	: LREAL; 	// Pressure Drop with Compansator
+	
+	fDeltaP			: LREAL; 	// Pressure Drop
+	fDeltaP_Ref		: LREAL; 	// Referance Pressure Drop
+	fFlowRef		: LREAL; 	// Refereance Flow
+	
+	fUFFTemp		: LREAL;	// Temp Signal Out
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fDeltaP_Norm	:= fDeltaP0 * 100000.0;
+
+IF fXDotRef > 0.0 THEN
+	
+	fFlow := fXDotRef * fAreaUp;
+	fFlowLM := -fFlow * 60000;
+	fDeltaP := (fPs - fPa) * 100000.0;
+	IF fDeltaP < 100 THEN
+		fDeltaP := 100;
+	ELSE
+		fDeltaP := fDeltaP;
+	END_IF
+	fDeltaP_Ref := ABS(fDeltaP_Norm/ (fDeltaP));
+	fFlowRef := (fFlow * SQRT(fDeltaP_Ref)) * 60000.0;
+	fUFFTemp := fFlowRef/fMaxFlowUp;
+	fUFFTemp := -fUFFTemp * (1.0-fDeadUp);
+	
+ELSIF fXDotRef < 0.0 THEN
+	
+	fFlow := fXDotRef * fAreaDown;
+	fFlowLM := -fFlow * 60000;
+	fDeltaP := (fPs - fPb) * 100000.0;
+	IF fDeltaP < 100 THEN
+		fDeltaP := 100;
+	ELSE
+		fDeltaP := fDeltaP;
+	END_IF
+	fDeltaP_Ref := ABS(fDeltaP_Norm/(fDeltaP));
+	fFlowRef := (fFlow * SQRT(fDeltaP_Ref)) * 60000.0;
+	fUFFTemp := fFlowRef/fMaxFlowDown; 
+	fUFFTemp := -fUFFTemp*(1.0-fDeadDown);
+	
+ELSE
+	
+	fUFFTemp := 0.0;		
+
+END_IF
+
+IF fUFFTemp > 1.0 THEN
+	fUFF := 1.0;
+ELSIF fUFFTemp < -1.0 THEN
+	fUFF := -1.0;
+ELSE
+	fUFF := fUFFTemp;
+END_IF
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_FeedForward_NonLinear">
+      <LineId Id="1" Count="49" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -53,8 +53,7 @@ sscprj/
 # TwinCAT (Beckhoff)
 ############################
 # TwinCAT build and cache folders
-_TwinCAT/
-TwinCAT/
+
 **/TcBuild/
 **/TcTemp/
 **/TcCache/

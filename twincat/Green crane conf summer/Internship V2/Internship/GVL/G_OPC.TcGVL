@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="G_OPC" Id="{5ea6be42-d96d-412e-8945-28bb945cf324}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	// Unfiltered Pressures
+	fPa 				: LREAL; // [bar], Pressure A 
+	fPb 				: LREAL; // [bar], Pressure B 
+	fPs 				: LREAL; // [bar], Pressure S 
+	fPaLower 			: LREAL; // [bar], Pressure A inbetween DCV and CBV 
+	
+	// Filtered Pressures
+	fPaFiltered 		: LREAL; // [bar], Pressure A Filtered 
+	fPbFiltered 		: LREAL; // [bar], Pressure B Filtered
+	fPsFiltered 		: LREAL; // [bar], Pressure S Filtered
+	fPaLowerFiltered 	: LREAL; // [bar], Pressure A inbetween DCV and CBV Filtered
+	
+	fSpoolPosition 		: LREAL; // [-1..1], Spool position 
+	fPistonPosition 	: LREAL; // [m], Piston position
+	fPistonPosMeasured 	: LREAL; // [m], Measured piston position
+	fJoystick 			: LREAL; // [-1..1], Joystick signal
+	fFlow 				: LREAL; // [l/min], Flow rod side 
+	fFlowCalc 			: LREAL; // [l/min], Calculated flow
+	
+	fXRef 				: LREAL; // [m], Position reference [m]
+	fXDotRef 			: LREAL; // [m/s], Velocity reference [m/s]
+	fFlowRef 			: LREAL; // [l/min], Flow reference calculated form fXDotRef
+	
+	fFFFlow				: LREAL; // [l/min], Flow form feed forward
+	fKv					: LREAL;
+
+	fWantedSpoolPos 	: LREAL; // [-1..1], Where spool is wanted to be
+	fUpfbGrad 			: LREAL; // Pressure feedback gradient
+	fPxGrad 			: LREAL; // Pressure gradient
+	fUTest 				: LREAL; // [-1..1], Signal to Valve with pfb
+	fTime 				: LREAL; // [s], Time
+	fError 				: LREAL; // [m], Error
+	
+	
+	fSignalPID 			: LREAL; // PID signal value
+	fFF 				: LREAL; // FF signal Value
+	fUpfb 				: LREAL; // Pressure feedback signal
+	fU 					: LREAL; // [-1..1], Signal for spool to be where it is wanted
+
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
