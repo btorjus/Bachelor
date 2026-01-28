@@ -1,19 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVL_Outputs" Id="{832b8673-4b1f-4d6d-b762-422c9a639734}">
+  <GVL Name="G_Output" Id="{9f09a37e-4151-41e9-b303-85d293f6f5b3}">
     <Declaration><![CDATA[{attribute 'qualified_only'} // Variable needs to be used with GVL-name
 
 // INT: [-32768, 32767]	
 // BOOL: True/False
 // %Q* assigns next available memory adress in Twincat (Out)
+
 VAR_GLOBAL
 	// Digital Outputs
-	bGreenLight 			AT %Q* : BOOL; // Green light controller
-	bRedLight 				AT %Q* : BOOL; // Red light controller
+	bGreenLight 			AT %Q* : BOOL;	// Green light on controller
+	bRedLight 				AT %Q* : BOOL;	// Red light on controller
 	
 	// Analog Outputs
-	nValveOutput 			AT %Q* : INT;  // Valve output
-	bRunning				AT %Q* : BOOL; // Running?
+	nValveOutput 			AT %Q* : INT;	// Valve output
+	bRunning				AT %Q* : BOOL;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

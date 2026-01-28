@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_JoystickInputScaling" Id="{45abe8f1-3862-4b14-9ee2-cf88212f6af6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_JoystickInputScaling
+// LREAL: Long Real decimal number
+// INT: [-32768, 32767]	
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bEnable 				: BOOL;
+	nRawInput 				: INT;
+	fMaxValue 				: LREAL;
+	fMaxInputValue			: LREAL;
+	fMinInputValue 			: LREAL;
+	fNeutralInputValue  	: LREAL;
+	fNeutralDeadband		: LREAL;
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fOutput : LREAL;
+END_VAR
+
+// Variables
+VAR
+	fRawInput : LREAL;
+	fTempInput : LREAL; // Temporary input
+	fTempOutput : LREAL;
+
+	fMaxOutputValue  		: LREAL := 1.0;
+	fMinOutputValue  		: LREAL := -1.0;
+	fNeutralOutputValue  	: LREAL := 0.0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Crane is only supported for movement in the y-axis (up/down)
+
+fRawInput := INT_TO_LREAL(nRawInput); // Converts input to decimal number
+fTempInput := fRawInput - fNeutralInputValue; // Defines joystick neutral point 
+
+IF fTempInput > fNeutralDeadband THEN // Checks if joystick is moved above the neutral deadband. 
+	fTempOutput := fTempInput/(fMaxInputValue - fNeutralInputValue);
+ELSIF fTempInput < -fNeutralDeadband THEN	
+	fTempOutput := fTempInput/(fNeutralInputValue - fMinInputValue);
+ELSE
+	fTempOutput := 0.0;
+END_IF
+
+IF NOT(bEnable) THEN
+	fOutput := 0.0;
+ELSE
+	fOutput := LIMIT(fMinOutputValue * fMaxValue, fTempOutput * fMaxValue, fMaxOutputValue* fMaxValue);
+END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

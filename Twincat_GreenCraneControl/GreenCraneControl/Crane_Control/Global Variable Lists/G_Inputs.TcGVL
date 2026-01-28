@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="G_Inputs" Id="{5adfdde3-399f-42d5-aa4c-f7f5d0c3a725}">
+    <Declaration><![CDATA[{attribute 'qualified_only'} // Variable needs to be used with GVL-name
+
+// INT: [-32768, 32767]	
+// BOOL: True/False
+// %I* assigns next available memory adress in Twincat (In)
+
+VAR_GLOBAL
+	// Mode Selection
+	bManual 			AT %I* : BOOL; 	// Manual mode controller
+	bAuto	 			AT %I* : BOOL;	// Auto mode controller
+	bStartButton		AT %I* : BOOL; 	// Start button
+	bStopButton			AT %I* : BOOL;	// Stop button
+	
+	// Raw Pressure Values
+	nRawPa 				AT %I*	: INT;	// Pressure cap side
+	nRawPb				AT %I*	: INT;	// Pressure rod side
+	nRawPs				AT %I*	: INT;	// Pressure supply
+	nRawPaLower			AT %I* 	: INT;	// Pressure under counterbalance valve
+	
+	// Raw Position Values
+	nRawPistonPosition 	AT %I*	: INT;	// Piston position
+	nRawJoystick		AT %I*	: INT;	// Joystick Y-position
+	nRawFlowSensor		AT %I*	: INT;	// Flow sensor
+	nRawSpoolPosition	AT %I*	: INT;	// Spool position
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

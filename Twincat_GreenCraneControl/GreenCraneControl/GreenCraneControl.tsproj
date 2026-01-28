@@ -39,35 +39,34 @@
 	<Project ProjectGUID="{384280B1-3146-42C0-911B-E00E4F7C9B47}" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
 			<Tasks>
-				<Task Id="2" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+				<Task Id="2" Priority="20" CycleTime="10000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
 				</Task>
 			</Tasks>
 		</System>
 		<Plc>
 			<Project GUID="{E9812855-AED2-41C8-A04A-9E0656F6006A}" Name="Crane_Control" PrjFilePath="Crane_Control\Crane_Control.plcproj" TmcFilePath="Crane_Control\Crane_Control.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{70E468BB-D309-92FF-A4A9-CEBC62A71B58}" TmcPath="Crane_Control\Crane_Control.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{020893C1-3AAF-E014-03FC-581D2111B47B}" TmcPath="Crane_Control\Crane_Control.tmc">
 					<Name>Crane_Control Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>GVL_Outputs.bGreenLight</Name>
-							<Comment><![CDATA[ Green light controller]]></Comment>
+							<Name>G_Output.bGreenLight</Name>
+							<Comment><![CDATA[ Green light on controller]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Outputs.bRedLight</Name>
-							<Comment><![CDATA[ Red light controller]]></Comment>
+							<Name>G_Output.bRedLight</Name>
+							<Comment><![CDATA[ Red light on controller]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Outputs.bRunning</Name>
-							<Comment><![CDATA[ Running?]]></Comment>
+							<Name>G_Output.bRunning</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Outputs.nValveOutput</Name>
+							<Name>G_Output.nValveOutput</Name>
 							<Comment><![CDATA[ Valve output]]></Comment>
 							<Type>INT</Type>
 						</Var>
@@ -75,62 +74,62 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>GVL_Inputs.bManualMode</Name>
+							<Name>G_Inputs.bManual</Name>
 							<Comment><![CDATA[ Manual mode controller]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.bAutoMode</Name>
+							<Name>G_Inputs.bAuto</Name>
 							<Comment><![CDATA[ Auto mode controller]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.bStartButton</Name>
+							<Name>G_Inputs.bStartButton</Name>
 							<Comment><![CDATA[ Start button]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.bStopButton</Name>
+							<Name>G_Inputs.bStopButton</Name>
 							<Comment><![CDATA[ Stop button]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawPa</Name>
+							<Name>G_Inputs.nRawPa</Name>
 							<Comment><![CDATA[ Pressure cap side]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawPb</Name>
+							<Name>G_Inputs.nRawPb</Name>
 							<Comment><![CDATA[ Pressure rod side]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawPs</Name>
+							<Name>G_Inputs.nRawPs</Name>
 							<Comment><![CDATA[ Pressure supply]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawPaLower</Name>
+							<Name>G_Inputs.nRawPaLower</Name>
 							<Comment><![CDATA[ Pressure under counterbalance valve]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawPistonPosition</Name>
+							<Name>G_Inputs.nRawPistonPosition</Name>
 							<Comment><![CDATA[ Piston position]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawJoystick</Name>
+							<Name>G_Inputs.nRawJoystick</Name>
 							<Comment><![CDATA[ Joystick Y-position]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawFlowSensor</Name>
+							<Name>G_Inputs.nRawFlowSensor</Name>
 							<Comment><![CDATA[ Flow sensor]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Inputs.nRawSpoolPosition</Name>
+							<Name>G_Inputs.nRawSpoolPosition</Name>
 							<Comment><![CDATA[ Spool position]]></Comment>
 							<Type>INT</Type>
 						</Var>
@@ -143,7 +142,7 @@
 								<OTCID>#x02010020</OTCID>
 							</ManualConfig>
 							<Priority>20</Priority>
-							<CycleTime>10000000</CycleTime>
+							<CycleTime>1000000</CycleTime>
 						</Context>
 					</Contexts>
 					<TaskPouOids>
@@ -1341,10 +1340,9 @@ Bit1: Value smaller than Limit2]]></Comment>
 		</Io>
 	</Project>
 	<Mappings>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500820000403}" Id="#x02030010"/>
 		<OwnerA Name="TIPC^Crane_Control^Crane_Control Instance">
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^DI (EL1008)">
-				<Link VarA="PlcTask Inputs^GVL_Inputs.bAutoMode" VarB="Channel 1^Input"/>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^AI2 (EL3068)">
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawPs" VarB="AI Standard Channel 1^Value"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>
