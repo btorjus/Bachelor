@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Integration" Id="{7ce813d6-b658-47e8-b682-d5e643c7eb41}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Integration
+// SINT: Integer [-128, 127]
+// LREAL: Long Real decimal number
+
+// Constant variables
+VAR CONSTANT
+	f_SampleTime: LREAL := 0.001;
+END_VAR
+
+// Input variables
+VAR_INPUT
+	ss_UpdateMode: SINT; // Integration mode (initialize or next step)
+	f_Signal: LREAL; // Signal value to integrate
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	f_IntegratedSignal: LREAL; // Output variable after integration
+END_VAR
+
+// Variables
+VAR
+	c_CurrentValue_DS: LREAL; // Current value/internal memory, discrete step
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Discrete time integration
+
+CASE ss_UpdateMode OF // Compares ss_UpdateMode value against values below.
+	ss_INITIALIZE: 
+	c_CurrentValue_DS := 0.0; // Executed if ss_INITIALIZE = ss_UpdateMode. (Initialization of the integrator)
+	
+	ss_STEP:
+	f_IntegratedSignal := c_CurrentValue_DS; // Output value = current value/internal mamory
+	c_CurrentValue_DS := (f_SampleTime * f_Signal) + c_CurrentValue_DS; // Discrete integration formula (forward euler method).
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
