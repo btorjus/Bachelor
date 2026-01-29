@@ -1,0 +1,7 @@
+CorrelationId: fee70b7e-b18a-4114-902f-cd366ac5eee0
+UTC DateTime: 01/28/2026 10:06:47
+
+The following files/folders have not been downloaded
+0. GreenCrane BSc/Startup package/Datasheets/Hose/ROCKMASTER 2SN.txt
+1. GreenCrane BSc/Startup package/Datasheets/Sensors/Pressure sensors/flow - 81.txt
+2. GreenCrane BSc/Startup package/Datasheets/Sensors/Pressure sensors/pressure - 42.txt
