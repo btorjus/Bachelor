@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MotionRef" Id="{354b3a34-d392-4f87-a4eb-f033618b096f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MotionRef
+// LREAL: Long Real decimal number
+// INT: [-32768, 32767]
+
+// Input variables
+VAR_INPUT
+	fAmplitude : LREAL;		// Amplitude
+	fFrequency : LREAL;		// Frequency
+	fInitialPos : LREAL; 	// Initial position
+	fCurrentPos : LREAL; 	// Current position
+	nMotionMode : INT;		// Motion mode
+	fMotionTimer : LREAL;	// Timer for movement
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fXDotRef : LREAL;	 // Velocity reference
+	fXRef : LREAL;		 // Position reference
+	fWantedFlow : LREAL; // Flow reference calculated from velocity reference
+END_VAR
+
+// Variables
+VAR
+	fPI : LREAL := 3.1415;
+	fMean : LREAL;
+	
+	arrBounduary 	: ARRAY[0..1] OF LREAL := [G_Parameter.fPistonStroke * 0.1, G_Parameter.fPistonStroke * 0.9]; // Min, Max [m]
+	// arrBounduary[0] and arrBoundary[1] = Lower limit piston stroke (10%) and higher limit (90%) of 0.5m. Safety for cylinder movement
+	
+	fRampTime 	 	: LREAL := 15.0; // [s] duration of movement sequence in ramp mode. Cylinder uses 15s from 10% to 90%
+ 	fTolerance   	: REAL := 0.005;  // ±5 mm tolerance for cylinder 
+  	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+CASE nMotionMode OF
+	0:	// Sine 
+		fMean := fAmplitude + fInitialPos; // Midpoint of the sine-wave. Initial position +- 0.15m
+		fXRef := fMean - fAmplitude * COS(2*fPI * fFrequency * fMotionTimer); // Position ref. Angle calculated using a timer, cylinder starts going upwards
+		fXDotRef := 2 * fPI *fFrequency * fAmplitude * SIN(2*fPI * fFrequency * fMotionTimer); // Velocity ref. Position derivated
+		
+	1:	// Ramp
+		IF fMotionTimer <= fRampTime THEN // If motion timer < 15s
+			fXDotRef := (arrBounduary[1] - arrBounduary[0]) / fRampTime; //calculates speed: distance/time = (90%-10%)/ramp time
+			fXRef := arrBounduary[0] + fXDotRef * fMotionTimer; // position = velocity*time = 10% + speed*time (10%: start distance)
+			
+		ELSIF fMotionTimer <= fRampTime * (4.0/3.0) THEN // If motion timer < 20s
+			fXRef := arrBounduary[1]; // Position holds at 90% (Highest position)
+			fXDotRef := 0.0; // Velocity = 0
+			
+		ELSIF fMotionTimer <= (2.0 + 1.0/3.0) * fRampTime AND fMotionTimer > fRampTime * (4.0/3.0) THEN // If motion timer is [20,35]s
+			fXDotRef := (arrBounduary[0] - arrBounduary[1]) / fRampTime; // Velocity = (10%-90%)/ramp time. Cylinder retracting
+			fXRef := arrBounduary[1] + fXDotRef * (fMotionTimer - (4.0/3.0) * fRampTime); 
+			// position = velocity*time = 90% + speed*time (90%: start distance). Timer calculated to start at 0 on the top position where motion timer = 20s
+		
+		ELSIF fMotionTimer > (2.0 + 1.0/3.0) * fRampTime THEN // If timer > 35
+			fXDotRef := 0.0; // Velocity = 0
+			fXRef := arrBounduary[0]; // Position holds at 10% (Lowest position)
+		END_IF
+END_CASE
+
+IF fXDotRef > 0.0 THEN // If cylinder moves upwards
+	fWantedFlow := fXDotRef * G_Parameter.fAreaUp*6E4; // Wanted flow = speed * AreaUp
+ELSIF fXDotRef < 0.0 THEN // If cylinder moves downwards
+	fWantedFlow := fXDotRef * G_Parameter.fAreaDown*6E4; // Wanted flow = speed * AreaDown
+ELSE
+	fWantedFlow := 0.0; 
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

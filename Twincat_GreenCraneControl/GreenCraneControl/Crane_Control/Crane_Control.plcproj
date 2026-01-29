@@ -33,6 +33,9 @@
     <Compile Include="Function Blocks\FB_JoystickInputScaling.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_MotionRef.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_Normalize.TcPOU">
       <SubType>Code</SubType>
     </Compile>
