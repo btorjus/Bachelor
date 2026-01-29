@@ -2,7 +2,6 @@
 <TcPlcObject Version="1.1.0.1">
   <GVL Name="G_Output" Id="{9f09a37e-4151-41e9-b303-85d293f6f5b3}">
     <Declaration><![CDATA[{attribute 'qualified_only'} // Variable needs to be used with GVL-name
-
 // INT: [-32768, 32767]	
 // BOOL: True/False
 // %Q* assigns next available memory adress in Twincat (Out)

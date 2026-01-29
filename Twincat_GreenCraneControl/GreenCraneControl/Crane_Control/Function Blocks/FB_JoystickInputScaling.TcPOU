@@ -26,7 +26,7 @@ END_VAR
 VAR
 	fRawInput : LREAL;
 	fTempInput : LREAL; // Temporary input
-	fTempOutput : LREAL;
+	fTempOutput : LREAL; // Temporary output
 
 	fMaxOutputValue  		: LREAL := 1.0;
 	fMinOutputValue  		: LREAL := -1.0;
@@ -39,18 +39,19 @@ END_VAR
 fRawInput := INT_TO_LREAL(nRawInput); // Converts input to decimal number
 fTempInput := fRawInput - fNeutralInputValue; // Defines joystick neutral point 
 
-IF fTempInput > fNeutralDeadband THEN // Checks if joystick is moved above the neutral deadband. 
-	fTempOutput := fTempInput/(fMaxInputValue - fNeutralInputValue);
-ELSIF fTempInput < -fNeutralDeadband THEN	
-	fTempOutput := fTempInput/(fNeutralInputValue - fMinInputValue);
+IF fTempInput > fNeutralDeadband THEN // Checks if joystick is moved above the neutral deadband (positive y) 
+	fTempOutput := fTempInput/(fMaxInputValue - fNeutralInputValue); // Scales positive movement [0,1]
+ELSIF fTempInput < -fNeutralDeadband THEN // Checks if joystick is moved below the neutral deadband (negative y)
+	fTempOutput := fTempInput/(fNeutralInputValue - fMinInputValue); // Scales negative movement [-1,0]
 ELSE
-	fTempOutput := 0.0;
+	fTempOutput := 0.0; // If joystick is inside deadzone, fTempOutput = 0
 END_IF
 
-IF NOT(bEnable) THEN
+IF NOT(bEnable) THEN // If bEnable is not true, set fOutput = 0
 	fOutput := 0.0;
 ELSE
-	fOutput := LIMIT(fMinOutputValue * fMaxValue, fTempOutput * fMaxValue, fMaxOutputValue* fMaxValue);
+	fOutput := LIMIT(fMinOutputValue * fMaxValue, fTempOutput * fMaxValue, fMaxOutputValue* fMaxValue); 
+	// Calculates output signal within safety limits (Min, Output, Max)
 END_IF
 
 ]]></ST>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_Motion" Id="{650ba4e4-723b-42a7-941b-43686e73885b}">
+    <Declaration><![CDATA[{attribute 'qualified_only'} // Variable needs to be used with ENUM name
+{attribute 'strict'} // Strict rules, prevents invalid assignments/mathematical operations on the ENUM
+{attribute 'to_string'} // Converts variable into text, to show variable name
+
+TYPE E_Motion : // List of settings the program can use, reference trajectory for motion
+(
+	Sine,
+	Ramp
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

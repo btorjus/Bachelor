@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="G_Mode" Id="{a89507da-b50b-4379-9e9a-399fcb20c7fd}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+// BOOL: True/False
+
+VAR_GLOBAL // Different modes true/false
+	bRunning : BOOL;
+	bManual : BOOL;
+	bAuto : BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
