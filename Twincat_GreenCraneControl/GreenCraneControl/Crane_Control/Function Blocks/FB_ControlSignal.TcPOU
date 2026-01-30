@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ControlSignal" Id="{5ec98e7b-f91c-4803-9df2-1eb6eb99ed16}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ControlSignal
+// LREAL: Long Real decimal number
+// INT: [-32768, 32767]	
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	fFF 			: LREAL; // FF signal value
+	fPID			: LREAL; // PID signal value
+	fPFB			: LREAL; // Pressure feedback signal
+	
+	// Deadband
+	fDeadBandUp		: LREAL; 
+	fDeadBandDown	: LREAL;
+	
+	nFFState		: INT; // 0: Bachelor FF, 1: Kv FF, 2: Naive FF
+
+	bPID			: BOOL; // Enable PID control
+	bFF				: BOOL; // Enable feed forward
+	bPFB			: BOOL; // Enable pressure feedback
+	bU				: BOOL; 
+	bValve			: BOOL; 
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fU				: LREAL; // Final output
+	fUAdj			: LREAL; // Adjusted signal before final output
+END_VAR
+
+// Variables
+VAR
+	FF				: LREAL; // Feed forward
+	PID				: LREAL; // PID
+	PFB				: LREAL; // Pressure feedback
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+FF := fFF  * TO_INT(bFF); // Multiplies fFF with bFF. bFF:(True/False) = (1/0). Like an on/off switch for the feed forward.
+
+PID := fPID * TO_INT(bPID); // On/off switch for PID
+
+PFB := fPFB * TO_INT(bPFB); // On/off switch for pressure feedback
+
+fUAdj := (FF+PID-PFB)*TO_INT(bValve); // bValve works as a main on/off switch
+
+IF FF = 0.0 THEN // If feed forward is off
+	fU := 0.0; // Output = 0
+ELSE
+	CASE nFFState OF // Feed forward states 0,1,2
+		0: // State 0
+			IF (fUAdj > 0.0) THEN
+				fU := fUAdj + fDeadBandUp; // Adds offset to skip deadband in the valve (positive direction)
+			ELSIF (fUAdj < 0.0) THEN
+				fU := fUAdj - fDeadBandDown; // Adds offset to skip deadband in the valve (negative direction)
+			ELSE
+				fU := 0.0;
+			END_IF
+			
+		ELSE // FF States that use this: 1, 2
+			IF (fUAdj > 0.0) THEN
+				fU := fUAdj;
+			ELSIF (fUAdj < 0.0) THEN
+				fU := fUAdj;
+			ELSE
+				fU := 0.0;
+			END_IF
+	END_CASE
+END_IF
+
+// Saturation for output [-1,1]
+IF fU < -1.0 THEN
+	fU := -1.0; 
+ELSIF fU > 1.0 THEN
+	fU := 1.0;
+ELSE
+	fU := fU;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

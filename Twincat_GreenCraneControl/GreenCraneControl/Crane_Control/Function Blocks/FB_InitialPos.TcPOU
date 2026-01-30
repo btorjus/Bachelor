@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_InitialPos" Id="{4f6abf03-5486-4a2c-ab9b-8b48fab2886b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_InitialPos
+// LREAL: Long Real decimal number
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bEnable : BOOL; // Start signal on controller
+	fCurrentPos : LREAL; // Piston position [m]
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fInitialPos : LREAL; // Initial position
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bEnable THEN
+	fInitialPos := fInitialPos; // If system is running, keep initial position
+ELSE 
+	fInitialPos := fCurrentPos; // If system is off, track initial position
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

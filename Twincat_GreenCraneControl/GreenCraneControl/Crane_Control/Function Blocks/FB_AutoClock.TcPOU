@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_AutoClock" Id="{7377a5f2-2bb2-4a99-a851-408be3481e91}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AutoClock
+// LREAL: Long Real decimal number
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	fStart : BOOL; // Start timer
+	fRunning : BOOL; // System is running
+	fCycle : LREAL; // Time step
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fTime : LREAL; // Output (time)
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF NOT(fStart) OR NOT(fRunning) THEN // If start signal is missing or the system is not running, set time to zero
+	fTime := 0.0; 
+ELSIF fStart AND fRunning THEN // If both start signal and system is on. PLS ticks synced into real time
+	fTime := fTime + fCycle;		
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

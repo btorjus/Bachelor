@@ -24,7 +24,19 @@
     <Compile Include="Enumeration\E_Motion.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_AutoClock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_ControlSignal.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_Derivator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_Home.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_InitialPos.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_Integrator.TcPOU">
@@ -37,6 +49,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_Normalize.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_RunClock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_Running.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_ValveOutput.TcPOU">
