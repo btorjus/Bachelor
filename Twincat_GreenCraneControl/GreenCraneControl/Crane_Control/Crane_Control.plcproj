@@ -33,6 +33,9 @@
     <Compile Include="Function Blocks\FB_Derivator.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_Filtering.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_Home.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -49,6 +52,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_Normalize.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_PositionInputScaling.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_PressureFeedback.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_RunClock.TcPOU">
