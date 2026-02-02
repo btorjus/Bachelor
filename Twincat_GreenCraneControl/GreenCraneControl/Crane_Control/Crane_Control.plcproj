@@ -51,7 +51,13 @@
     <Compile Include="Function Blocks\FB_MotionRef.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_NaiveFF.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_Normalize.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_PID.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Function Blocks\FB_PositionInputScaling.TcPOU">
