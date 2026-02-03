@@ -39,7 +39,7 @@ VAR
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-fDeltaP_Norm	:= fDeltaP0 * 100000.0; // Converts from bar to Pa
+fDeltaP_Norm	:= fDeltaP0 * 100000.0; // Converts from Pa
 
 IF fXDotRef > 0.0 THEN // Velocity reference > 0
 	fFlow := fXDotRef * fAreaUp; // Calculates wanted flow (Q = v*A)

@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_KvFF" Id="{ae5f0261-6fc9-4fa6-82c4-cf1ec38248cc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_KvFF
+// LREAL: Long Real decimal number
+
+// Input variables
+VAR_INPUT
+	fPs 		: LREAL; // [bar] 
+	fPa 		: LREAL; // [bar]
+	fPb 		: LREAL; // [bar]
+	fXDotRef 	: LREAL; // [m/s]
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fFFTemp		: LREAL; // [-1,1], Wanted spool position
+	fFF 		: LREAL; // [-1,1], Spool signal for position
+	fFlow 		: LREAL; // [L/min]
+	fKv 		: LREAL; // [L/min / bar^0.5]
+END_VAR
+
+// Variables
+VAR
+	fDeltaP		: LREAL; // [bar]
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+IF fXDotRef > 0.0 THEN // Velocity reference > 0
+	IF fKv >= 0.1 THEN 
+		fFFTemp := -0.013*EXPT(fKv,5) + 0.1355*EXPT(fKv,4) - 0.5012*EXPT(fKv,3) + 0.7175*EXPT(fKv,2) - 0.0278 * fKv + 0.2684; // Curve fitting for valve opening
+	ELSIF fKv < 0.1 THEN
+		fFFTemp := 0.2325 + 0.0398 * fKv/0.1; // Linear approximation for low Kv values
+	ELSE 
+		fFFTemp := G_Parameter.fDeadUp; // Fallback to deadband value (positive direction)
+	END_IF
+	fFlow := fXDotRef * G_Parameter.fAreaUp * 6E4; // Calculates flow
+	fDeltaP := fPs - fPa; // Calculates pressure drop
+	fFF := -(fFFTemp + 0.0151)/1.1224; // Scaling and offset
+	
+ELSIF fXDotRef < 0.0 THEN // Velocity reference < 0
+	IF fKv >= 0.1 THEN
+		fFFTemp := 0.0054*EXPT(fKv,6) - 0.0733*EXPT(fKv,5) + 0.3796*EXPT(fKv,4) - 0.9356*EXPT(fKv,3) + 1.0359*EXPT(fKv,2) - 0.1046 * fKv + 0.2381; // Curve fitting for valve opening
+	ELSIF fKv < 0.1 THEN
+		fFFTemp := 0.2175 + 0.0196 * fKv/0.1; // Linear approximation for low Kv values
+	ELSE 
+		fFFTemp := G_Parameter.fDeadDown; // Fallback to deadband value (negative direction)
+	END_IF
+	fFlow := fXDotRef * G_Parameter.fAreaDown * 6E4; // Calculates flow
+	fDeltaP := fPs - fPb; // Calculates pressure drop
+	fFF := (fFFTemp + 0.0398)/1.1079; // Scaling and offset
+	
+ELSE
+	fFlow := 0.0;
+	fFFTemp := 0.0;
+	fFF := 0.0;
+END_IF
+
+// Safety to avoid division by zero when pressure drop is below 0
+IF fDeltaP <= 0.0 THEN
+	fKv := 4.0;
+ELSE
+	fKv := ABS(fFlow)/SQRT(fDeltaP);
+END_IF
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

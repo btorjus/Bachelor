@@ -54,6 +54,9 @@
     <Compile Include="Function Blocks\FB_JoystickInputScaling.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_KvFF.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_MotionRef.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -120,6 +123,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Programs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_Modes.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_Output.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_RunClock.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

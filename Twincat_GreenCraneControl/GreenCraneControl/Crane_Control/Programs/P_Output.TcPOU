@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="P_Output" Id="{ea868c64-71e1-491f-a495-e9db7d8a4d4c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_Output
+
+VAR
+	fbValveOutput : FB_ValveOutput;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Runs FB with given values
+fbValveOutput(
+	fNormalizedInput := G_OPC.fU,
+	bEnable := G_Enables.bEnableU,
+	nOutput => G_Output.nValveOutput	
+);
+
+IF G_Mode.bRunning THEN // If system is running, set green and red light on controller true. False when not running
+	G_Output.bGreenLight := TRUE;
+	G_Output.bRedLight := TRUE;
+ELSE
+	G_Output.bGreenLight := FALSE;
+	G_Output.bRedLight := FALSE;
+END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
