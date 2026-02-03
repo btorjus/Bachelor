@@ -33,6 +33,12 @@
     <Compile Include="Function Blocks\FB_Derivator.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Function Blocks\FB_FeedForward.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function Blocks\FB_FeedForward_NonLinear.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Function Blocks\FB_Filtering.TcPOU">
       <SubType>Code</SubType>
     </Compile>

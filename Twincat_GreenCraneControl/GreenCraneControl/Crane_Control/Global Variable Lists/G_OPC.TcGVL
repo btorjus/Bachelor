@@ -30,7 +30,7 @@ VAR_GLOBAL
 	fFlowRef 			: LREAL; // [L/min], Flow reference calculated form fXDotRef
 	
 	fFFFlow				: LREAL; // [L/min], Flow form feed forward
-	fKv					: LREAL; // Capacity factor (how much liquid a valve can let through over a set pressure drop)
+	fKv					: LREAL; // [L/min / bar^0.5] K value 
 
 	fWantedSpoolPos 	: LREAL; // [-1,1], Wanted spool position
 	fUpfbGrad 			: LREAL; // Pressure feedback gradient
