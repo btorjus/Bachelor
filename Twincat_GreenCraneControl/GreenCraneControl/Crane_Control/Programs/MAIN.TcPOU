@@ -1,13 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="MAIN" Id="{95bd3131-5c67-452d-927e-7536941f7837}">
+  <POU Name="MAIN" Id="{95bd3131-5c67-452d-927e-7536941f7837}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
 END_VAR
-]]>
-    </Declaration>
+]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[P_Inputs();
+P_Filtering();
+P_ControlBlock();
+P_Output();
+//P_RunClock();
+P_Modes();
+P_PID();
+P_FeedForward();]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

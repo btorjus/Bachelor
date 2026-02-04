@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="P_ControlBlock" Id="{34b73f17-fb3f-4014-8571-592d49402d29}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_ControlBlock
+VAR
+	fbAutoClock : FB_AutoClock;
+	fbMotionRef : FB_MotionRef;
+	fbControl : FB_ControlSignal;
+	fbInitialPos : FB_InitialPos;
+	nMode : E_Motion;
+	fbPressureFB : FB_PressureFeedback;
+	fbHome : FB_Home;
+	StartTimer : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Main control of valve
+fbControl(
+	nFFState := G_Parameter.FFMode,	// 0: Bachelor FF, 1: Kv FF, 2: Naive FF
+
+	bFF := G_Enables.bEnableFF, 	
+	bPID := G_Enables.bEnablePID,	
+	bPFB := G_Enables.bEnablePFB,	
+	bU := G_Enables.bEnableU,		// Enable signal valve
+	bValve := TRUE,					// Output valve active
+	
+	fDeadBandUp := G_Parameter.fDeadUp,
+	fDeadBandDown := G_Parameter.fDeadDown
+);
+
+// Pressure feedback
+fbPressureFB(
+			fKf := G_Parameter.Kf,
+			fTauF := G_Parameter.TauF,
+			state := G_Parameter.PFBstate,
+			
+			fUpfb => G_OPC.fUpfb,
+			fUpfbGrad => G_OPC.fUpfbGrad,
+			fPxGrad => G_OPC.fPxGrad
+		);
+
+IF G_Mode.bAuto AND G_Mode.bRunning THEN // If auto mode active and system is running
+
+	fbInitialPos(
+		bEnable := G_Inputs.bStartButton,
+		fCurrentPos := G_OPC.fPistonPosition
+	);
+	
+	fbAutoClock(
+		fStart := StartTimer.Q,
+		fRunning := G_Mode.bRunning,
+		fCycle := G_Parameter.fCycleTime
+	);
+	
+	IF G_Inputs.bStartButton THEN
+		StartTimer(IN := TRUE, PT :=T#2S);	// System counts 2s
+		fbMotionRef();
+		IF StartTimer.Q THEN
+			
+			IF G_Enables.bMove2Home THEN // If Move2Home is active, move to home position
+				fbHome(
+					bGoHome := G_Enables.bMove2Home,
+					fCurrentPos := G_OPC.fPistonPosition,
+					fHomePos := 0.05,
+					fMoveTimer := fbAutoClock.fTime,
+					fMoveTime := 10.0,
+					fTolerance := 0.002,
+					
+					fXDotRef => G_OPC.fXDotRef,
+					fXRef => G_OPC.fXRef
+				);
+			ELSE // Runs auto mode with given values
+			fbMotionRef(
+				nMotionMode := G_Enables.nModeSelect,
+				fMotionTimer := fbAutoClock.fTime,
+				fAmplitude := G_Parameter.fAmplitude,
+				fInitialPos := fbInitialPos.fInitialPos,
+				fFrequency := G_Parameter.fFrequency,
+				fCurrentPos := G_OPC.fPistonPosition,
+				fXDotRef => G_OPC.fXDotRef,
+				fXRef => G_OPC.fXRef,
+				fWantedFlow => G_OPC.fFlowRef
+			);
+			END_IF
+		ELSE 
+			G_OPC.fXDotRef := 0.0;
+			G_OPC.fXRef := G_OPC.fPistonPosition;
+		END_IF
+	ELSE 
+		StartTimer(IN := FALSE);
+		G_OPC.fXDotRef := 0.0;
+		G_OPC.fXRef := G_OPC.fPistonPosition;
+	END_IF
+	
+	
+	G_OPC.fUTest := G_OPC.fU - G_OPC.fUpfb; // Calculates control signal without PFB for monitoring
+	
+	fbControl(
+		fFF := G_OPC.fFF,
+		fPID := G_OPC.fSignalPID,
+		fPFB := G_OPC.fUpfb,
+		
+		fU => G_OPC.fU
+	);
+		
+		
+	
+	
+
+ELSIF G_Mode.bManual AND G_Mode.bRunning THEN // If manual mode is active and system is running
+
+	fbInitialPos(
+		bEnable := G_Inputs.bStartButton,
+		fCurrentPos := G_OPC.fPistonPosition
+	);
+	
+	IF G_Enables.bCharTesting THEN
+		IF G_OPC.fPistonPosition >= 0.9*0.5 OR G_OPC.fPistonPosition <= 0.1 * 0.5 THEN // Cylinder at max/min allowed value
+			G_OPC.fU := 0.0; // Signal to set spool at wanted position
+		ELSE
+			G_OPC.fU := G_Parameter.fConst - G_OPC.fUpfb * TO_INT(G_Enables.bEnablePFB);
+		END_IF
+	
+	ELSE
+		G_OPC.fU := G_OPC.fJoystick;
+	END_IF
+	
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

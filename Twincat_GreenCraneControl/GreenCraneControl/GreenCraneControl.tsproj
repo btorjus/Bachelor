@@ -46,7 +46,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9812855-AED2-41C8-A04A-9E0656F6006A}" Name="Crane_Control" PrjFilePath="Crane_Control\Crane_Control.plcproj" TmcFilePath="Crane_Control\Crane_Control.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{DEF77153-5DA4-6FC7-5C8D-7649801C1FA4}" TmcPath="Crane_Control\Crane_Control.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{68EF01D8-5B9F-55C7-1A82-04561248DEC2}" TmcPath="Crane_Control\Crane_Control.tmc">
 					<Name>Crane_Control Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -1342,8 +1342,30 @@ Bit1: Value smaller than Limit2]]></Comment>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500820000403}" Id="#x02030010"/>
 		<OwnerA Name="TIPC^Crane_Control^Crane_Control Instance">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^AI1 (EL3068)">
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawJoystick" VarB="AI Standard Channel 2^Value"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawPistonPosition" VarB="AI Standard Channel 3^Value"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawSpoolPosition" VarB="AI Standard Channel 4^Value"/>
+			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^AI2 (EL3068)">
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawPa" VarB="AI Standard Channel 4^Value"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawPaLower" VarB="AI Standard Channel 5^Value"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.nRawPb" VarB="AI Standard Channel 6^Value"/>
 				<Link VarA="PlcTask Inputs^G_Inputs.nRawPs" VarB="AI Standard Channel 1^Value"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^AO (EL4104)">
+				<Link VarA="PlcTask Outputs^G_Output.nValveOutput" VarB="AO Output Channel 1^Analog output"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^DI (EL1008)">
+				<Link VarA="PlcTask Inputs^G_Inputs.bAuto" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.bManual" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.bStartButton" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^G_Inputs.bStopButton" VarB="Channel 4^Input"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^RIO (EK1100)^DO (EL2008)">
+				<Link VarA="PlcTask Outputs^G_Output.bGreenLight" VarB="Channel 1^Output"/>
+				<Link VarA="PlcTask Outputs^G_Output.bRedLight" VarB="Channel 2^Output"/>
+				<Link VarA="PlcTask Outputs^G_Output.bRunning" VarB="Channel 3^Output"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

@@ -125,10 +125,25 @@
     <Compile Include="Programs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Programs\P_ControlBlock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_FeedForward.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_Filtering.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_Inputs.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Programs\P_Modes.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Programs\P_Output.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Programs\P_PID.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Programs\P_RunClock.TcPOU">
