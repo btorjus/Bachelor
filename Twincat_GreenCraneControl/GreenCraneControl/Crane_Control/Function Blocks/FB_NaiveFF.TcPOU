@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_NaiveFF" Id="{ca7bc146-de72-40c0-8b17-2acf5555ebf6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_NaiveFF
+// LREAL: Long Real decimal number
+
+// Input variables
+VAR_INPUT
+	fPs 		: LREAL; // [bar] Pressur supply
+	fPa 		: LREAL; // [bar] Pressure A between DCV and CBV 
+	fPb 		: LREAL; // [bar] Pressure B
+	
+	fXDotRef 	: LREAL; // [m/s] Velocity reference
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fFF 		: LREAL; // [-1,1], Feed forward signal value (spool position)
+	fFlow 		: LREAL; // [L/min] Feed forward flow output
+	fKv 		: LREAL; // [L/min / bar^0.5] Capacity factor
+END_VAR
+
+// Variables
+VAR
+	fDeltaP		: LREAL; // [bar] pressure drop
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Naive FF assumes relationship between in/out is linear. 
+// Multiplies input with a fixed gain to estimate the output.
+
+IF fXDotRef > 0.0 THEN  // When cylinder velocity REFERENCE > 0
+	fFlow := fXDotRef * G_Parameter.fAreaUp * 6E4; // Calculates needed flow (Q = v*A)
+	fDeltaP := fPs - fPa; // Calculates pressure drop over valve
+	
+	fFF := -(0.2143 + 0.7857 * fKv/3.7796); // Calculates signal value (spool position)
+ELSIF fXDotRef < 0.0 THEN // When cylinder velocity REFERENCE < 0
+	fFlow := fXDotRef * G_Parameter.fAreaDown * 6E4; // Calculates needed flow (Q = v*A)
+	fDeltaP := fPs - fPb; // Calculates pressure drop over valve
+	
+	fFF := (0.2143 + 0.7857 * fKv/3.7796); // Calculates signal value (spool position)
+ELSE
+	fFlow := 0.0;
+	fFF := 0.0;
+END_IF
+
+IF fDeltaP <= 0.0 THEN // If pressure in is lower than in the cylinder
+	fKv := 4.0; // Capacity factor
+ELSE
+	fKv := ABS(fFlow)/SQRT(fDeltaP); // Capacity factor else
+END_IF
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

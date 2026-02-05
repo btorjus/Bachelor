@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PressureFeedback" Id="{0804179b-0183-4864-8bc4-e432f54461a1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PressureFeedback
+// INT: [-32768, 32767]	
+// LREAL: Long Real decimal number
+
+// Input variables
+VAR_INPUT
+	fKf			: LREAL; // Pressure feedback constant
+	fTauF		: LREAL; // Pressure feedback constant [s]	
+	state		: INT;	 // [0,1,2] 0:Switching, 1: Pa-phi*Pb, 2: Pb
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fUpfb 		: LREAL; // Pressure feedback signal
+	fUpfbGrad	: LREAL; // Pressure feedback gradient
+	fPxGrad		: LREAL; // Pressure gradient [Bar]
+END_VAR
+
+// Variables
+VAR
+	fDt			: LREAL := 0.001; // Delta time [s]
+	fPx			: LREAL := 0.0; // Pressure [Bar]
+	fPxOld		: LREAL; // Previous pressure[Bar]
+	fARatio		: LREAL; // Valve area ratio
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+CASE state OF
+	0: // Altering input for Px (switching state)
+		IF G_OPC.fU < 0.0 THEN // If signal to set spool at wanted position [-1,1] is < 0: pressure = pressure A
+			fPx := G_OPC.fPa;
+		ELSIF G_OPC.fU > 0.0 THEN // If signal to set spool at wanted position [-1,1] is > 0: pressure = pressure B
+			fPx := G_OPC.fPb;
+		ELSE
+			fPx := 0.0; 
+		END_IF
+	1:	// Px = Pa - phi * Pb
+		fARatio := G_Parameter.fAreaDown/G_Parameter.fAreaUp; // Area ratio = AreaDown/AreaUp
+		fPx := G_OPC.fPa - fARatio * G_OPC.fPb;  // Effective pressure = pA-pB. Uses area ratio to get equivalent pressure
+	2:	// Px = Pb
+		fPx := G_OPC.fPb;
+END_CASE
+
+fPxGrad := (fPx - fPxOld)/fDt; // Change of pressure per second (this instant)
+fUpfbGrad :=  (fKf * fPxGrad - fUpfb)/fTauF; // Change of pressure (filtered/overall)
+fUpfb := fUpfb + fUpfbGrad * fDt; // Updates pressure feedback (Eulers method)
+
+fPxOld := fPx; // Updates previous pressure
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

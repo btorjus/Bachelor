@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="G_Init" Id="{ff24d0bb-675e-416a-a696-d612cc2a07e4}">
+    <Declaration><![CDATA[// SINT: Integer [-128, 127]
+VAR_GLOBAL CONSTANT
+	SS_INITIALIZE: SINT := 0; 	// Initial system state value
+	SS_STEP: SINT := 1;			// Step sequence state value
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

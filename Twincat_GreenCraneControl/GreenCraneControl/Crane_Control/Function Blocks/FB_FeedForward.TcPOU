@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_FeedForward" Id="{c7c6c1c3-721c-4ea2-9006-d66030d86044}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_FeedForward
+// LREAL: Long Real decimal number
+
+// Input variables
+VAR_INPUT
+	fXDotRef 		: LREAL; // Velocity Reference [m/s]
+	fMaxFlowUp 		: LREAL; // Needs to be positive (22)
+	fMaxFlowDown 	: LREAL; // Needs to be positive (15)
+	fDeadUp			: LREAL; // Needs to be positive (0.155)
+	fDeadDown 		: LREAL; // Needs to be positive (0.18)
+	
+	fPs 			: LREAL; // [Bar]
+	fPa 			: LREAL; // [Bar]
+	fPb 			: LREAL; // [Bar]
+	fDeltaP0		: LREAL; // [Bar] (8.0)
+	fAreaUp			: LREAL; // [mm^2]
+	fAreaDown		: LREAL; // [mm^2]
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fUFF 			: LREAL;	// FF signal value
+	fFlow			: LREAL; 	// Wanted Flow
+	fFlowLM			: LREAL;	// Flow [L/min]
+END_VAR
+
+// Variables
+VAR
+	fDeltaP_Norm	: LREAL; 	// Pressure Drop with Compensator
+	
+	fDeltaP			: LREAL; 	// Pressure Drop
+	fDeltaP_Ref		: LREAL; 	// Reference Pressure Drop
+	fFlowRef		: LREAL; 	// Reference Flow
+	
+	fUFFTemp		: LREAL;	// Temp Signal Out
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fDeltaP_Norm	:= fDeltaP0 * 100000.0; // Converts from Pa
+
+IF fXDotRef > 0.0 THEN // Velocity reference > 0
+	fFlow := fXDotRef * fAreaUp; // Calculates wanted flow (Q = v*A)
+	fFlowLM := -fFlow * 60000; // Converts flow to [L/min]. Negative sign for valve direction
+	fDeltaP := (fPs - fPa) * 100000.0; // Calculates pressure drop
+	
+	IF fDeltaP < 100 THEN // Safety for pressure drop to never go below 100. Avoiding division by zero
+		fDeltaP := 100;
+	ELSE
+		fDeltaP := fDeltaP;
+	END_IF
+	
+	fDeltaP_Ref := ABS(fDeltaP_Norm/ (fDeltaP)); // Calculates reference pressure drop. 
+	fFlowRef := (fFlow * SQRT(fDeltaP_Ref)) * 60000.0; // Calculates reference flow
+	fUFFTemp := fFlowRef/fMaxFlowUp; // Normalizes output signal [0,1]
+	fUFFTemp := -fUFFTemp * (1.0-fDeadUp); // Adjusts for valve deadband 
+	
+ELSIF fXDotRef < 0.0 THEN // Velocity reference < 0
+	fFlow := fXDotRef * fAreaDown; // Calculates wanted flow (Q = v*A)
+	fFlowLM := -fFlow * 60000; // Converts flow to [L/min]. Negative sign for valve direction
+	fDeltaP := (fPs - fPb) * 100000.0; // Calculates pressure drop
+	
+	IF fDeltaP < 100 THEN // Safety for pressure drop to never go below 100. Avoiding division by zero
+		fDeltaP := 100;
+	ELSE
+		fDeltaP := fDeltaP;
+	END_IF
+	
+	fDeltaP_Ref := ABS(fDeltaP_Norm/(fDeltaP)); // Calculates reference pressure drop
+	fFlowRef := (fFlow * SQRT(fDeltaP_Ref)) * 60000.0; // Calculates reference flow
+	fUFFTemp := fFlowRef/fMaxFlowDown; // Normalizes output signal [-1,0]
+	fUFFTemp := -fUFFTemp*(1.0-fDeadDown); // Adjusts for valve deadband
+	
+ELSE
+	
+	fUFFTemp := 0.0; // FF signal is zero		
+
+END_IF
+
+// Safety to keep FF signal [-1,1]
+IF fUFFTemp > 1.0 THEN
+	fUFF := 1.0;
+ELSIF fUFFTemp < -1.0 THEN
+	fUFF := -1.0;
+ELSE
+	fUFF := fUFFTemp;
+END_IF
+
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

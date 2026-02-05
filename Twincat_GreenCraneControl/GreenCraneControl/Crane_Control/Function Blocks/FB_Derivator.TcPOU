@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Derivator" Id="{3f122280-99b0-4728-bda7-c5c76630a2c8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Derivator
+// SINT: Integer [-128, 127]
+// LREAL: Long Real decimal number
+
+// Constant variables
+VAR CONSTANT
+	f_SampleRate: LREAL := 1000.0;
+END_VAR
+
+// Input variables
+VAR_INPUT
+	ssMethodType: SINT; // Derivation mode (initialize or next step)
+	fSignal: LREAL;		// Signal value to derivate
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fSignalDerivative: LREAL; // Output variable after derivation
+END_VAR
+
+// Variables
+VAR
+	rtb_TSamp: LREAL; // run-time-block. Scaled value for time, converts changes per PLC-loop to per second.
+	UD_DSTATE: LREAL; // Unit Delay. Current value/internal memory
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Discrete derivation
+
+CASE ssMethodType OF
+    SS_INITIALIZE: 
+        UD_DSTATE := 0.0; // Reset derivatior
+		
+    SS_STEP: 
+        rtb_TSamp := fSignal * f_SampleRate; // Converts PLC-time into real time. PlcTask cycle tick = 1ms
+        fSignalDerivative := rtb_TSamp - UD_DSTATE; // Change of value. Signal this cycle - signal cycle before 
+        UD_DSTATE := rtb_TSamp; // Updates current value
+END_CASE;
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

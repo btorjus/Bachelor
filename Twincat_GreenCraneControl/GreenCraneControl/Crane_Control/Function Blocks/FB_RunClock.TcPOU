@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_RunClock" Id="{72885421-59e1-4582-bbdc-64c324631609}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RunClock
+// LREAL: Long Real decimal number	
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bStart 		: BOOL; // Set to true
+	bStop 		: BOOL; // Stop button on controller
+	fCycleTime  : LREAL; // Time step [s]
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fTime : LREAL; // Output (time)
+END_VAR
+
+// Variables
+VAR
+	bOnOff : BOOL; // True/False
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bStop OR (G_Work.eStatus = E_Status.Off) THEN // If stop button is pressed or system is off 
+	bOnOff := FALSE; 
+	fTime := 0.0; 
+ELSIF bOnOff OR bStart THEN // If system is online/start button pushed, start timer
+	bOnOff := TRUE;
+	fTime := fTime + fCycleTime;
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

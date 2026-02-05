@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Home" Id="{56347319-b514-4e59-8d41-b8ed428dde85}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Home
+// LREAL: Long Real decimal number
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bGoHome : BOOL; // Enable home function
+	fCurrentPos : LREAL; // Piston position [m]
+	fTolerance : LREAL; // Tolerance for position [m]
+	fMoveTime : LREAL; // set to 10[s]
+	fHomePos : LREAL; // set to 0.05 (10%) [m]
+	fMoveTimer : LREAL; // Timer [s]
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fXRef : LREAL; // Position reference [m]
+	fXDotRef : LREAL; // Velocity reference [m/s]
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+IF bGoHome AND ABS(fHomePos-fCurrentPos)>fTolerance THEN // If home command is active and distance to home is larger than allowed tolerance
+	fXDotRef := (fHomePos-fCurrentPos)/fMoveTime; // Calculates speed
+	fXRef := fCurrentPos + fXDotRef * fMoveTimer; // Calculates position
+	IF	ABS(fHomePos-fCurrentPos)<=fTolerance THEN // If distance is lower than allowed tolerance, home position is aquired
+		bGoHome := FALSE;
+		fXDotRef := 0.0;
+		fXRef := fCurrentPos;
+	END_IF
+ELSE // Stop moving and stay at current position
+	fXDotRef := 0.0;
+	fXRef := fCurrentPos;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
