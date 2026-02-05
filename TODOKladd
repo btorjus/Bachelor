@@ -108,5 +108,29 @@ så mye som mulig av twincat fungerer og lag et programm selv.
 
 
 
-////
+//// Møte 04/02 //////////////////////////
 
+Vi må sjekke hva feilen er på cylinder transduseren. Snakk med Are. 
+
+
+Forover kobling og noe form for stabilisering. i twincat3
+
+når Are og Michael jobbet, så gikk are opp og fikk hjelp, frem og tilbake, men nå skal den dokumenters ordentlig og å få det i en rapport.
+
+De første tingene som ble gjort var en test matrise der Are kjørte sinus opp og ned, og forskjellig pumpetrykk.
+1. Vi skal hvert i fall ha mål på posisjonstrasduser mot fysisk.
+2. Få styr på dødband, la styresygnal llangsomt vokse og mål posisjon på cylinder med transduser. 100 140 og 180 bar langsomt ramp styresignal opp og plot med cylindervandring så finner vi dødbandet ligger.
+3. Michael finner de gamle exel ark, og gjør hele sommerprosjektet igjen. Vi gjør noen enkle teste slik at vi får kartlaget alt.
+Går tilbake til å sjekke cylinderkraft teoretisk mot malt. Skriv i rapport at vi er skeptiske og vil undersøke de gamle målingene på nytt, at det virker lovende. 
+Sjekk om han er ledig etter 12 for simscape veildening.
+
+
+kjøre ned 100 110 120 bar med fem prosent sprang 0.25 til 1
+
+
+
+
+/////////////PLan for 05/02 ///////////////7
+
+sylinder målinger
+Program for å kjøre ramp og sinus samt måle u signal. Det skal være både u signal og faktisk u.
