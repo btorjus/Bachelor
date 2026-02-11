@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Filtering" Id="{14261dac-a247-4f46-86fb-4a529ccfd47b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Filtering
+// SINT: Integer [-128, 127]
+// LREAL: Long Real decimal number
+// USINT: Integer, strictly positive [0,255]
+
+// Input variables
+VAR_INPUT
+	ssMethodType: SINT;
+	Signal: LREAL; 				// Input signal
+	Num: LREAL; 				// Filter constant
+	DenZ: LREAL; 				// Filter constant
+	Den: LREAL; 				// Filter constant
+	Initial: LREAL; 			// Filter constant
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	Signal_Unfiltered: LREAL;	// Unfiltered signal
+	Signal_Filtered: LREAL;		// Filtered signal
+END_VAR
+
+// Variables
+VAR
+	DiscreteTransferFcn1_icLoad: USINT; 					// Initial condition load (start value)
+	DiscreteTransferFcn1_states: LREAL; 					// Filter state/memory (how the filter works)
+	c_TmpSignalConversionAtDisc: ARRAY[0..1] OF LREAL; 		// List of two decimal numbers
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+CASE ssMethodType OF
+    SS_INITIALIZE: 												// If ssMethodType = SS_INITIALIZE, set initial condition load = 1.
+        DiscreteTransferFcn1_icLoad := 1;
+    SS_STEP: 													// If ssMethodType = SS_STEP, set filter constants
+        c_TmpSignalConversionAtDisc[0] := DenZ;
+        c_TmpSignalConversionAtDisc[1] := Den;
+		
+        IF DiscreteTransferFcn1_icLoad <> 0 THEN 				// If icLoad is not equal to zero, set initial filter value
+            DiscreteTransferFcn1_states := Initial;
+        END_IF;
+        Signal_Filtered := Num * DiscreteTransferFcn1_states; 	// Output = filter constant * filter state
+        Signal_Unfiltered := Signal;
+        DiscreteTransferFcn1_icLoad := 0; 						// Reset filter initial condition
+        DiscreteTransferFcn1_states := Signal - (c_TmpSignalConversionAtDisc[1] * DiscreteTransferFcn1_states); 	// Filter update (negative feedback)
+END_CASE;
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

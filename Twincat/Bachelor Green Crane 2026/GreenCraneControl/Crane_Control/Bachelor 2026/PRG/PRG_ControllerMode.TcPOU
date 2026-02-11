@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_ControllerMode" Id="{0450d79d-8ebf-4b0d-8196-6efb5a4dcb4c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_ControllerMode
+
+VAR
+	fbControllerMode : FB_ControllerMode;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Runs FB with given values
+fbControllerMode(
+	bAuto := G_Inputs.bAuto, 			// Auto mode controller
+	bManual := G_Inputs.bManual, 		// Manual mode controller
+	bStart := G_Inputs.bStartButton,	// Start button
+	bStop := G_Inputs.bStopButton, 		// Stop button
+	
+	// Values from FB sent to GVL
+	bRunning => G_Mode.bRunning,		// System running
+	bRunning => G_Output.bRunning,		// System running
+	bManualMode => G_Mode.bManual,		// Manual mode
+	bAutoMode => G_Mode.bAuto			// Auto mode
+);
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

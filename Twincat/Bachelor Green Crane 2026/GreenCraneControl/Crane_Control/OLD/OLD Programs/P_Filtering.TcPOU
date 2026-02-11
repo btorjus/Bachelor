@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="P_Filtering" Id="{152e0fb1-83f0-480e-9255-787d93a44be7}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_Filtering
+VAR
+	//fbControlBlock : c_FB_ControlBlockWithMonito;
+	fbFilterPa : FB_Filtering;
+	fbFilterPb : FB_Filtering;
+	fbFilterPs : FB_Filtering;
+	fbFilterU : FB_Filtering;
+	fbFilterPaLower : FB_Filtering;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbFilterPa(
+	ssMethodType := 1,
+	Signal := G_OPC.fPa, // Unfiltered, normalized pressure 
+	
+	// Filter constants:
+	Num := G_FilterConstants.fPressureFilterNum,
+	Denz := G_FilterConstants.fPressureFilterDenz,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	// Filtered pressure:
+	Signal_Filtered => G_Filtered.fPressurePistonSideFiltered,
+	Signal_Filtered => G_OPC.fPaFiltered
+);
+
+fbFilterPb(
+	ssMethodType := 1,
+	Signal := G_OPC.fPb,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Denz := G_FilterConstants.fPressureFilterDenz,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureRodSideFiltered,
+	Signal_Filtered => G_OPC.fPbFiltered
+);
+
+fbFilterPs(
+	ssMethodType := 1,
+	Signal := G_OPC.fPs,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Denz := G_FilterConstants.fPressureFilterDenz,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,
+	Signal_Filtered => G_OPC.fPsFiltered
+);
+
+fbFilterPaLower(
+	ssMethodType := 1,
+	Signal := G_OPC.fPaLower,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Denz := G_FilterConstants.fPressureFilterDenz,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,
+	Signal_Filtered => G_OPC.fPaLowerFiltered
+);
+
+//fbFilterU(
+//	ssMethodType := 1,
+//	Signal := G_Filtered.fValveOutputUnfiltered,
+//	Num := G_FilterConstants.fSignalFilterNum,
+//	Denz := G_FilterConstants.fSignalFilterDenz,
+//	Den := G_FilterConstants.fSignalFilterDen,
+//	Initial := G_FilterConstants.fSignalFilterInit,
+//	
+//	Signal_Filtered => G_Filtered.fValveOutputFiltered,
+//	Signal_Filtered => G_OPC_UA.fFilteredSignal
+//);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
