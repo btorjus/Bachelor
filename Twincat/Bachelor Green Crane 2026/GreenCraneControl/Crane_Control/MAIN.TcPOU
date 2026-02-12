@@ -10,9 +10,9 @@ END_VAR
 
 // Bachelor:
 // Inputs - not created
-// Filtering - not created
-// ControlBlock - not created
-// Output - not created
+//PRG_Filter();
+//PRG_ManualDriving();
+//PRG_Output();
 //PRG_ControllerMode();
 // PID - not created
 // FeedForward - not created

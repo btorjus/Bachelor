@@ -16,18 +16,50 @@
     <Implicit_KindOfTask>{6b4bc93a-f942-428d-b088-7fca5edb2127}</Implicit_KindOfTask>
     <Implicit_Jitter_Distribution>{4c1c0d96-c2bd-412f-98b5-86a67f5a854a}</Implicit_Jitter_Distribution>
     <LibraryReferences>{b37fe640-dc69-4e98-b531-f89faa0ce952}</LibraryReferences>
+    <CompilerDefines>VISU_USEPROPERTYINFO</CompilerDefines>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Bachelor 2026\FB\FB_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\FB\FB_ValveOutput_NC.TcPOU">
+    <Compile Include="Bachelor 2026\FB\FB_Filter.TcPOU">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_InitialPosition.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_JoystickInputScaling_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_Normalize_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_CylinderScaling.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_ValveControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\HMI\HMI.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\PRG\P_Output_NC.TcPOU">
+    <Compile Include="Bachelor 2026\PRG\PRG_Output.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_ManualDriving.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_Filter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\P_Inputs_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MAIN.TcPOU">
@@ -161,10 +193,15 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Visualization Manager.TcVMO">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bachelor 2026" />
     <Folder Include="Bachelor 2026\FB" />
+    <Folder Include="Bachelor 2026\HMI" />
+    <Folder Include="Bachelor 2026\Enumeration" />
     <Folder Include="Bachelor 2026\PRG" />
     <Folder Include="OLD" />
     <Folder Include="GVL" />
@@ -173,6 +210,48 @@
     <Folder Include="OLD\OLD Programs" />
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderReference Include="System_VisuElemMeter">
+      <DefaultResolution>VisuElemMeter, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemMeter</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElems">
+      <DefaultResolution>VisuElems, 4.8.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElems</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsSpecialControls">
+      <DefaultResolution>VisuElemsSpecialControls, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemsSpecialControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsWinControls">
+      <DefaultResolution>VisuElemsWinControls, 4.8.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemsWinControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemTextEditor">
+      <DefaultResolution>VisuElemTextEditor, 4.8.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemTextEditor</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuInputs">
+      <DefaultResolution>VisuInputs, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuInputs</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuNativeControl">
+      <DefaultResolution>VisuNativeControl, 4.8.0.0 (System)</DefaultResolution>
+      <Namespace>VisuNativeControl</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -204,6 +283,17 @@
           <v n="Name">"{192FAD59-8248-4824-A8DE-9177C94C195A}"</v>
           <d n="SubKeys" t="Hashtable" />
           <d n="Values" t="Hashtable" />
+        </o>
+        <v>{246001F4-279D-43AC-B241-948EB31120E1}</v>
+        <o>
+          <v n="Name">"{246001F4-279D-43AC-B241-948EB31120E1}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>GeneralPropertySupport</v>
+            <v>True</v>
+            <v>UnicodeStrings</v>
+            <v>False</v>
+          </d>
         </o>
         <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
         <o>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ValveControl" Id="{945aba02-7636-4643-ae8e-1eec2ef7bf11}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ValveControl
+// LREAL: Long Real decimal number
+// INT: [-32768, 32767]	
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bEnable 			: BOOL; 	// Enable signal
+	fNormalizedInput 	: LREAL;	// Normalized input-data
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	nOutput : INT; 
+END_VAR
+
+// Variables
+VAR
+	nOffset 	: LREAL := 19630.0; 	// Closed valve
+	nMaxValue	: LREAL := 29460.0; 	// Max value valve
+	nMinValue 	: LREAL :=  9830.0; 	// Min value valve
+	nTempOutput : LREAL; 				// Temporary output
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF fNormalizedInput > 0.0 THEN													// Signal to set spool at wanted position > 0.0
+    nTempOutput := nOffset + (fNormalizedInput * (nMaxValue - nOffset));		// Converts wanted output for valve [19630, 29460] (positive direction)
+ELSE																			// Signal to set spool at wanted position < 0.0
+    nTempOutput := nOffset + (fNormalizedInput * (nOffset - nMinValue));		// Converts wanted output for valve [9830, 19630] (negative direction)
+END_IF
+
+nOutput := LREAL_TO_INT(SEL(bEnable, nOffset, nTempOutput));	// If bEnable is false, output = nOffset (closed valve). 
+																// If bEnable is true, output = nTempOutput]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

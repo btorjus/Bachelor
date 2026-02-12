@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_Output" Id="{570651de-6d72-48ad-99bb-75936a9676a8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Output
+
+VAR
+	fbValveOutput : FB_ValveControl;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Runs FB with given values
+fbValveOutput(
+	fNormalizedInput := G_OPC.fU,		// Signal to set spool at wanted position
+	bEnable := G_Enables.bEnableU,		// Enable signal
+	nOutput => G_Output.nValveOutput	// Output signal to valve
+);
+
+// If system is running, set green and red light on controller true. False when not running:
+G_Output.bGreenLight := G_Mode.bRunning;
+G_Output.bRedLight   := G_Mode.bRunning;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

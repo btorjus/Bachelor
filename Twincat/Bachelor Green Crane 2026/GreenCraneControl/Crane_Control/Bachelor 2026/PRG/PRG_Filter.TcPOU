@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_Filter" Id="{9d2d7a52-672b-42d7-8964-55adcd8e0760}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Filter
+
+// Variables
+VAR
+	fbFilterPa : FB_Filter;
+	fbFilterPb : FB_Filter;
+	fbFilterPs : FB_Filter;
+	fbFilterPaLower : FB_Filter;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbFilterPa(
+	FilterMode := 1,
+	Signal := G_OPC.fPa, // Unfiltered, normalized pressure 
+	
+	// Filter constants:
+	Num := G_FilterConstants.fPressureFilterNum,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	// Filtered pressure:
+	Signal_Filtered => G_Filtered.fPressurePistonSideFiltered,
+	Signal_Filtered => G_OPC.fPaFiltered
+);
+
+fbFilterPb(
+	FilterMode := 1,
+	Signal := G_OPC.fPb,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureRodSideFiltered,
+	Signal_Filtered => G_OPC.fPbFiltered
+);
+
+fbFilterPs(
+	FilterMode := 1,
+	Signal := G_OPC.fPs,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,
+	Signal_Filtered => G_OPC.fPsFiltered
+);
+
+fbFilterPaLower(
+	FilterMode := 1,
+	Signal := G_OPC.fPaLower,
+	Num := G_FilterConstants.fPressureFilterNum,
+	Den := G_FilterConstants.fPressureFilterDen,
+	Initial := G_FilterConstants.fPressureFilterInit,
+	
+	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,	// Overkjører PressureSupply output? Er det samme?
+	Signal_Filtered => G_OPC.fPaLowerFiltered
+);
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
