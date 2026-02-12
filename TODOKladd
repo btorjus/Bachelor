@@ -142,3 +142,12 @@ Program for å kjøre ramp og sinus samt måle u signal. Det skal være både u 
 Husk god notasjon av alle de forskjellige verdiene i rapporten.
 
 kan goså ha med i rapporten, datablader og slik og si sånn burde den eegentlig være, men det er ikke riktig og v\gjennom testing har vi kommet til andre verdier .
+
+
+
+/////////OPC ua ///
+
+Start på PLSen opc ua
+blokken i matlab må configurere server i blokka upc for å koble til
+Trege og sette opp men bedre med, nytt measurment projekt og starter begge, lagrer csv fil. må google.
+
