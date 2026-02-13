@@ -10,10 +10,10 @@ END_VAR
 
 // Bachelor:
 PRG_ScaledInputs();
+PRG_ControllerMode();
 PRG_Filter();
 PRG_ManualDriving();
 PRG_Output();
-PRG_ControllerMode();
 // PID - NOT created
 // FeedForward - not created
 

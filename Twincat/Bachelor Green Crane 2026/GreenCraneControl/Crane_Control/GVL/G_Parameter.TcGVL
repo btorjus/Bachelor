@@ -23,8 +23,8 @@ VAR_GLOBAL
 	fAreaDown 		: LREAL := 23.560/1E4; 	//[m^2]
 	
 	// Deadband
-	fDeadUp 		: LREAL := 0.23;
-	fDeadDown 		: LREAL := 0.215;
+	fDeadUp 		: LREAL := 0.23;  //  Fra sommer: 0.23
+	fDeadDown 		: LREAL := 0.215; // Fra sommer: 0.215
 	
 	fMaxSpeed 		: LREAL := 0.01; 	// [m/s] 
 	fDeltaP0 		: LREAL := 8.0; 	// [Bar]

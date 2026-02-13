@@ -8,7 +8,9 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Runs FB with given values
+      <ST><![CDATA[G_Enables.bEnableU := G_Mode.bRunning; // Lagt til senere
+
+// Runs FB with given values
 fbValveOutput(
 	fNormalizedInput := G_OPC.fU,		// Signal to set spool at wanted position
 	bEnable := G_Enables.bEnableU,		// Enable signal

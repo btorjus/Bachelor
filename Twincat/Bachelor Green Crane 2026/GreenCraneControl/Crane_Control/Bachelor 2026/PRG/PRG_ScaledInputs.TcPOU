@@ -65,7 +65,7 @@ fbNormCylinderPosition(
 fbNormJoystick(
 	nRawInput := G_Inputs.nRawJoystick, 				// Joystick raw y-position
 	fMaxValue := 1.0,
-	bEnable := (G_Mode.bRunning AND G_Mode.bManual), 	// Running and manual needs to be on
+	bEnable := (G_Mode.bRunning AND G_Mode.bManual), 	// Running and manual needs to be on   // Endre til true eller manuel?
 	
 	fMaxInputValue := 14745.0,							// Joystick raw signal max position
 	fMinInputValue := 1620.0,							// Joystick raw signal min position

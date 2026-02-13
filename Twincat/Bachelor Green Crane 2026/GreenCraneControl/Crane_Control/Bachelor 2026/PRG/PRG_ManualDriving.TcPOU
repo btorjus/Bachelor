@@ -8,19 +8,21 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-IF G_Mode.bManual AND G_Mode.bRunning THEN				// If system is running and manuel mode is active
+IF G_Mode.bManual AND G_Mode.bRunning THEN					// If system is running and manuel mode is active
 
 	fbInitialPos(										// Updates position when start button is pressed
 		bEnable := G_Inputs.bStartButton,
 		fCurrentPos := G_OPC.fPistonPosition
 	);
 
-    G_OPC.fU := G_OPC.fJoystick;						// Signal to spool from joystick
+    G_OPC.fU := -G_OPC.fJoystick;						// Signal to spool from joystick
 
-	// Cylinder at max/min allowed value. If not within safe area, output = 0.0
-    IF G_OPC.fPistonPosition >= 0.45 OR G_OPC.fPistonPosition <= 0.05 THEN
-        G_OPC.fU := 0.0;
-    END_IF
+	//Cylinder AT MAX/MIN allowed value. IF NOT within safe area, output = 0.0
+    //IF G_OPC.fPistonPosition >= 0.45 OR G_OPC.fPistonPosition <= 0.05 THEN
+        //G_OPC.fU := 0.0;
+    //END_IF
+	// MÅ ENDRES, STOPPER FOR TIDLIG
+	
 
     IF G_OPC.fU > 0.0 THEN
         G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;		// Output sendt with respect to valve deadband (upper)
