@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="FB_JoystickInputScaling_1" Id="{567a891a-c9cb-4c8d-af8e-f47a632b067b}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_JoystickInputScaling_1
+  <POU Name="FB_JoystickScaler" Id="{567a891a-c9cb-4c8d-af8e-f47a632b067b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_JoystickScaler
 // LREAL: Long Real decimal number
 // INT: [-32768, 32767]	
 // BOOL: True/False
@@ -36,24 +36,25 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// Crane is only supported for movement in the y-axis (up/down)
 
-fRawInput := INT_TO_LREAL(nRawInput); 			// Converts input to decimal number
-fTempInput := fRawInput - fNeutralInputValue; 	// Defines neutral point 
+fRawInput := INT_TO_LREAL(nRawInput);											// Converts input to decimal number
+fTempInput := fRawInput - fNeutralInputValue;									// Defines neutral point
 
-IF fTempInput > fNeutralDeadband THEN 									// If input is above the neutral deadband (positive y) 
-	fTempOutput := fTempInput/(fMaxInputValue - fNeutralInputValue); 	// Scales positive movement [0,1]
-ELSIF fTempInput < -fNeutralDeadband THEN 								// If input is below the neutral deadband (negative y)
-	fTempOutput := fTempInput/(fNeutralInputValue - fMinInputValue); 	// Scales negative movement [-1,0]
+IF ABS(fTempInput) > fNeutralDeadband THEN										// If joystick-signal is above deadband
+    IF fTempInput > 0 THEN														// Positive joystick-signal
+        fTempOutput := fTempInput / (fMaxInputValue - fNeutralInputValue);		// Scales positive signal [0,1]
+    ELSE																		// Negative joystick-signal
+        fTempOutput := fTempInput / (fNeutralInputValue - fMinInputValue);		// Scales negative signal [-1,0]
+    END_IF
 ELSE
-	fTempOutput := 0.0; 			// If joystick is inside deadzone, fTempOutput = 0
+    fTempOutput := 0.0;															// Inside deadband, signal = 0.0
 END_IF
 
-IF NOT(bEnable) THEN 				// If bEnable is not true, set fOutput = 0
+IF NOT(bEnable) THEN 															// If bEnable is not true, set fOutput = 0
 	fOutput := 0.0;
 ELSE
 	fOutput := LIMIT(fMinOutputValue * fMaxValue, fTempOutput * fMaxValue, fMaxOutputValue* fMaxValue); 
 	// Calculates output signal within safety limits (Min, Output, Max)
 END_IF
-
 ]]></ST>
     </Implementation>
   </POU>

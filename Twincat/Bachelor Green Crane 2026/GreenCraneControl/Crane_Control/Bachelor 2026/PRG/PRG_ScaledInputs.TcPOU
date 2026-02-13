@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_ScaledInputs" Id="{d48b7183-4789-4f92-80ca-b361f0603549}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_ScaledInputs
+// LREAL: Long Real decimal number
+
+VAR
+	fbNormPa :  FB_Normalization;
+	fbNormPb :  FB_Normalization;
+	fbNormPs :  FB_Normalization;
+	fbNormPaLower : FB_Normalization;
+	
+	fbNormCylinderPosition : FB_CylinderScaling;
+	fbNormSpoolPosition : FB_JoystickScaler;
+	fbNormJoystick : FB_JoystickScaler;	
+	fbNormFlow	: FB_JoystickScaler;		
+
+	fPa : LREAL;
+	fPb : LREAL;
+	fPs : LREAL;
+	fPaLower : LREAL;
+	
+	fPistonPosition : LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Runs FBs with given values
+
+fbNormPa(
+	nRawInput := G_Inputs.nRawPa,		// Raw value pressure A
+	fMaxValue := 400.0, 				// Max value [Bar]
+	fNormalizedInput => G_OPC.fPa		// Unfiltered pressure A out from FB (normalized)
+);
+
+fbNormPaLower(
+	nRawInput := G_Inputs.nRawPaLower, 	// Raw pressure A lower
+	fMaxValue := 400.0, 				// Max value [Bar]
+	fNormalizedInput => G_OPC.fPaLower	// Unfiltered pressure A lower out from FB (normalized)
+);
+
+fbNormPb(
+	nRawInput := G_Inputs.nRawPb,		// Raw value pressure B
+	fMaxValue := 400.0, 				// Max value [Bar]
+	fNormalizedInput => G_OPC.fPb		// Unfiltered pressure B out from FB (normalized)
+);
+
+fbNormPs(
+	nRawInput := G_Inputs.nRawPs,		// Raw value pressure S
+	fMaxValue := 400.0, 				// Max value [Bar]
+	fNormalizedInput => G_OPC.fPs 		// Unfiltered pressure S out from FB (normalized)
+);
+
+fbNormCylinderPosition(
+	nRawInput := G_Inputs.nRawPistonPosition,
+	
+	fMaxInputValue := 16090.0,
+	fMinInputValue := 125.0,
+	fMaxOutputValue := 0.5,			// Scaled output (cylinder at highest position)
+	fMinOutputValue := 0.0,			// Scaled output (cylinder at lowest position)
+	
+	fOutput => G_OPC.fPistonPosMeasured,
+	fActual => G_OPC.fPistonPosition
+);
+	
+fbNormJoystick(
+	nRawInput := G_Inputs.nRawJoystick, 				// Joystick raw y-position
+	fMaxValue := 1.0,
+	bEnable := (G_Mode.bRunning AND G_Mode.bManual), 	// Running and manual needs to be on
+	
+	fMaxInputValue := 14745.0,							// Joystick raw signal max position
+	fMinInputValue := 1620.0,							// Joystick raw signal min position
+	fNeutralInputValue := 8140.0,						// Joystick raw signal neutral position
+	fNeutralDeadband := 100.0,							// Deadband for joystick
+	
+	fOutput => G_OPC.fJoystick 							// Joystick output
+);
+
+fbNormSpoolPosition(
+	nRawInput := G_Inputs.nRawSpoolPosition,
+	fMaxValue := 1.0,
+	bEnable := TRUE,
+	
+	fNeutralInputValue := 8355.0,			// Spool raw signal at neutral position
+	fMaxInputValue := 12645.0,				// Spool raw signal at max position
+	fMinInputValue := 4071.0,				// Spool raw signal at min position
+	fNeutralDeadband := 15.0,				// Spool deadband
+	
+	fOutput => G_OPC.fSpoolPosition
+);
+
+fbNormFlow(
+	bEnable := TRUE,
+	nRawInput := G_Inputs.nRawFlowSensor,
+	fMaxValue := 150.0, 					// Max value flow [L/min]
+	
+	fMaxInputValue := 32767.0,				
+	fMinInputValue := 0,					
+	fNeutralInputValue := 15270.0,
+	fNeutralDeadband := 25.0,
+	
+	fOutput => G_OPC.fFlow
+);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

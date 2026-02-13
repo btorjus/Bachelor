@@ -9,25 +9,25 @@ END_VAR
       <ST><![CDATA[
 
 // Bachelor:
-// Inputs - not created
-//PRG_Filter();
-//PRG_ManualDriving();
-//PRG_Output();
-//PRG_ControllerMode();
-// PID - not created
+PRG_ScaledInputs();
+PRG_Filter();
+PRG_ManualDriving();
+PRG_Output();
+PRG_ControllerMode();
+// PID - NOT created
 // FeedForward - not created
 
 
 
 // From summer 2025:
- P_Inputs();
- P_Filtering();
- P_ControlBlock();
- P_Output();
+// P_Inputs();
+// P_Filtering();
+// P_ControlBlock();
+// P_Output();
 //P_RunClock(); // Not in use?
- P_Modes();
- P_PID();
- P_FeedForward();
+// P_Modes();
+// P_PID();
+// P_FeedForward();
 ]]></ST>
     </Implementation>
   </POU>
