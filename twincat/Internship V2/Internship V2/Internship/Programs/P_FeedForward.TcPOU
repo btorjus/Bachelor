@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="P_FeedForward" Id="{202d862f-f86c-42e9-b9cf-42d47a621534}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_FeedForward
+VAR
+	fbFF : FB_FeedForward;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbFF(
+	fMaxFlowUp := G_Parameter.fQMaxUp,
+	fMaxFlowDown := G_Parameter.fQMaxDown,
+	fDeadUp := G_Parameter.fDeadUp,
+	fDeadDown := G_Parameter.fDeadDown,
+	fAreaUp := G_Parameter.fAreaUp,
+	fAreaDown := G_Parameter.fAreaDown,
+	
+	fPs := G_OPC.fPs,
+	fPa := G_OPC.fPa,
+	fPb := G_OPC.fPb,
+	fDeltaP0 := G_Parameter.fDeltaP0,
+);
+
+IF TO_BOOL(G_Inputs.bAuto) THEN
+	fbFF(
+		fXDotRef := G_OPC.fXDotRef,		
+		
+		fUFF => G_OPC.fFF,
+	);
+
+
+ELSIF TO_BOOL(G_Inputs.bManual) THEN
+	fbFF(
+		fXDotRef := G_OPC.fJoystick * G_Parameter.fMaxSpeed,
+		
+		fUFF => G_OPC.fFF,
+	);
+
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="P_FeedForward">
+      <LineId Id="52" Count="0" />
+      <LineId Id="55" Count="3" />
+      <LineId Id="67" Count="1" />
+      <LineId Id="59" Count="1" />
+      <LineId Id="62" Count="2" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="21" Count="4" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="34" Count="5" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="16" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
