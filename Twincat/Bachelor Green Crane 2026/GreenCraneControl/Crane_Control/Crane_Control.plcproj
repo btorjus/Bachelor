@@ -40,20 +40,32 @@
     <Compile Include="Bachelor 2026\FB\FB_CylinderScaling.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\FB\FB_PF_GradientFiltered.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bachelor 2026\FB\FB_PressureFeedback_Simple.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Bachelor 2026\FB\FB_ValveControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\Pressure Feedback\FB_PF_AreaRatio.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\Pressure Feedback\FB_PF_GradientFiltered.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\Pressure Feedback\FB_PressureFeedback_Simple.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\HMI\HMI.TcVIS">
       <SubType>Code</SubType>
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>
-    <Compile Include="Bachelor 2026\PRG\PRG_Manual_PF_Gradient.TcPOU">
+    <Compile Include="Bachelor 2026\PRG\Manual Driving\PRG_ManualDriving.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\Manual Driving\PRG_ManualDriving_AreaRatioPF.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\Manual Driving\PRG_ManualDriving_PF_Home.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\Manual Driving\PRG_Manual_PF_Gradient.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp_11.TcPOU">
@@ -62,13 +74,7 @@
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\PRG\PRG_ManualDriving_PF_Home.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_Output.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bachelor 2026\PRG\PRG_ManualDriving.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_Filter.TcPOU">
@@ -218,9 +224,11 @@
   <ItemGroup>
     <Folder Include="Bachelor 2026" />
     <Folder Include="Bachelor 2026\FB" />
+    <Folder Include="Bachelor 2026\FB\Pressure Feedback" />
     <Folder Include="Bachelor 2026\HMI" />
     <Folder Include="Bachelor 2026\Enumeration" />
     <Folder Include="Bachelor 2026\PRG" />
+    <Folder Include="Bachelor 2026\PRG\Manual Driving" />
     <Folder Include="OLD" />
     <Folder Include="GVL" />
     <Folder Include="OLD\OLD Enumeration" />

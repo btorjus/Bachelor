@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_ManualDriving_AreaRatioPF" Id="{bc9172c5-43b2-4fe5-847a-3b2154b303ff}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_ManualDriving_AreaRatioPF
+
+VAR
+    bReturning        : BOOL;                   // True when returning home
+    ePFMode           : E_PressureFeedback;     // PF mode selection (ON/OFF)
+    fDistance         : LREAL;                  // Distance for breaking in return-home
+    
+    fbInitialPos      : FB_InitialPos;          // FB for start position
+    fbReturnTimer     : TON;                    // Timer for home command (5s hold)
+    fbPF_Area         : FB_PF_AreaRatio;        // Pressure feedback
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Updates initial position when start button is pushed
+fbInitialPos(
+    bEnable := G_Inputs.bStartButton AND G_Mode.bRunning,
+    fCurrentPos := G_OPC.fPistonPosition
+);
+
+// If start button is held for 5s, return home
+fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#5S);
+IF fbReturnTimer.Q THEN
+    bReturning := TRUE;
+END_IF
+
+// Cancel return-home if joystick is activated 
+IF ABS(G_OPC.fJoystick) > 0.1 THEN 
+    bReturning := FALSE;
+END_IF
+
+// 3. Drive logic (Home/Manual)
+IF bReturning THEN
+    fDistance := ABS(G_OPC.fPistonPosition - 0.01); // Calculates distance home
+    IF G_OPC.fPistonPosition > 0.01 THEN 			// If cylinder is above home point
+        G_OPC.fU := fDistance * 4.0; 				// Breaking starts at 0.1m from home
+        G_OPC.fU := LIMIT(0.05, G_OPC.fU, 0.4); 	// Safety limits for speed
+    ELSE
+        G_OPC.fU := 0.0;
+        bReturning := FALSE;
+    END_IF
+ELSE
+    IF G_Mode.bManual AND G_Mode.bRunning THEN		// Manual mode
+        G_OPC.fU := -G_OPC.fJoystick;
+    ELSE
+        G_OPC.fU := 0.0; 
+    END_IF
+END_IF
+
+// Pressure feedback based on area ratio
+fbPF_Area(
+    bEnable     := (ePFMode = E_PressureFeedback.PF_ON), 
+    fJoystick   := G_OPC.fU,            
+    fPa         := G_OPC.fPa,
+    fPb         := G_OPC.fPb,        
+    fU_Out      => G_OPC.fU            
+);
+
+// Deadband compensation for valve
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0); // Safety limit]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

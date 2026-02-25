@@ -22,6 +22,7 @@ VAR_GLOBAL
 	fAreaUp 		: LREAL := 33.100/1E4; 	//[m^2]
 	fAreaDown 		: LREAL := 23.560/1E4; 	//[m^2]
 	
+
 	// Deadband
 	fDeadUp 		: LREAL := 0.12;  //  Fra sommer: 0.23  Torjus: 8/0.7 = 0.114
 	fDeadDown 		: LREAL := 0.12; // Fra sommer: 0.215	Torjus: 8/0.7 = 0.114

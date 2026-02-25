@@ -1,84 +1,95 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PRG_AutoRamp_11" Id="{2cae9fbe-a2b7-47d1-b52c-c613185fedc9}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM PRG_AutoRamp_11
-VAR
-    // Ramp-logikk
-    bDirectionUp      : BOOL;
-    fUpperLimit       : REAL := 0.45;
-    fLowerLimit       : REAL := 0.05;
-    fAutoSpeed        : REAL := 0.3;
+    <Declaration><![CDATA[VAR
+    // Ramp- og hastighetsinnstillinger
+    fMaxSpeed         : LREAL := 0.3;      
+    fRampTime         : LREAL := 2.0;      
+    fPauseTime        : LREAL := 2.0;      
+    fCycleTime        : LREAL := 0.01;     
+    fBrakeDist        : LREAL := 0.05;     // Begynn å bremse 5 cm før grensen
     
-    // Pause-logikk
-    fbPauseTimer      : TON;           // Timer for pausen
-    bInPause          : BOOL;          // Er vi i en pause akkurat nå?
+    // Grenser og retning
+    fUpperLimit       : LREAL := 0.45;
+    fLowerLimit       : LREAL := 0.05;
+    bDirectionUp      : BOOL := TRUE;
+    
+    // Status
+    bInPause          : BOOL;
+    fCurrentTimer     : LREAL;             
+    fSpeed            : LREAL;             // Mellomvariabel for beregnet fart
     
     // Pressure Feedback (PF)
-    bPFEnable         : BOOL;
-    fSelectedPressure : LREAL;
-    fbDamping         : FB_PressureFeedback_Simple;
+    ePFMode : E_PressureFeedback := E_PressureFeedback.PF_ON; 
+    fbPF_Area         : FB_PF_AreaRatio;    
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// ==========================================
-// 1. AUTO RAMP LOGIKK MED PAUSE
+// 1. AUTO RAMP LOGIKK (KUN AUTO + STARTKNAPP)
 // ==========================================
-
-IF G_Inputs.bStartButton AND G_Mode.bRunning THEN
+IF G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto THEN
     
-    // Sjekk om vi har nådd en grense
-    IF (G_OPC.fPistonPosition >= fUpperLimit AND bDirectionUp) OR 
-       (G_OPC.fPistonPosition <= fLowerLimit AND NOT bDirectionUp) THEN
-        bInPause := TRUE;
+    fCurrentTimer := fCurrentTimer + fCycleTime;
+
+    // Sjekk om vi har nådd målet (Gå i pause)
+    IF NOT bInPause THEN
+        IF (bDirectionUp AND G_OPC.fPistonPosition >= fUpperLimit) OR 
+           (NOT bDirectionUp AND G_OPC.fPistonPosition <= fLowerLimit) THEN
+            bInPause := TRUE;
+            fCurrentTimer := 0.0; 
+        END_IF
     END_IF
 
-    // Timer-håndtering (2 sekunder pause)
-    fbPauseTimer(IN := bInPause, PT := T#2S);
-
-    IF fbPauseTimer.Q THEN
-        // Når pausen er ferdig: Snu retning og avslutt pause
-        bDirectionUp := NOT bDirectionUp;
+    // Håndter pause-slutt (snu retning)
+    IF bInPause AND fCurrentTimer >= fPauseTime THEN
         bInPause := FALSE;
+        bDirectionUp := NOT bDirectionUp;
+        fCurrentTimer := 0.0; 
     END_IF
 
-    // Sett fart (fU blir 0 hvis vi er i en pause)
+    // BEREGN HASTIGHET (OPP- OG NEDRAMPING)
     IF bInPause THEN
-        G_OPC.fU := 0.0;
-    ELSIF bDirectionUp THEN
-        G_OPC.fU := fAutoSpeed;
+        fSpeed := 0.0;
     ELSE
-        G_OPC.fU := -fAutoSpeed;
+        // 1. Start-rampe opp (Tidsbasert)
+        fSpeed := LIMIT(0.0, (fCurrentTimer / fRampTime) * fMaxSpeed, fMaxSpeed);
+        
+        // 2. Bremse-rampe ned (Posisjonsbasert)
+        IF bDirectionUp THEN
+            IF G_OPC.fPistonPosition > (fUpperLimit - fBrakeDist) THEN
+                fSpeed := LIMIT(0.05, (fUpperLimit - G_OPC.fPistonPosition) / fBrakeDist * fMaxSpeed, fSpeed);
+            END_IF
+        ELSE
+            IF G_OPC.fPistonPosition < (fLowerLimit + fBrakeDist) THEN
+                fSpeed := LIMIT(0.05, (G_OPC.fPistonPosition - fLowerLimit) / fBrakeDist * fMaxSpeed, fSpeed);
+            END_IF
+        END_IF
+        
+        // Sett retning (SEL velger mellom -fSpeed og fSpeed basert på bDirectionUp)
+        G_OPC.fU := SEL(bDirectionUp, -fSpeed, fSpeed);
     END_IF
 
 ELSE
-    // Stopp alt og nullstill hvis knappen slippes
+    // Full stopp og nullstilling hvis knapp slippes eller modus endres
     G_OPC.fU := 0.0;
+    fCurrentTimer := 0.0;
     bInPause := FALSE;
-    fbPauseTimer(IN := FALSE);
 END_IF
 
 // ==========================================
-// 2. PRESSURE FEEDBACK (PF)
+// 2. PRESSURE FEEDBACK (AREA RATIO)
 // ==========================================
-
-IF G_OPC.fU > 0 THEN
-    fSelectedPressure := G_OPC.fPb;
-ELSIF G_OPC.fU < 0 THEN
-    fSelectedPressure := G_OPC.fPa;
-ELSE
-    fSelectedPressure := 0.0;
-END_IF
-
-fbDamping(
-    bEnable   := bPFEnable, 
-    fInputU   := G_OPC.fU,
-    fPressure := fSelectedPressure,
-    fOutputU  => G_OPC.fU
+fbPF_Area(
+    bEnable   := (ePFMode = E_PressureFeedback.PF_ON), 
+    fJoystick := G_OPC.fU,            
+    fPa       := G_OPC.fPa,
+    fPb       := G_OPC.fPb,
+    fU_Out    => G_OPC.fU            
 );
 
 // ==========================================
 // 3. VENTIL-TILPASNING (DEADBAND & LIMIT)
 // ==========================================
-
 IF G_OPC.fU > 0.0 THEN
     G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
 ELSIF G_OPC.fU < 0.0 THEN

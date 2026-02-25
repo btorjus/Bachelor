@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PF_AreaRatio" Id="{c8449b8f-a7a3-4873-8b3c-d55fbd878291}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PF_AreaRatio
+
+VAR_INPUT
+    fPa             : LREAL;         	// Pressure piston-side Pa
+    fPb             : LREAL;         	// Pressure rod-side Pb
+    fDp             : LREAL := 0.065; 	// Diameter piston [m]
+    fDr             : LREAL := 0.035; 	// Diameter rod [m]
+    fKf             : LREAL := 0.001;//prøv deg frem med verdi, men bør være liten.
+    fTf             : LREAL := 0.5;		// [0.05, 0.1]
+    fJoystick       : LREAL;			// Joystick signal
+    bEnable         : BOOL;				// Enable signal for PF
+END_VAR
+
+VAR_OUTPUT
+    fU_Out          : LREAL;			// Output to valve
+END_VAR
+
+VAR
+    fAp             : LREAL;         			// Area piston
+    fAr             : LREAL;         			// Area rod 
+    fAa             : LREAL;         			// Area ring
+    fPhi            : LREAL;         			// Area ratio	
+	fPx             : LREAL; 					// Effective net pressure (Pa - Phi * Pb)
+    fPxOld          : LREAL; 					// Net pressure from previous sample
+    fPxDot          : LREAL; 					// Derivative of net pressure (rate of change)
+    fUpDot          : LREAL; 					// Derivative of damping signal 
+    fUp             : LREAL; 					// Integrated damping signal (active feedback)
+    fDt             : LREAL := 0.001; 			// Sampling time(1ms)
+    bFirstCycle     : BOOL := TRUE;   			// Initialization first cycle
+    PI              : LREAL := 3.14159265359; 	// 
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fAp := PI * EXPT(fDp / 2.0, 2);	// Area piston
+fAr := PI * EXPT(fDr / 2.0, 2);	// Area rod
+fAa := fAp - fAr;				// Area ring
+
+IF fAp > 0 THEN
+    fPhi := fAa / fAp;			// Area ratio Phi
+ELSE
+    fPhi := 1.0;				// Avoiding divison by zero if Ap < 0
+END_IF
+
+fPx := fPa - (fPhi * fPb);		// Calculates net pressure
+
+// Initial conditions first cycle
+IF bFirstCycle THEN
+    fPxOld := fPx;				// Updates Px
+    fUp := 0.0;					// Feedback will not give a big spike when starting
+    bFirstCycle := FALSE;
+END_IF
+
+fPxDot := (fPx - fPxOld) / fDt;			// Gradient pressure
+fUpDot := fKf * (fPxDot - fUp) / fTf;	// Low-pass filter
+fUp := fUp + (fUpDot * fDt); 			// Calculates feedback signal
+fPxOld := fPx;							// Updates PxOld
+
+IF bEnable THEN
+    IF ABS(fJoystick) < 0.05 THEN		// 5% deadband for joystick
+        fUp := 0.0; 
+        fU_Out := 0.0;
+    ELSE
+        fU_Out := fJoystick - fUp;		// PF is active
+    END_IF
+ELSE
+    fUp := 0.0;
+    fU_Out := fJoystick;				// PF is not active
+END_IF
+
+fU_Out := LIMIT(-1.0, fU_Out, 1.0);		// Safety limit]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
