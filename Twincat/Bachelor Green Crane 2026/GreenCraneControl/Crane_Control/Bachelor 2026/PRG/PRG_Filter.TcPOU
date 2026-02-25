@@ -55,7 +55,7 @@ fbFilterPaLower(
 	Den := G_FilterConstants.fPressureFilterDen,
 	Initial := G_FilterConstants.fPressureFilterInit,
 	
-	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,	// Overkjører PressureSupply output? Er det samme?
+	Signal_Filtered => G_Filtered.fPressurePaLower,	
 	Signal_Filtered => G_OPC.fPaLowerFiltered
 );
 

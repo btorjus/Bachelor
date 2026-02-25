@@ -12,13 +12,15 @@ END_VAR
 PRG_ScaledInputs();
 PRG_ControllerMode();
 PRG_Filter();
-PRG_ManualDriving();
+//PRG_ManualDriving();
+PRG_Manual_PF_Gradient();
+//PRG_ManualDriving_PF_Home();	// Manual driving with home function and pressure feedback
 PRG_Output();
 // PID - NOT created
 // FeedForward - not created
 
 
-
+	
 // From summer 2025:
 // P_Inputs();
 // P_Filtering();

@@ -19,6 +19,9 @@
     <CompilerDefines>VISU_USEPROPERTYINFO</CompilerDefines>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Bachelor 2026\Enumeration\E_PressureFeedback.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\FB\FB_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +40,12 @@
     <Compile Include="Bachelor 2026\FB\FB_CylinderScaling.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_PF_GradientFiltered.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_PressureFeedback_Simple.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\FB\FB_ValveControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -44,7 +53,16 @@
       <SubType>Code</SubType>
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_Manual_PF_Gradient.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp_11.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_ManualDriving_PF_Home.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_Output.TcPOU">

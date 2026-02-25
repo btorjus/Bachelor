@@ -10,6 +10,7 @@ VAR_GLOBAL
 	fPressureRodSideFiltered 	: LREAL; 	// Filtered pressure, rod side
 	fValveOutputFiltered		: LREAL; 	// Filtered valve output
 	fValveOutputUnfiltered		: LREAL; 	// Unfiltered valve output
+	fPressurePaLower			: LREAL;  	// Filtered value before counterbalance valve
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

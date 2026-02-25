@@ -17,13 +17,6 @@ IF G_Mode.bManual AND G_Mode.bRunning THEN					// If system is running and manue
 
     G_OPC.fU := -G_OPC.fJoystick;						// Signal to spool from joystick
 
-	//Cylinder AT MAX/MIN allowed value. IF NOT within safe area, output = 0.0
-    //IF G_OPC.fPistonPosition >= 0.45 OR G_OPC.fPistonPosition <= 0.05 THEN
-        //G_OPC.fU := 0.0;
-    //END_IF
-	// MÅ ENDRES, STOPPER FOR TIDLIG
-	
-
     IF G_OPC.fU > 0.0 THEN
         G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;		// Output sendt with respect to valve deadband (upper)
     ELSIF G_OPC.fU < 0.0 THEN
@@ -35,10 +28,6 @@ ELSE
 END_IF
 
 G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);		// Limit output 
-
-
-
-
 
 ]]></ST>
     </Implementation>

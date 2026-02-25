@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_AutoRamp_11" Id="{2cae9fbe-a2b7-47d1-b52c-c613185fedc9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_AutoRamp_11
+VAR
+    // Ramp-logikk
+    bDirectionUp      : BOOL;
+    fUpperLimit       : REAL := 0.45;
+    fLowerLimit       : REAL := 0.05;
+    fAutoSpeed        : REAL := 0.3;
+    
+    // Pause-logikk
+    fbPauseTimer      : TON;           // Timer for pausen
+    bInPause          : BOOL;          // Er vi i en pause akkurat nå?
+    
+    // Pressure Feedback (PF)
+    bPFEnable         : BOOL;
+    fSelectedPressure : LREAL;
+    fbDamping         : FB_PressureFeedback_Simple;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ==========================================
+// 1. AUTO RAMP LOGIKK MED PAUSE
+// ==========================================
+
+IF G_Inputs.bStartButton AND G_Mode.bRunning THEN
+    
+    // Sjekk om vi har nådd en grense
+    IF (G_OPC.fPistonPosition >= fUpperLimit AND bDirectionUp) OR 
+       (G_OPC.fPistonPosition <= fLowerLimit AND NOT bDirectionUp) THEN
+        bInPause := TRUE;
+    END_IF
+
+    // Timer-håndtering (2 sekunder pause)
+    fbPauseTimer(IN := bInPause, PT := T#2S);
+
+    IF fbPauseTimer.Q THEN
+        // Når pausen er ferdig: Snu retning og avslutt pause
+        bDirectionUp := NOT bDirectionUp;
+        bInPause := FALSE;
+    END_IF
+
+    // Sett fart (fU blir 0 hvis vi er i en pause)
+    IF bInPause THEN
+        G_OPC.fU := 0.0;
+    ELSIF bDirectionUp THEN
+        G_OPC.fU := fAutoSpeed;
+    ELSE
+        G_OPC.fU := -fAutoSpeed;
+    END_IF
+
+ELSE
+    // Stopp alt og nullstill hvis knappen slippes
+    G_OPC.fU := 0.0;
+    bInPause := FALSE;
+    fbPauseTimer(IN := FALSE);
+END_IF
+
+// ==========================================
+// 2. PRESSURE FEEDBACK (PF)
+// ==========================================
+
+IF G_OPC.fU > 0 THEN
+    fSelectedPressure := G_OPC.fPb;
+ELSIF G_OPC.fU < 0 THEN
+    fSelectedPressure := G_OPC.fPa;
+ELSE
+    fSelectedPressure := 0.0;
+END_IF
+
+fbDamping(
+    bEnable   := bPFEnable, 
+    fInputU   := G_OPC.fU,
+    fPressure := fSelectedPressure,
+    fOutputU  => G_OPC.fU
+);
+
+// ==========================================
+// 3. VENTIL-TILPASNING (DEADBAND & LIMIT)
+// ==========================================
+
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
