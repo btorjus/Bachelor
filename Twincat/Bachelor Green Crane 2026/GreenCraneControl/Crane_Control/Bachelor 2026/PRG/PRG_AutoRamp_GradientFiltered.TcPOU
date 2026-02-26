@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_AutoRamp_GradientFiltered" Id="{6ea477b9-1862-4df7-994f-5b93ed2d2a88}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_AutoRamp_GradientFiltered
+VAR
+    fbStartDelay      : TON; 
+    
+    // Hastigheter
+    fMaxSpeedUp       : LREAL := 0.60;     // Beholdes (siden den fungerer bra)
+    fMaxSpeedDown     : LREAL := 0.35;     
+    fStartKickDown    : LREAL := 0.03;     // Push nedover
+    
+    // Tider
+    fRampTime         : LREAL := 2.0;      // Enkel 2-sekunders rampe for begge veier
+    fPauseTime        : LREAL := 2.0;      
+    fCycleTime        : LREAL := 0.01;     
+    
+    // Grenser
+    fUpperLimit       : LREAL := 0.45;
+    fLowerLimit       : LREAL := 0.05;     
+    bDirectionUp      : BOOL := TRUE;      
+    
+    bInPause          : BOOL;
+    fCurrentTimer     : LREAL;             
+    fTargetSpeed      : LREAL;             
+    fSelectedPressure : LREAL;             
+    
+    // PF og filter
+    ePFMode           : E_PressureFeedback := E_PressureFeedback.PF_ON; 
+    fbPF_Filtered     : FB_PF_GradientFiltered;    
+    fDampingGain      : LREAL := 0.005;    
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 1. SIKKERHET (1s hold)
+fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#1S);
+
+IF fbStartDelay.Q THEN
+    // 2. RETNINGSSTYRING
+    IF NOT bInPause THEN
+        IF bDirectionUp AND G_OPC.fPistonPosition >= fUpperLimit THEN
+            bInPause := TRUE; bDirectionUp := FALSE; fCurrentTimer := 0;
+        ELSIF NOT bDirectionUp AND G_OPC.fPistonPosition <= fLowerLimit THEN
+            bInPause := TRUE; bDirectionUp := TRUE; fCurrentTimer := 0;
+        END_IF
+    END_IF
+
+    // 3. BEVEGELSE
+    IF bInPause THEN
+        fTargetSpeed := 0;
+        fCurrentTimer := fCurrentTimer + fCycleTime;
+        IF fCurrentTimer >= fPauseTime THEN bInPause := FALSE; fCurrentTimer := 0; END_IF
+    ELSE
+        fCurrentTimer := fCurrentTimer + fCycleTime;
+        
+        IF bDirectionUp THEN
+            // Enkel lineær rampe opp
+            fTargetSpeed := LIMIT(0, (fCurrentTimer / 1.0) * fMaxSpeedUp, fMaxSpeedUp);
+        ELSE
+            // "KICKSTART" ned: Starter på fStartKickDown og rampa opp til fMaxSpeedDown
+            fTargetSpeed := fStartKickDown + LIMIT(0, (fCurrentTimer / fRampTime) * (fMaxSpeedDown - fStartKickDown), (fMaxSpeedDown - fStartKickDown));
+        END_IF
+    END_IF
+    
+    G_OPC.fU := SEL(bDirectionUp, fTargetSpeed, -fTargetSpeed);
+ELSE
+    G_OPC.fU := 0; fCurrentTimer := 0;
+END_IF
+
+// 4. PF OG DØDSONE (Standard logikk)
+fSelectedPressure := SEL(G_OPC.fU > 0, G_OPC.fPa, G_OPC.fPb);
+IF G_OPC.fU = 0 THEN fSelectedPressure := 0; END_IF
+
+fbPF_Filtered(bEnable := (ePFMode = E_PressureFeedback.PF_ON), fJoystick := G_OPC.fU, 
+              fSelectedPressure := fSelectedPressure, fDampingGain := fDampingGain, fU_Out => G_OPC.fU);
+
+// Legg på dødsoner
+IF G_OPC.fU > 0 THEN G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0 THEN G_OPC.fU := G_OPC.fU + G_Parameter.fDeadDown; END_IF
+
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

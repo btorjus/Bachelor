@@ -8,13 +8,20 @@ VAR
     ePFMode           : E_PressureFeedback;   // PF mode (ON/OFF)
     
     fSelectedPressure : LREAL;                // Pa/Pb based on direction
-    fDistance         : LREAL;                 // Distance for braking
+    fDistance         : LREAL;                // Distance for breaking
     
     fbInitialPos      : FB_InitialPos;        // FB for initial position
     fbReturnTimer     : TON;                  // Timer for home command
     fbDamping         : FB_PF_GradientFiltered; // THE NEW FILTERED GRADIENT FB
     
     fDampingGain      : LREAL := 0.005;       // Tuning factor (start low!)
+
+    // --- NYE VARIABLER FOR MYK START ---
+    fSpeed            : LREAL;                // Mellomvariabel for fart
+    fHomeTimer        : LREAL;                // Teller sekunder for oppramping
+    fHomeRampTime     : LREAL := 4.0;         // Tid for å nå full fart (4s for veldig myk start)
+    fHomeMaxSpeed     : LREAL := 0.15;        // Toppfart for hjemkjøring
+    fCycleTime        : LREAL := 0.01;        // 10ms syklustid
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// 1. Update initial position
@@ -37,16 +44,30 @@ END_IF
 
 // 3. Drive Logic (Home vs Manual)
 IF bReturning THEN
-    fDistance := ABS(G_OPC.fPistonPosition - 0.01); 
-    IF G_OPC.fPistonPosition > 0.01 THEN 
-        G_OPC.fU := fDistance * 4.0; 
-        G_OPC.fU := LIMIT(0.05, G_OPC.fU, 0.4); 
+    // Oppdater timer for akselerasjon (Myk start)
+    fHomeTimer := fHomeTimer + fCycleTime;
+    
+    fDistance := ABS(G_OPC.fPistonPosition - 0.01); // Calculates distance home
+    
+    IF G_OPC.fPistonPosition > 0.01 THEN // If cylinder is above home point
+        // Beregn myk oppstart
+        fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;
+        
+        // Beregn bremsing nær målet (LIMIT sikrer minimumsfart på 0.12)
+        fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 
+        
+        // Sett endelig utgangssignal for Home-funksjon
+        G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed);
     ELSE
         G_OPC.fU := 0.0;
         bReturning := FALSE;
+        fHomeTimer := 0.0; // Reset timer for neste gang
     END_IF
 ELSE
-    IF G_Mode.bManual AND G_Mode.bRunning THEN
+    // Nullstill timer når vi ikke kjører Home
+    fHomeTimer := 0.0;
+    
+    IF G_Mode.bManual AND G_Mode.bRunning THEN // Manual mode
         G_OPC.fU := -G_OPC.fJoystick;
     ELSE
         G_OPC.fU := 0.0; 

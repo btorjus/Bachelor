@@ -4,68 +4,97 @@
     <Declaration><![CDATA[PROGRAM PRG_ManualDriving_AreaRatioPF
 
 VAR
-    bReturning        : BOOL;                   // True when returning home
-    ePFMode           : E_PressureFeedback;     // PF mode selection (ON/OFF)
-    fDistance         : LREAL;                  // Distance for breaking in return-home
+    // Styring og Tilstand
+    bReturning         : BOOL;                 // True når Home-sekvens kjører
+    ePFMode            : E_PressureFeedback := E_PressureFeedback.PF_ON; // PF alltid på som standard
     
-    fbInitialPos      : FB_InitialPos;          // FB for start position
-    fbReturnTimer     : TON;                    // Timer for home command (5s hold)
-    fbPF_Area         : FB_PF_AreaRatio;        // Pressure feedback
+    // FB Instanser
+    fbInitialPos       : FB_InitialPos;        // Lagrer startposisjon
+    fbReturnTimer      : TON;                  // Timer for 5s hold (Home)
+    fbAreaRatioDamping : FB_PF_AreaRatio;      // DEN NYE AREA RATIO FB-en
+    
+    // Innstillinger for Home-funksjon (Myk start/stopp)
+    fHomeTimer         : LREAL;                // Sekunder for oppramping
+    fHomeRampTime      : LREAL := 4.0;         // Tid til full fart
+    fHomeMaxSpeed      : LREAL := 0.15;        // Toppfart Home
+    fCycleTime         : LREAL := 0.01;        // 10ms syklus
+    
+    // Hjelpevariabler
+    fSpeed             : LREAL;                // Mellomverdi for fart
+    fDistance          : LREAL;                // Avstand til 0.01
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-// Updates initial position when start button is pushed
+      <ST><![CDATA[// 1. Oppdater initial posisjon (for statistikk/logging)
 fbInitialPos(
     bEnable := G_Inputs.bStartButton AND G_Mode.bRunning,
     fCurrentPos := G_OPC.fPistonPosition
 );
 
-// If start button is held for 5s, return home
+// 2. Return Home Logikk (Hold knappen i 5s)
 fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#5S);
 IF fbReturnTimer.Q THEN
     bReturning := TRUE;
 END_IF
 
-// Cancel return-home if joystick is activated 
+// Avbryt Home hvis joysticken beveges mer enn 10%
 IF ABS(G_OPC.fJoystick) > 0.1 THEN 
     bReturning := FALSE;
 END_IF
 
-// 3. Drive logic (Home/Manual)
+// 3. Kjøre-logikk (Home vs Manuelt)
 IF bReturning THEN
-    fDistance := ABS(G_OPC.fPistonPosition - 0.01); // Calculates distance home
-    IF G_OPC.fPistonPosition > 0.01 THEN 			// If cylinder is above home point
-        G_OPC.fU := fDistance * 4.0; 				// Breaking starts at 0.1m from home
-        G_OPC.fU := LIMIT(0.05, G_OPC.fU, 0.4); 	// Safety limits for speed
+    // Myk oppstart-timer
+    fHomeTimer := fHomeTimer + fCycleTime;
+    fDistance := ABS(G_OPC.fPistonPosition - 0.01); 
+    
+    IF G_OPC.fPistonPosition > 0.01 THEN
+        // Rampe opp fart
+        fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;
+        
+        // Bremsing nær målet (Limit sikrer minimumsfart for å overvinne friksjon)
+        fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 
+        
+        G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed);
     ELSE
+        // Vi er hjemme
         G_OPC.fU := 0.0;
         bReturning := FALSE;
+        fHomeTimer := 0.0;
     END_IF
 ELSE
-    IF G_Mode.bManual AND G_Mode.bRunning THEN		// Manual mode
+    fHomeTimer := 0.0;
+    
+    IF G_Mode.bManual AND G_Mode.bRunning THEN
+        // Inverterer joystick slik som i ditt originale script
         G_OPC.fU := -G_OPC.fJoystick;
     ELSE
         G_OPC.fU := 0.0; 
     END_IF
 END_IF
 
-// Pressure feedback based on area ratio
-fbPF_Area(
-    bEnable     := (ePFMode = E_PressureFeedback.PF_ON), 
-    fJoystick   := G_OPC.fU,            
+// 4. Bruk den nye Area Ratio Pressure Feedback blokken
+fbAreaRatioDamping(
     fPa         := G_OPC.fPa,
-    fPb         := G_OPC.fPb,        
-    fU_Out      => G_OPC.fU            
+    fPb         := G_OPC.fPb,
+    fJoystick   := G_OPC.fU,
+    bEnable     := (ePFMode = E_PressureFeedback.PF_ON),
+    fDp         := 0.065,         // Diameter stempel fra din FB
+    fDr         := 0.035,         // Diameter stang fra din FB
+    fKf         := 0.00001,       // Gain
+    fTf         := 0.5,           // Filtertid
+    fU_Out      => G_OPC.fU       // Skriver filtrert verdi tilbake til fU
 );
 
-// Deadband compensation for valve
+// 5. Ventil Dødsone Kompensasjon
 IF G_OPC.fU > 0.0 THEN
     G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
 ELSIF G_OPC.fU < 0.0 THEN
+    // Bruker din originale logikk: G_OPC.fU - fDeadDown (Sjekk fortegn i GVL!)
     G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
 END_IF
 
-G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0); // Safety limit]]></ST>
+// 6. Endelig sikkerhetsbegrensning
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

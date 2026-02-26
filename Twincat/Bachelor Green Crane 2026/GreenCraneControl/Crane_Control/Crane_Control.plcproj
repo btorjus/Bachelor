@@ -68,7 +68,10 @@
     <Compile Include="Bachelor 2026\PRG\Manual Driving\PRG_Manual_PF_Gradient.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp_11.TcPOU">
+    <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp_AreaRatio.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp_GradientFiltered.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">

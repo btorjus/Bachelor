@@ -54,7 +54,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9812855-AED2-41C8-A04A-9E0656F6006A}" Name="Crane_Control" PrjFilePath="Crane_Control\Crane_Control.plcproj" TmcFilePath="Crane_Control\Crane_Control.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" CopyTpyToTarget="false" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{984ADBD7-E481-9714-BA95-B16A4F1BCF4A}" TmcPath="Crane_Control\Crane_Control.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{61E88F86-3AF7-13B2-C886-E39E2083DF87}" TmcPath="Crane_Control\Crane_Control.tmc">
 					<Name>Crane_Control Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
