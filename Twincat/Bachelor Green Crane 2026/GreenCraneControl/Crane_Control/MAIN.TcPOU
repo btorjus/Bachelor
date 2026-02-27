@@ -22,7 +22,8 @@ IF G_Mode.bManual THEN
 ELSIF G_Mode.bAuto THEN
     // Her kjører vi auto-rampen (0.05m til 0.45m)
     //PRG_AutoRamp_AreaRatio();
-	PRG_AutoRamp_GradientFiltered();
+	//PRG_AutoRamp_GradientFiltered();
+	RampfUTest();
     
 ELSE
     // SIKKERHET: Hvis ingen modus er valgt, stopp kranen helt
