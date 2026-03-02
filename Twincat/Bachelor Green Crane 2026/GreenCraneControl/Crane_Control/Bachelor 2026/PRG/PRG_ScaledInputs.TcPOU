@@ -80,9 +80,9 @@ fbNormSpoolPosition(
 	fMaxValue := 1.0,
 	bEnable := TRUE,
 	
-	fNeutralInputValue := 8355.0,			// Spool raw signal at neutral position
-	fMaxInputValue := 12645.0,				// Spool raw signal at max position
-	fMinInputValue := 4071.0,				// Spool raw signal at min position
+	fNeutralInputValue := 8328.0,			// Spool raw signal at neutral position
+	fMaxInputValue := 12630.0,				// Spool raw signal at max position
+	fMinInputValue := 4070.0,				// Spool raw signal at min position
 	fNeutralDeadband := 15.0,				// Spool deadband
 	
 	fOutput => G_OPC.fSpoolPosition

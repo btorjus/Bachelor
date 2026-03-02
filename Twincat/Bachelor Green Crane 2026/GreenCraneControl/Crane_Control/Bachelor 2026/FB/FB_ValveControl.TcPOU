@@ -18,10 +18,11 @@ VAR_OUTPUT
 END_VAR
 
 // Variables
-VAR
-	nOffset 	: LREAL := 19630.0; 	// Closed valve			Endret fra 19630
-	nMaxValue	: LREAL := 32767.0; 	// Max value valve		Endret fra 29460
-	nMinValue 	: LREAL :=  0; 	// Min value valve   endret fra 9830
+VAR		
+	// [3V, 9V]: (Voltage/10)*32767 
+	nOffset 	: LREAL := 19630.0; 	// Closed valve	6V		
+	nMaxValue	: LREAL := 29460.0; 	// Max value valve 9V		
+	nMinValue 	: LREAL :=  9830.0; 	// Min value valve 3V	
 	nTempOutput : LREAL; 				// Temporary output
 END_VAR
 ]]></Declaration>
