@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Normalization" Id="{a78fb5e3-d685-4d3d-9971-5c4c25d20393}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Normalization
+// INT: [-32768, 32767]	
+// LREAL: Long Real decimal number
+
+// Constant variables
+VAR CONSTANT
+	MaxBitValue : LREAL := 32767.0;
+END_VAR
+
+// Input variables
+VAR_INPUT
+	nRawInput : INT;		// Raw data
+	fMaxValue : LREAL; 		// Set in PRG
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fNormalizedInput : LREAL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fNormalizedInput := (fMaxValue	* INT_TO_LREAL(nRawInput)) / MaxBitValue;
+// Value/Max value = Raw-value/Max raw-value. Use this definition to calculate value for normalized data.
+// 16 bit = [-32767, 32767], max value: 32 767
+
+fNormalizedInput := LIMIT(0, fNormalizedInput, fMaxValue); // Limit(min, test-value, max)
+// Safety function. Lowest value = 0, highest = f_MaxValue
+// Output scaled [0, f_MaxValue]
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

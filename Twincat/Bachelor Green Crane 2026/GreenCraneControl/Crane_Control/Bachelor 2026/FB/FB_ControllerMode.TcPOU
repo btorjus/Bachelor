@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ControllerMode" Id="{8c1242ad-d42d-40ad-8567-2e32208c2fb8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ControllerMode
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bManual : BOOL;			// Manual mode
+	bStart : BOOL;			// Start button
+	bStop : BOOL;			// Stop button
+	bAuto : BOOL;			// Auto mode
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	bRunning : BOOL;		// System running
+	bAutoMode : BOOL;		// Auto mode
+	bManualMode : BOOL;		// Manual mode
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ 				
+IF bStop OR NOT (bStart OR bManual OR bAuto) THEN 				// If bStop is active (or no run-signal), all false values
+    bRunning    := FALSE;
+    bAutoMode   := FALSE;
+    bManualMode := FALSE;	
+    
+ELSIF bStart AND bAuto THEN 									// If start button and auto is true (auto mode)
+    bRunning    := TRUE;
+    bAutoMode   := TRUE;
+    bManualMode := FALSE;
+	
+ELSIF bStart AND bManual THEN 									// If start and manual is true (manual mode)
+    bRunning    := TRUE;
+    bManualMode := TRUE;
+    bAutoMode   := FALSE;
+END_IF
+
+
+    
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

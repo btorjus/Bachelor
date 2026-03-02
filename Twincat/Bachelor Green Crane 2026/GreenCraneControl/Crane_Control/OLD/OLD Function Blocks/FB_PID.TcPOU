@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PID" Id="{c3b9a6ed-2e03-46aa-9312-a6c1264b90f3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PID
+// LREAL: Long Real decimal number
+// BOOL: True/False
+
+// Input variables
+VAR_INPUT
+	bEnablePID			: BOOL;  	// Enables PID controller
+	fX 					: LREAL; 	// Position reference [m]
+	fXReal 				: LREAL; 	// Piston position [m]
+	fSignalIntegrated 	: LREAL; 	// Integrated signal
+	fSignalDerivated 	: LREAL; 	// Derivated signal
+	fKp 				: LREAL; 	// P constant
+	fKi 				: LREAL; 	// I constant
+	fKd 				: LREAL; 	// D constant
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fSignalI 			: LREAL;
+	fSignalD 			: LREAL;
+	fSignalAdjusted 	: LREAL; 	// PID signal value
+	fError  			: LREAL; 	// Error
+END_VAR
+
+// Variables
+VAR
+	fTempP 				: LREAL; 	// Temporary P value
+	fTempI 				: LREAL; 	// Temporary I value
+	fTempD 				: LREAL; 	// Temporary D value
+	fTempOut 			: LREAL; 	// Temporary output
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fError := fX - fXReal; // Position error
+
+fSignalI := fError; 
+fSignalD := fError; 
+
+fTempP := fError * fKp; 					// Calculates proportional term (current error)
+fTempI := fSignalIntegrated * fKi; 			// Calculates integral term (past error)
+fTempD := fSignalDerivated * fKd; 			// Calculates derivator term (future trend)
+
+fTempOut := -(fTempP + fTempI + fTempD); 	// PID-controller (minus sign for correct cylinder movement)
+
+IF fTempOut > 1.0 THEN
+	fSignalAdjusted := 1.0; 		// Max-saturation
+ELSIF fTempOut < -1.0 THEN
+	fSignalAdjusted := -1.0; 		// Min-saturation
+ELSE
+	fSignalAdjusted := fTempOut; 	// PID-signal
+END_IF
+
+// Safety switch
+IF bEnablePID THEN
+	fSignalAdjusted := fSignalAdjusted;
+ELSE
+	fSignalAdjusted := 0.0;
+END_IF
+
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PF_AreaRatio" Id="{c8449b8f-a7a3-4873-8b3c-d55fbd878291}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PF_AreaRatio
+
+VAR_INPUT
+    fPa             : LREAL;            // Pressure piston-side Pa
+    fPb             : LREAL;            // Pressure rod-side Pb
+    fDp             : LREAL := 0.065;   // Diameter piston [m]
+    fDr             : LREAL := 0.035;   // Diameter rod [m]
+    fKf             : LREAL := 0.00001; // Gain for feedback
+    fTf             : LREAL := 0.5;     // Filter constant (Den)
+    fJoystick       : LREAL;            // Joystick signal
+    bEnable         : BOOL;             // Enable signal for PF
+END_VAR
+
+VAR_OUTPUT
+    fU_Out          : LREAL;            // Output to valve
+END_VAR
+
+VAR
+    // Areal-beregninger
+    fAp             : LREAL;            // Area piston
+    fAr             : LREAL;            // Area rod 
+    fAa             : LREAL;            // Area ring
+    fPhi            : LREAL;            // Area ratio   
+    
+    // Trykk-gradient
+    fPx             : LREAL;            // Effective net pressure
+    fPxOld          : LREAL;            // Net pressure from previous sample
+    fPxDot          : LREAL;            // Derivative of net pressure
+    fDt             : LREAL := 0.001;   // Sampling time (1ms)
+    
+    // Filter-instans
+    fbDampingFilter : FB_Filter;        // Instans av filter-blokken din
+    
+    bFirstCycle     : BOOL := TRUE;     // Initialization
+    PI              : LREAL := 3.14159265359; 
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// --- 1. Areal-beregninger (Konstant) ---
+fAp := PI * EXPT(fDp / 2.0, 2); 
+fAr := PI * EXPT(fDr / 2.0, 2); 
+fAa := fAp - fAr;
+
+IF fAp > 0 THEN
+    fPhi := fAa / fAp;
+ELSE
+    fPhi := 1.0;
+END_IF
+
+// --- 2. Beregn Netto Trykk-gradient ---
+fPx := fPa - (fPhi * fPb);
+
+IF bFirstCycle THEN
+    fPxOld := fPx;
+    bFirstCycle := FALSE;
+END_IF
+
+fPxDot := (fPx - fPxOld) / fDt; // Endring i trykk per sekund
+fPxOld := fPx; // Oppdater til neste syklus
+
+// --- 3. Bruk FB_Filter som Damping-ledd ---
+// Vi sender fPxDot inn i filteret. fKf fungerer som 'Num'.
+// fTf fungerer som 'Den'.
+fbDampingFilter(
+    FilterMode := 1,        // SS_STEP
+    Signal := fPxDot,       // Input er gradienten
+    Num := fKf,             // Teller (Gain)
+    Den := fTf,             // Nevner (Tidskonstant)
+    Initial := 0.0          // Startverdi
+);
+
+// --- 4. Utgangslogikk ---
+IF bEnable THEN
+    IF ABS(fJoystick) < 0.05 THEN
+        // Ved joystick i dødsone, resetter vi filteret internt
+        fbDampingFilter(FilterMode := 0); // SS_INITIALIZE
+        fU_Out := 0.0;
+    ELSE
+        // fU_Out = Joystick - Filtert feedback (Signal_Filtered)
+        fU_Out := fJoystick - fbDampingFilter.Signal_Filtered;
+    END_IF
+ELSE
+    fU_Out := fJoystick;
+END_IF
+
+fU_Out := LIMIT(-1.0, fU_Out, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="P_FeedForward" Id="{202d862f-f86c-42e9-b9cf-42d47a621534}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_FeedForward
+VAR
+	fbFF 	: FB_FeedForward;
+	fbKv 	: FB_KvFF;
+	fbNaive	: FB_NaiveFF;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//fbKv(
+//	fPa := G_OPC.fPa,
+//	fPb := G_OPC.fPb,
+//	fPs := G_OPC.fPs,
+	
+//	fXDotRef := G_OPC.fXDotRef,
+	
+//	fUTemp => G_OPC.fWantedSpoolPos,
+//	fU => G_OPC.fU
+//);
+
+	// 0: Bachelor FF, 1: Kv FF, 2: Naive FF
+CASE G_Parameter.FFMode OF
+	0:
+		fbFF(
+			fMaxFlowUp := G_Parameter.fQMaxUp,
+			fMaxFlowDown := G_Parameter.fQMaxDown,
+			fDeadUp := G_Parameter.fDeadUp,
+			fDeadDown := G_Parameter.fDeadDown,
+			fAreaUp := G_Parameter.fAreaUp,
+			fAreaDown := G_Parameter.fAreaDown,
+			
+			fPs := G_OPC.fPs,
+			fPa := G_OPC.fPa,
+			fPb := G_OPC.fPb,
+			fDeltaP0 := G_Parameter.fDeltaP0,
+			
+			fXDotRef := G_OPC.fXDotRef,		
+	
+			fUFF => G_OPC.fFF,
+			fFlowLM => G_OPC.fFlowCalc
+		);
+		
+	1:
+		fbKv(
+			fPa :=G_OPC.fPaLower,
+			fPb := G_OPC.fPb,
+			fPs := G_OPC.fPs,
+			
+			fXDotRef := G_OPC.fXDotRef,
+			
+			fFFTemp => G_OPC.fWantedSpoolPos,
+			fFF => G_OPC.fFF,
+			fFlow => G_OPC.fFFFlow,
+			fKv => G_OPC.fKv
+			
+			
+		);
+	2:
+		fbNaive(
+			fPa :=G_OPC.fPaLower,
+			fPb := G_OPC.fPb,
+			fPs := G_OPC.fPs,
+			
+			fXDotRef := G_OPC.fXDotRef,
+			
+			fFF => G_OPC.fFF,
+			fFlow => G_OPC.fFFFlow,
+			fKv => G_OPC.fKv
+		);
+		
+
+END_CASE
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

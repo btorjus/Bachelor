@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PositionInputScaling" Id="{aaf7dedb-496d-4e47-af87-ac12aff46c11}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PositionInputScaling
+// LREAL: Long Real decimal number
+// INT: [-32768, 32767]
+
+// Input variables
+VAR_INPUT
+	nRawInput 				: INT; 		// Raw position
+	fMaxInputValue 			: LREAL; 
+	fMinInputValue			: LREAL;
+	fMaxOutputValue  		: LREAL;
+	fMinOutputValue  		: LREAL;	
+END_VAR
+
+// Output variables
+VAR_OUTPUT
+	fOutput : LREAL;
+	fActual : LREAL;
+END_VAR
+
+// Variables
+VAR
+	fRawInput : LREAL;
+	fNormalizedInput: LREAL;
+	fTempOut : LREAL; // Temporary output
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fRawInput := INT_TO_LREAL(nRawInput); // Converts into a decimal number
+
+fNormalizedInput := (fRawInput - fMinInputValue) / (fMaxInputValue - fMinInputValue); 	// Normalized input [0,1]
+fTempOut := fMinOutputValue + fNormalizedInput*(fMaxOutputValue - fMinOutputValue); 	// Converts percentage into real value [0, 0.5]
+
+fOutput := LIMIT(fMinOutputValue, fTempOut, fMaxOutputValue); // Safety limit [0, value, 0.5]
+fActual := LIMIT(fMinOutputValue, fTempOut - 0.0006 - 0.0109*fTempOut + 0.5855*EXPT(fTempOut,2) - 1.1291*EXPT(fTempOut,3), fMaxOutputValue);
+// Curve fitting to remove offsets
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

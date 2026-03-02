@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="RampfUTest" Id="{27f9a70c-3f92-47a4-b845-4f79a0edad15}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM RampfUTest
+
+VAR
+    // Innstillinger
+    fTargetSpeed      : LREAL := -1.0;
+    tRampTime         : TIME := T#5S;      
+    fTotalTimeSec     : LREAL := 5.0;      
+    
+    // Timer og Kontroll
+    fbRampTimer       : TON;               
+    fCurrentTimeSec   : LREAL;             
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 1. KJØR TIMER PÅ STARTKNAPP
+// Timeren starter på 0ms hver gang bStartButton går fra FALSE til TRUE.
+// Den resetter seg til 0ms hver gang du slipper knappen.
+fbRampTimer(IN := G_Inputs.bStartButton, PT := tRampTime);
+
+// 2. RAMPELOGIKK
+IF G_Inputs.bStartButton THEN
+    // Konverterer ET (Elapsed Time) til sekunder
+    fCurrentTimeSec := TIME_TO_LREAL(fbRampTimer.ET) / 1000.0;
+    
+    // Lineær beregning: (Tid / 5.0) * -1.0
+    G_OPC.fU := (fCurrentTimeSec / fTotalTimeSec) * fTargetSpeed;
+    
+    // Sikkerhet: Stopper på -1.0 selv om du holder lenger enn 5 sek
+    IF G_OPC.fU < -1.0 THEN
+        G_OPC.fU := -1.0;
+    END_IF
+ELSE
+    // Når knappen slippes, tvinges utgangen til 0 umiddelbart
+    G_OPC.fU := 0;
+    fCurrentTimeSec := 0;
+END_IF
+
+// 3. DIREKTE UT (Ingen PF, Ingen Deadband)
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

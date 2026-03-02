@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_PressureFeedback" Id="{ede8c74b-975d-415b-a8fe-137c3d03d2fa}">
+    <Declaration><![CDATA[TYPE E_PressureFeedback :
+(
+    PF_OFF := 0,
+    PF_ON  := 1
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

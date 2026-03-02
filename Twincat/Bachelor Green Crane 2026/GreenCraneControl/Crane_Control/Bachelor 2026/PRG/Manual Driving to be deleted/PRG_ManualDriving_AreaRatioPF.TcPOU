@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_ManualDriving_AreaRatioPF" Id="{bc9172c5-43b2-4fe5-847a-3b2154b303ff}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_ManualDriving_AreaRatioPF
+
+VAR
+    // Styring og Tilstand
+    bReturning         : BOOL;                 // True når Home-sekvens kjører
+    ePFMode            : E_PressureFeedback := E_PressureFeedback.PF_ON; // PF alltid på som standard
+    
+    // FB Instanser
+    fbInitialPos       : FB_InitialPos;        // Lagrer startposisjon
+    fbReturnTimer      : TON;                  // Timer for 5s hold (Home)
+    fbAreaRatioDamping : FB_PF_AreaRatio;      // DEN NYE AREA RATIO FB-en
+    
+    // Innstillinger for Home-funksjon (Myk start/stopp)
+    fHomeTimer         : LREAL;                // Sekunder for oppramping
+    fHomeRampTime      : LREAL := 4.0;         // Tid til full fart
+    fHomeMaxSpeed      : LREAL := 0.15;        // Toppfart Home
+    fCycleTime         : LREAL := 0.01;        // 10ms syklus
+    
+    // Hjelpevariabler
+    fSpeed             : LREAL;                // Mellomverdi for fart
+    fDistance          : LREAL;                // Avstand til 0.01
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 1. Oppdater initial posisjon (for statistikk/logging)
+fbInitialPos(
+    bEnable := G_Inputs.bStartButton AND G_Mode.bRunning,
+    fCurrentPos := G_OPC.fPistonPosition
+);
+
+// 2. Return Home Logikk (Hold knappen i 5s)
+fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#5S);
+IF fbReturnTimer.Q THEN
+    bReturning := TRUE;
+END_IF
+
+// Avbryt Home hvis joysticken beveges mer enn 10%
+IF ABS(G_OPC.fJoystick) > 0.1 THEN 
+    bReturning := FALSE;
+END_IF
+
+// 3. Kjøre-logikk (Home vs Manuelt)
+IF bReturning THEN
+    // Myk oppstart-timer
+    fHomeTimer := fHomeTimer + fCycleTime;
+    fDistance := ABS(G_OPC.fPistonPosition - 0.01); 
+    
+    IF G_OPC.fPistonPosition > 0.01 THEN
+        // Rampe opp fart
+        fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;
+        
+        // Bremsing nær målet (Limit sikrer minimumsfart for å overvinne friksjon)
+        fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 
+        
+        G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed);
+    ELSE
+        // Vi er hjemme
+        G_OPC.fU := 0.0;
+        bReturning := FALSE;
+        fHomeTimer := 0.0;
+    END_IF
+ELSE
+    fHomeTimer := 0.0;
+    
+    IF G_Mode.bManual AND G_Mode.bRunning THEN
+        // Inverterer joystick slik som i ditt originale script
+        G_OPC.fU := -G_OPC.fJoystick;
+    ELSE
+        G_OPC.fU := 0.0; 
+    END_IF
+END_IF
+
+// 4. Bruk den nye Area Ratio Pressure Feedback blokken
+fbAreaRatioDamping(
+    fPa         := G_OPC.fPa,
+    fPb         := G_OPC.fPb,
+    fJoystick   := G_OPC.fU,
+    bEnable     := (ePFMode = E_PressureFeedback.PF_ON),
+    fDp         := 0.065,         // Diameter stempel fra din FB
+    fDr         := 0.035,         // Diameter stang fra din FB
+    fKf         := 0.00001,       // Gain
+    fTf         := 0.5,           // Filtertid
+    fU_Out      => G_OPC.fU       // Skriver filtrert verdi tilbake til fU
+);
+
+// 5. Ventil Dødsone Kompensasjon
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    // Bruker din originale logikk: G_OPC.fU - fDeadDown (Sjekk fortegn i GVL!)
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+
+// 6. Endelig sikkerhetsbegrensning
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
