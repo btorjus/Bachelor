@@ -19,7 +19,7 @@ END_VAR
 
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[	
 IF NOT(fStart) OR NOT(fRunning) THEN 	// If start signal is missing or the system is not running, set time to zero
 	fTime := 0.0; 
 ELSIF fStart AND fRunning THEN 			// If both start signal and system is on. PLS ticks synced into real time

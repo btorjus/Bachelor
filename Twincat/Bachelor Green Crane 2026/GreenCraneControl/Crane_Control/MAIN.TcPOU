@@ -16,14 +16,13 @@ PRG_Filter();
 // 2. MODUS-VALG (Kun ett program får skrive til fU)
 IF G_Mode.bManual THEN
     // Her kjører vi manual-programmet ditt med joystick
-    //PRG_ManualDriving_AreaRatioPF();
 	PRG_Manual_PF_Gradient();
     
 ELSIF G_Mode.bAuto THEN
     // Her kjører vi auto-rampen (0.05m til 0.45m)
-    //PRG_AutoRamp_AreaRatio();
 	//PRG_AutoRamp_GradientFiltered();
-	RampfUTest();
+	//RampfUTest();
+	fU_Testing();
     
 ELSE
     // SIKKERHET: Hvis ingen modus er valgt, stopp kranen helt
