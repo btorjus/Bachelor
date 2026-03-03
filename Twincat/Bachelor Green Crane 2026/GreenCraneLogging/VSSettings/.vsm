@@ -12,26 +12,7 @@
           <Title>DataPool</Title>
           <Expanded>False</Expanded>
           <FileName></FileName>
-          <Children>
-            <Node>
-              <Title>fSpoolPosition</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
-              <Title>fU</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
-              <Title>nValveOutput</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-          </Children>
+          <Children />
         </Node>
         <Node>
           <Title>YT Chart</Title>
@@ -42,20 +23,7 @@
               <Title>Axis Group</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
-              <Children>
-                <Node>
-                  <Title>fU</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fSpoolPosition</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-              </Children>
+              <Children />
             </Node>
           </Children>
         </Node>

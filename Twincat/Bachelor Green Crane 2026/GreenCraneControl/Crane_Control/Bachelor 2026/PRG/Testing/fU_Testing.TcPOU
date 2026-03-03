@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="fU_Testing" Id="{a2a695bb-a141-4af0-97b4-2d34bb7d91d9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM fU_Testing
+
+VAR
+    fU_TestValue : LREAL := 0.0; // Skriv inn verdi mellom -1.0 og 1.0 her
+    bEnableTesting    : BOOL  := FALSE; // Sett til TRUE for å aktivere manuell overstyring
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bEnableTesting THEN
+    // Sikrer at verdien holder seg mellom -1 og 1
+    fU_TestValue := LIMIT(-1.0, fU_TestValue, 1.0);
+    
+    // Sender verdien direkte til utgangen
+    G_OPC.fU := fU_TestValue;
+ELSE
+    // Hvis ikke aktiv, kan vi f.eks. tvinge den til 0 for sikkerhet
+    G_OPC.fU := 0.0;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

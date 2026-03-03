@@ -5,7 +5,7 @@
 
 VAR
     // Innstillinger
-    fTargetSpeed      : LREAL := -1.0;
+    fTargetSpeed      : LREAL := -1.0;	// Endre denne for opp/ned kjøring (-1: oppover)
     tRampTime         : TIME := T#5S;      
     fTotalTimeSec     : LREAL := 5.0;      
     
