@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_Timer" Id="{9221d7e7-f8c8-4882-a322-8168f1bfcef8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Timer
+
+
+VAR
+    // --- Timer Variabler ---
+    fMyTimer          : LREAL;          // Selve timeren (0.0000)
+    bTimerRunning     : BOOL;           // Status for om timeren teller
+    fbStartTrigger    : R_TRIG;         // Oppdager akkurat når knappen trykkes
+    
+    // --- Parametere ---
+    fCycleTime        : LREAL := 0.001; // Din syklustid på 1ms
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 1. Oppdag flanken (akkurat i det knappen trykkes ned)
+fbStartTrigger(CLK := G_Inputs.bStartButton);
+
+// 2. Hvis knappen trykkes: Reset timeren til 0 og start tellingen
+IF fbStartTrigger.Q THEN
+    fMyTimer := 0.0;
+    bTimerRunning := TRUE;
+END_IF
+
+// 3. Hvis timeren er aktiv, legg til syklustiden for hver runde PLS-en kjører
+IF bTimerRunning THEN
+    fMyTimer := fMyTimer + fCycleTime;
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

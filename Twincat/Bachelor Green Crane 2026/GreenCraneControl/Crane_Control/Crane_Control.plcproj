@@ -86,6 +86,9 @@
     <Compile Include="Bachelor 2026\PRG\PRG_ScaledInputs.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_Timer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\PRG\Testing\fU_Testing.TcPOU">
       <SubType>Code</SubType>
     </Compile>

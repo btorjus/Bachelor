@@ -17,7 +17,7 @@ PRG_Filter();
 IF G_Mode.bManual THEN
     // Her kjører vi manual-programmet ditt med joystick
 	PRG_Manual_PF_Gradient();
-    
+    //PRG_TestHome();
 ELSIF G_Mode.bAuto THEN
     // Her kjører vi auto-rampen (0.05m til 0.45m)
 	//PRG_AutoRamp_GradientFiltered();
