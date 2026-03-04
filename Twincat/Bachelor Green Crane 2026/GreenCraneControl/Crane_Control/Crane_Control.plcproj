@@ -31,7 +31,7 @@
     <Compile Include="Bachelor 2026\FB\FB_InitialPosition.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\FB\FB_JoystickScaler.TcPOU">
+    <Compile Include="Bachelor 2026\FB\FB_Scaler.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\FB\FB_Normalization.TcPOU">

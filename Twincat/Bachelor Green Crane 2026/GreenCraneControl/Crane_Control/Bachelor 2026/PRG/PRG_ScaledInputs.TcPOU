@@ -11,9 +11,10 @@ VAR
 	fbNormPaLower : FB_Normalization;
 	
 	fbNormCylinderPosition : FB_CylinderScaling;
-	fbNormSpoolPosition : FB_JoystickScaler;
-	fbNormJoystick : FB_JoystickScaler;	
-	fbNormFlow	: FB_JoystickScaler;		
+	fbNormSpoolPosition : FB_Scaler;
+	fbNormJoystick : FB_Scaler;	
+ 	fbNormFlow	: FB_Scaler;
+	//fbNormFlow : FB_Normalization;		
 
 	fPa : LREAL;
 	fPb : LREAL;
@@ -99,7 +100,14 @@ fbNormFlow(
 	fNeutralDeadband := 25.0,
 	
 	fOutput => G_OPC.fFlow
-);]]></ST>
+);
+
+// fbNormFlow(
+// 	nRawInput := G_Inputs.nRawFlowSensor,
+// 	fMaxValue := 150.0,
+// 	fNormalizedInput => G_OPC.fFlow
+// );
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

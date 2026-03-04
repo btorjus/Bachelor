@@ -18,10 +18,10 @@ VAR
 
     fSpeed            : LREAL;                					// Speed for home return
     fHomeTimer        : LREAL;                					// Timer for home return
-    fHomeRampTime     : LREAL := 4.0;         					// Timer to full speed when returning home
+    fHomeRampTime     : LREAL := 2.0;         					// Timer to full speed when returning home
     fHomeMaxSpeed     : LREAL := 0.5;        					// Max speed for home return
     fCycleTime        : LREAL := 0.001;        					// Cycle time PLC (endret fra 0.01)
-	fHomePos		  :LREAL := 0.03;							// Piston position at home
+	fHomePos		  :LREAL := 0.01;							// Piston position at home
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Updates initial position when start button is pressed
@@ -31,7 +31,7 @@ fbInitialPos(
 );
 
 // Return home if start button is pushed for set seconds
-fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#1S);
+fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#0.5S);
 IF fbReturnTimer.Q THEN
     bReturning := TRUE;
 END_IF
