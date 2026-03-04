@@ -31,9 +31,9 @@ L_cyl_meas = L_cyl_meas(1:n_cut);
 F_hyd      = F_hyd(1:n_cut);
 
 % Beam and geometry parameters
-m_beam  = 415.74;                       % Beam mass [kg] Øke for å få fikse (CAD 415.74kg)
+m_beam  = 430.74;                       % Beam mass [kg] Øke for å få fikse (CAD 415.74kg)
 g       = 9.81;                         % Gravitational acceleration [m/s^2]
-x_c     = 3.01315;                      % COM in x direction local [m] (CAD 3.01315m)
+x_c     = 3.11315;                      % COM in x direction local [m] (CAD 3.01315m)
 y_c     = 0.06148;                      % COM in y direction local [m]
 r_top   = [0.547; -0.133];             % Cylinder top mount in beam coords [m]
 r_bot   = [0.427; -1.057];             % Cylinder bottom mount in global coords [m]
@@ -65,7 +65,7 @@ ylabel('Force [kN]');
 legend('Location','northeast');
 grid on;
 
-fname = 'run1_180226_plot';
+fname = 'run1_180226_plot_10kg4cm';
 picturewidth = 20;
 hw_ratio = 0.65;
 set(findall(hfig,'-property','FontSize'),'FontSize',17)
@@ -75,7 +75,7 @@ set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','lat
 set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
 pos = get(hfig,'Position');
 set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
-print(hfig,fname,'-dpdf','-vector','-fillpage')
+%print(hfig,fname,'-dpdf','-vector','-fillpage')
 
 
 
@@ -83,3 +83,50 @@ print(hfig,fname,'-dpdf','-vector','-fillpage')
 %  Legg til moving avrage slik at oscilasjoner
 % og vi kan vise hva som skjer når vi flytter COm og MAsse og skriv litt om
 % det
+
+%% Smoothed force comparison (run after Section 1)
+
+% --- Three smoothing methods ---
+F_smooth_movmean = smoothdata(F_hyd, 'movmean', 80);
+F_smooth_gauss   = smoothdata(F_hyd, 'gaussian', 120);
+F_smooth_sgolay  = smoothdata(F_hyd, 'sgolay', 80);
+
+% --- Plot ---
+hfig2 = figure;
+
+plot(L_cyl_meas, F_hyd/1000, ...
+    'Color', [0.7 0.7 0.7], 'LineWidth', 0.5, ...
+    'DisplayName', '$F_{hyd}$ (raw)'); hold on;
+
+% plot(L_cyl_meas, F_smooth_movmean/1000, ...
+%     'b-', 'LineWidth', 1.5, ...
+%     'DisplayName', '$F_{hyd}$ (movmean)');
+
+plot(L_cyl_meas, F_smooth_gauss/1000, ...
+    'k-', 'LineWidth', 1.5, ...
+    'DisplayName', '$F_{hyd}$ (gaussian)');
+
+% plot(L_cyl_meas, F_smooth_sgolay/1000, ...
+%     'g-', 'LineWidth', 1.5, ...
+%     'DisplayName', '$F_{hyd}$ (sgolay)');
+
+plot(L_cyl_theo, F_cyl_theo/1000, ...
+    'r--', 'LineWidth', 1.5, ...
+    'DisplayName', '$F_{cyl}$ (theoretical)');
+
+xlabel('Cylinder length [m]');
+ylabel('Force [kN]');
+legend('Location','northeast');
+grid on;
+
+fname = 'run1_smoothed_comparison';
+picturewidth = 20;
+hw_ratio = 0.65;
+set(findall(hfig2,'-property','FontSize'),'FontSize',17)
+set(findall(hfig2,'-property','Box'),'Box','off')
+set(findall(hfig2,'-property','Interpreter'),'Interpreter','latex')
+set(findall(hfig2,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
+set(hfig2,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
+pos = get(hfig2,'Position');
+set(hfig2,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
+print(hfig2,fname,'-dpdf','-vector','-fillpage')
