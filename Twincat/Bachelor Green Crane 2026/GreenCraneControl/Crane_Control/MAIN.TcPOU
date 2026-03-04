@@ -12,6 +12,7 @@ END_VAR
 PRG_ScaledInputs();
 PRG_ControllerMode();
 PRG_Filter();
+PRG_Timer();
 
 // 2. MODUS-VALG (Kun ett program får skrive til fU)
 IF G_Mode.bManual THEN
@@ -35,15 +36,6 @@ PRG_Output();
 
 
 	
-// From summer 2025:
-// P_Inputs();
-// P_Filtering();
-// P_ControlBlock();
-// P_Output();
-//P_RunClock(); // Not in use?
-// P_Modes();
-// P_PID();
-// P_FeedForward();
 ]]></ST>
     </Implementation>
   </POU>
