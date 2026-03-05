@@ -20,21 +20,21 @@ END_VAR
 // Variables
 VAR		
 	// [3V, 9V]: (Voltage/10)*32767 
-	nOffset 	: LREAL := 19630.0; 	// Closed valve	6V		
-	nMaxValue	: LREAL := 29460.0; 	// Max value valve 9V		
-	nMinValue 	: LREAL :=  9830.0; 	// Min value valve 3V	
-	nTempOutput : LREAL; 				// Temporary output
+	fOffset 	: LREAL := 19630.0; 	// Closed valve	6V		
+	fMaxValue	: LREAL := 29460.0; 	// Max value valve 9V		
+	fMinValue 	: LREAL :=  9830.0; 	// Min value valve 3V	
+	fTempOutput : LREAL; 				// Temporary output
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 IF fNormalizedInput > 0.0 THEN													// Signal to set spool at wanted position > 0.0
-    nTempOutput := nOffset + (fNormalizedInput * (nMaxValue - nOffset));		// Converts wanted output for valve [19630, 29460] (positive direction)
+    fTempOutput := fOffset + (fNormalizedInput * (fMaxValue - fOffset));		// Converts wanted output for valve [19630, 29460] (positive direction)
 ELSE																			// Signal to set spool at wanted position < 0.0
-    nTempOutput := nOffset + (fNormalizedInput * (nOffset - nMinValue));		// Converts wanted output for valve [9830, 19630] (negative direction)
+    fTempOutput := fOffset + (fNormalizedInput * (fOffset - fMinValue));		// Converts wanted output for valve [9830, 19630] (negative direction)
 END_IF
 
-nOutput := LREAL_TO_INT(SEL(bEnable, nOffset, nTempOutput));	// If bEnable is false, output = nOffset (closed valve). 
+nOutput := LREAL_TO_INT(SEL(bEnable, fOffset, fTempOutput));	// If bEnable is false, output = nOffset (closed valve). 
 																// If bEnable is true, output = nTempOutput]]></ST>
     </Implementation>
   </POU>

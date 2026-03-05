@@ -7,7 +7,7 @@
 
 // Constant variables
 VAR CONSTANT
-	MaxBitValue : LREAL := 32767.0;
+	fMaxBitValue : LREAL := 32767.0;
 END_VAR
 
 // Input variables
@@ -23,7 +23,7 @@ END_VAR
 
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[fNormalizedInput := (fMaxValue	* INT_TO_LREAL(nRawInput)) / MaxBitValue;
+      <ST><![CDATA[fNormalizedInput := (fMaxValue	* INT_TO_LREAL(nRawInput)) / fMaxBitValue;
 // Value/Max value = Raw-value/Max raw-value. Use this definition to calculate value for normalized data.
 // 16 bit = [-32767, 32767], max value: 32 767
 

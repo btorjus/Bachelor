@@ -2,37 +2,30 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="MAIN" Id="{95bd3131-5c67-452d-927e-7536941f7837}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
-VAR
-END_VAR
+
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-
-// Bachelor:
 PRG_ScaledInputs();
 PRG_ControllerMode();
 PRG_Filter();
 PRG_Timer();
 
-// 2. MODUS-VALG (Kun ett program får skrive til fU)
-IF G_Mode.bManual THEN
-    // Her kjører vi manual-programmet ditt med joystick
-	PRG_Manual_PF_Gradient();
-    //PRG_TestHome();
-ELSIF G_Mode.bAuto THEN
-    // Her kjører vi auto-rampen (0.05m til 0.45m)
-	//PRG_AutoRamp_GradientFiltered();
+
+IF G_Mode.bManual THEN		// Manual mode
+	PRG_ManualMode();
+ELSIF G_Mode.bAuto THEN		// Auto mode
+	PRG_AutoRamp();
 	//RampfUTest();
-	fU_Testing();
+	//fU_Testing();
     
 ELSE
-    // SIKKERHET: Hvis ingen modus er valgt, stopp kranen helt
-    G_OPC.fU := 0.0;
+    G_OPC.fU := 0.0;		// Safety
 END_IF
 
 PRG_Output();
 // PID - NOT created
-// FeedForward - not created
+// FeedForward - not created	
 
 
 	

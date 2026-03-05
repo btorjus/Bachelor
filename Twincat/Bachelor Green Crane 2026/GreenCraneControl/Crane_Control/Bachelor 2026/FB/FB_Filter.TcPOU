@@ -8,41 +8,41 @@
 
 // Input variables
 VAR_INPUT
-	FilterMode: SINT;			// 0/1 
-	Signal: LREAL; 				// Input signal
-	Num: LREAL; 				// Filter constant
-	Den: LREAL; 				// Filter constant
-	Initial: LREAL; 			// Filter constant
+	nFilterMode: SINT;			// 0/1 
+	fSignal: LREAL; 			// Input signal
+	fNum: LREAL; 				// Filter constant
+	fDen: LREAL; 				// Filter constant
+	fInitial: LREAL; 			// Filter constant
 END_VAR
 
 // Output variables
 VAR_OUTPUT
-	Signal_Unfiltered: LREAL;	// Unfiltered signal
-	Signal_Filtered: LREAL;		// Filtered signal
+	fSignal_Unfiltered: LREAL;	// Unfiltered signal
+	fSignal_Filtered: LREAL;		// Filtered signal
 END_VAR
 
 // Variables
 VAR
-	InitialCondition: USINT; 	// Initial condition load (start value)
-	FilterState: LREAL; 		// Filter state/memory (how the filter works)
+	nInitialCondition: USINT; 	// Initial condition load (start value)
+	fFilterState: LREAL; 		// Filter state/memory (how the filter works)
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-CASE FilterMode OF
+CASE nFilterMode OF
     SS_INITIALIZE:								
-        InitialCondition := 1;							// If FilterMode = SS_INITIALIZE (0), set InitialCondition = 1 (reset filter)
+        nInitialCondition := 1;							// If FilterMode = SS_INITIALIZE (0), set InitialCondition = 1 (reset filter)
 
     SS_STEP:
-        IF InitialCondition <> 0 THEN					// If InitialCondition is not equal to zero, set initial filter values
-            FilterState := Initial;
-            InitialCondition := 0;						// set InitialCondition = 0 after reset
+        IF nInitialCondition <> 0 THEN					// If InitialCondition is not equal to zero, set initial filter values
+            fFilterState := fInitial;
+            nInitialCondition := 0;						// set InitialCondition = 0 after reset
         END_IF;
 
-        Signal_Unfiltered := Signal;					// Unfiltered input signal
-        Signal_Filtered   := Num * FilterState;			// Filtered output
+        fSignal_Unfiltered := fSignal;					// Unfiltered input signal
+        fSignal_Filtered   := fNum * fFilterState;			// Filtered output
         
-        FilterState := Signal - (Den * FilterState); 	// Update filter state (negative feedback)
+        fFilterState := fSignal - (fDen * fFilterState); 	// Update filter state (negative feedback)
 		
 		// Filter adds a percentage of old signal value to the new value (according to value of Den). 
 		// This makes the filter calculate slowly and wont be able to fit big spikes/noice in unfiltered signal.

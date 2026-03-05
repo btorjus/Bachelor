@@ -14,13 +14,11 @@ VAR
 	fbNormSpoolPosition : FB_Scaler;
 	fbNormJoystick : FB_Scaler;	
  	fbNormFlow	: FB_Scaler;
-	//fbNormFlow : FB_Normalization;		
-
+		
 	fPa : LREAL;
 	fPb : LREAL;
 	fPs : LREAL;
 	fPaLower : LREAL;
-	
 	fPistonPosition : LREAL;
 END_VAR
 ]]></Declaration>
@@ -102,11 +100,6 @@ fbNormFlow(
 	fOutput => G_OPC.fFlow
 );
 
-// fbNormFlow(
-// 	nRawInput := G_Inputs.nRawFlowSensor,
-// 	fMaxValue := 150.0,
-// 	fNormalizedInput => G_OPC.fFlow
-// );
 ]]></ST>
     </Implementation>
   </POU>

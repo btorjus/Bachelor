@@ -7,7 +7,7 @@ VAR
     fTimer          	: LREAL;          	
     bTimerStatus     	: BOOL;           
     fbTrigger    		: R_TRIG;         		
-    fCycleTime        : LREAL := 0.001;		// PLC cycle time
+    fCycleTime        	: LREAL := 0.001;		// PLC cycle time
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[

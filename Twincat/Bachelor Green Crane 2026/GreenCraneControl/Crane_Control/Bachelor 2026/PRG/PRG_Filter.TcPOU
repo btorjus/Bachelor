@@ -13,50 +13,50 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[fbFilterPa(
-	FilterMode := 1,
-	Signal := G_OPC.fPa, // Unfiltered, normalized pressure 
+	nFilterMode := 1,
+	fSignal := G_OPC.fPa, // Unfiltered, normalized pressure 
 	
 	// Filter constants:
-	Num := G_FilterConstants.fPressureFilterNum,
-	Den := G_FilterConstants.fPressureFilterDen,
-	Initial := G_FilterConstants.fPressureFilterInit,
+	fNum := G_FilterConstants.fPressureFilterNum,
+	fDen := G_FilterConstants.fPressureFilterDen,
+	fInitial := G_FilterConstants.fPressureFilterInit,
 	
 	// Filtered pressure:
-	Signal_Filtered => G_Filtered.fPressurePistonSideFiltered,
-	Signal_Filtered => G_OPC.fPaFiltered
+	fSignal_Filtered => G_Filtered.fPressurePistonSideFiltered,
+	fSignal_Filtered => G_OPC.fPaFiltered
 );
 
 fbFilterPb(
-	FilterMode := 1,
-	Signal := G_OPC.fPb,
-	Num := G_FilterConstants.fPressureFilterNum,
-	Den := G_FilterConstants.fPressureFilterDen,
-	Initial := G_FilterConstants.fPressureFilterInit,
+	nFilterMode := 1,
+	fSignal := G_OPC.fPb,
+	fNum := G_FilterConstants.fPressureFilterNum,
+	fDen := G_FilterConstants.fPressureFilterDen,
+	fInitial := G_FilterConstants.fPressureFilterInit,
 	
-	Signal_Filtered => G_Filtered.fPressureRodSideFiltered,
-	Signal_Filtered => G_OPC.fPbFiltered
+	fSignal_Filtered => G_Filtered.fPressureRodSideFiltered,
+	fSignal_Filtered => G_OPC.fPbFiltered
 );
 
 fbFilterPs(
-	FilterMode := 1,
-	Signal := G_OPC.fPs,
-	Num := G_FilterConstants.fPressureFilterNum,
-	Den := G_FilterConstants.fPressureFilterDen,
-	Initial := G_FilterConstants.fPressureFilterInit,
+	nFilterMode := 1,
+	fSignal := G_OPC.fPs,
+	fNum := G_FilterConstants.fPressureFilterNum,
+	fDen := G_FilterConstants.fPressureFilterDen,
+	fInitial := G_FilterConstants.fPressureFilterInit,
 	
-	Signal_Filtered => G_Filtered.fPressureSupplyFiltered,
-	Signal_Filtered => G_OPC.fPsFiltered
+	fSignal_Filtered => G_Filtered.fPressureSupplyFiltered,
+	fSignal_Filtered => G_OPC.fPsFiltered
 );
 
 fbFilterPaLower(
-	FilterMode := 1,
-	Signal := G_OPC.fPaLower,
-	Num := G_FilterConstants.fPressureFilterNum,
-	Den := G_FilterConstants.fPressureFilterDen,
-	Initial := G_FilterConstants.fPressureFilterInit,
+	nFilterMode := 1,
+	fSignal := G_OPC.fPaLower,
+	fNum := G_FilterConstants.fPressureFilterNum,
+	fDen := G_FilterConstants.fPressureFilterDen,
+	fInitial := G_FilterConstants.fPressureFilterInit,
 	
-	Signal_Filtered => G_Filtered.fPressurePaLower,	
-	Signal_Filtered => G_OPC.fPaLowerFiltered
+	fSignal_Filtered => G_Filtered.fPressurePaLower,	
+	fSignal_Filtered => G_OPC.fPaLowerFiltered
 );
 
 ]]></ST>

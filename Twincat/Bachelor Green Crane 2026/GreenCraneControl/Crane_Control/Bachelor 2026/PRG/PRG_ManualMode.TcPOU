@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PRG_Manual_PF_Gradient" Id="{8b698f07-a516-4b87-a0eb-cf4c6c35d59c}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM PRG_Manual_PF_Gradient
+  <POU Name="PRG_ManualMode" Id="{4af9ddd0-9108-41ef-846b-b8d39f1bab86}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_ManualMode
+
 
 VAR
     bReturning        : BOOL;                 					// True when returning home
@@ -21,10 +22,11 @@ VAR
     fHomeRampTime     : LREAL := 2.0;         					// Timer to full speed when returning home
     fHomeMaxSpeed     : LREAL := 0.5;        					// Max speed for home return
     fCycleTime        : LREAL := 0.001;        					// Cycle time PLC (endret fra 0.01)
-	fHomePos		  :LREAL := 0.01;							// Piston position at home
+	fHomePos		  : LREAL := 0.01;							// Piston position at home
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Updates initial position when start button is pressed
+      <ST><![CDATA[
+// Updates initial position when start button is pressed
 fbInitialPos(
     bEnable := G_Inputs.bStartButton AND G_Mode.bRunning,
     fCurrentPos := G_OPC.fPistonPosition

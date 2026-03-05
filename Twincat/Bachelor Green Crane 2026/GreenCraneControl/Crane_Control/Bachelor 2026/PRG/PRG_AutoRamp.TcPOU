@@ -1,41 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PRG_AutoRamp_GradientFiltered" Id="{6ea477b9-1862-4df7-994f-5b93ed2d2a88}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM PRG_AutoRamp_GradientFiltered
-
+  <POU Name="PRG_AutoRamp" Id="{21695018-7c4c-4332-995b-8cf97617936e}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_AutoRamp
+ 
 VAR
     fbStartDelay      : TON; 
-    
     // Hastigheter
     fMaxSpeedUp       : LREAL := 0.60;
     fMaxSpeedDown     : LREAL := 0.35;     
-    
     // Tider
     fRampTimeUp       : LREAL := 1.0;      // Raskere opp
     fRampTimeDown     : LREAL := 4.0;      // MYK START: 4 sekunder nedover
     fPauseTime        : LREAL := 2.0;      
     fCycleTime        : LREAL := 0.001;    // MATCHER 1ms TASK
-    
     // Grenser
     fUpperLimit       : LREAL := 0.45;
     fLowerLimit       : LREAL := 0.05;     
     bDirectionUp      : BOOL := TRUE;      
-    
     bInPause          : BOOL;
     fCurrentTimer     : LREAL;             
     fTargetSpeed      : LREAL;             
     fSelectedPressure : LREAL;             
-    
     // PF og filter
     ePFMode           : E_PressureFeedback := E_PressureFeedback.PF_ON; 
     fbPF_Filtered     : FB_PF_GradientFiltered;    
     fDampingGain      : LREAL := 0.005;    
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-// 1. SIKKERHET (1s hold)
+      <ST><![CDATA[// 1. SIKKERHET (1s hold)
 fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#1S);
-
+ 
 IF fbStartDelay.Q THEN
     // 2. RETNINGSSTYRING
     IF NOT bInPause THEN
@@ -45,7 +39,7 @@ IF fbStartDelay.Q THEN
             bInPause := TRUE; bDirectionUp := TRUE; fCurrentTimer := 0;
         END_IF
     END_IF
-
+ 
     // 3. BEVEGELSE
     IF bInPause THEN
         fTargetSpeed := 0;
@@ -53,7 +47,6 @@ IF fbStartDelay.Q THEN
         IF fCurrentTimer >= fPauseTime THEN bInPause := FALSE; fCurrentTimer := 0; END_IF
     ELSE
         fCurrentTimer := fCurrentTimer + fCycleTime;
-        
         IF bDirectionUp THEN
             // Rampe oppover
             fTargetSpeed := LIMIT(0, (fCurrentTimer / fRampTimeUp) * fMaxSpeedUp, fMaxSpeedUp);
@@ -62,16 +55,15 @@ IF fbStartDelay.Q THEN
             fTargetSpeed := LIMIT(0, (fCurrentTimer / fRampTimeDown) * fMaxSpeedDown, fMaxSpeedDown);
         END_IF
     END_IF
-    
     G_OPC.fU := SEL(bDirectionUp, fTargetSpeed, -fTargetSpeed);
 ELSE
     G_OPC.fU := 0; fCurrentTimer := 0;
 END_IF
-
+ 
 // 4. PF OG DØDSONE
 fSelectedPressure := SEL(G_OPC.fU > 0, G_OPC.fPa, G_OPC.fPb);
 IF G_OPC.fU = 0 THEN fSelectedPressure := 0; END_IF
-
+ 
 fbPF_Filtered(
     bEnable := (ePFMode = E_PressureFeedback.PF_ON), 
     fJoystick := G_OPC.fU, 
@@ -79,16 +71,15 @@ fbPF_Filtered(
     fDampingGain := fDampingGain, 
     fU_Out => G_OPC.fU
 );
-
+ 
 // Legg på dødsoner
 IF G_OPC.fU > 0 THEN 
     G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
 ELSIF G_OPC.fU < 0 THEN 
     G_OPC.fU := G_OPC.fU + G_Parameter.fDeadDown; 
 END_IF
-
-G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);
-]]></ST>
+ 
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>
