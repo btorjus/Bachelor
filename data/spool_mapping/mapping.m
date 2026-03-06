@@ -15,7 +15,7 @@ dpref  = 20e5;             % nominal pressure drop      [Pa]
 Kv_rated = Qref / dpref;
 
 %% ─── Data root & folder list ─────────────────────────────────────────────────
-dataRoot = fullfile('data', 'spool_mapping');
+dataRoot = '.';            % script lives in data/spool_mapping/
 
 folders = { ...
     fullfile(dataRoot, 'UpDown100Bar040326'), ...
@@ -25,16 +25,17 @@ folders = { ...
 
 %% ─── Column names (confirmed from CSV header row 7) ─────────────────────────
 COL_time     = 'fTimer';            % already in seconds
-COL_fU       = 'fU';               % test-active flag  (0 = idle, != 0 = test)
-COL_pSupply  = 'fPsFiltered';      % supply pressure   [bar]
-COL_pA       = 'fPaFiltered';      % port-A pressure   [bar]
-COL_pB       = 'fPbFiltered';      % port-B pressure   [bar]
-COL_pA_lower = 'fPaLowerFiltered'; % lower A pressure  [bar]
-COL_flow     = 'fFlow';            % flow sensor       [L/min]
-COL_position = 'fPistonPosition';  % piston position   [m]
+COL_fU       = 'fU';               % control signal  (0 = idle, !=0 = active)
+COL_spool    = 'fSpoolPosition';   % spool position  (-1 = home, then working range)
+COL_pSupply  = 'fPsFiltered';      % supply pressure [bar]
+COL_pA       = 'fPaFiltered';      % port-A pressure [bar]
+COL_pB       = 'fPbFiltered';      % port-B pressure [bar]
+COL_pA_lower = 'fPaLowerFiltered'; % lower A pressure [bar]
+COL_flow     = 'fFlow';            % flow sensor     [L/min]
+COL_position = 'fPistonPosition';  % piston position [m]
 
 %% ─── Helper: load & clean one CSV ───────────────────────────────────────────
-function T = loadAndClean(filepath, COL_fU)
+function T = loadAndClean(filepath, COL_fU, COL_spool)
     opts = detectImportOptions(filepath, ...
         'Delimiter',          ';',  ...
         'NumHeaderLines',     6,    ...   % rows 1-6 are metadata; row 7 = headers
@@ -42,15 +43,14 @@ function T = loadAndClean(filepath, COL_fU)
         'VariableNamingRule', 'preserve');
     T = readtable(filepath, opts);
 
-    % ── Remove trailing empty/NaN rows that some exports append ──────────
+    % ── Remove trailing empty/NaN rows ───────────────────────────────────
     T = rmmissing(T, 'MinNumMissing', width(T));
 
     % ── CLEAN 1: timer-reset marker ──────────────────────────────────────
-    % fTimer counts up from some arbitrary offset, then resets to ~0 when
-    % the actual test begins.  Keep everything from the LAST reset onward.
+    % fTimer counts up, then resets to ~0 when the actual test begins.
+    % Keep everything from the LAST reset onward.
     timeVec  = T{:, 1};
     resetIdx = find(diff(timeVec) < 0);
-
     if ~isempty(resetIdx)
         T = T(resetIdx(end)+1 : end, :);
     end
@@ -63,6 +63,17 @@ function T = loadAndClean(filepath, COL_fU)
         colNames = strjoin(T.Properties.VariableNames, ', ');
         error('Column "%s" not found.\nAvailable columns: %s', COL_fU, colNames);
     end
+
+    % ── CLEAN 3: remove spool home position (-1) ─────────────────────────
+    % Spool starts at -1 (mechanical home) before the stroke begins.
+    % Keep only rows where spool has left home. Threshold -0.9 gives
+    % margin for sensor noise around -1.
+    if ismember(COL_spool, T.Properties.VariableNames)
+        T = T(T{:, COL_spool} > -0.9, :);
+    else
+        colNames = strjoin(T.Properties.VariableNames, ', ');
+        error('Column "%s" not found.\nAvailable columns: %s', COL_spool, colNames);
+    end
 end
 
 %% ─── Load all CSV files from the three UpDown folders ───────────────────────
@@ -73,6 +84,11 @@ allRuns = struct( ...
 
 for fi = 1:numel(folders)
     csvFiles = dir(fullfile(folders{fi}, '*.csv'));
+
+    if isempty(csvFiles)
+        warning('No CSV files found in: %s', folders{fi});
+        continue
+    end
 
     for ci = 1:numel(csvFiles)
         fname = csvFiles(ci).name;
@@ -86,21 +102,21 @@ for fi = 1:numel(folders)
             continue
         end
 
-        direction    = tokens{1};
-        nomPressure  = str2double(tokens{2});   % [bar] — label only
-        signal       = str2double(tokens{3});   % [%]
+        direction   = tokens{1};
+        nomPressure = str2double(tokens{2});   % [bar] — label only
+        signal      = str2double(tokens{3});   % [%]
 
         fullpath = fullfile(folders{fi}, fname);
         fprintf('Loading %s ...\n', fname);
-        T = loadAndClean(fullpath, COL_fU);
+        T = loadAndClean(fullpath, COL_fU, COL_spool);
 
         entry.folder      = folders{fi};
         entry.filename    = fname;
         entry.direction   = direction;
-        entry.pressure    = nomPressure;   % nominal [bar], for labelling
+        entry.pressure    = nomPressure;
         entry.signal      = signal;
         entry.data        = T;
-        allRuns(end+1)    = entry;         %#ok<AGROW>
+        allRuns(end+1)    = entry;             %#ok<AGROW>
     end
 end
 fprintf('\nLoaded %d files.\n', numel(allRuns));
@@ -110,8 +126,16 @@ for i = 1:numel(allRuns)
     T         = allRuns(i).data;
     direction = allRuns(i).direction;
 
-    % ── Time ─────────────────────────────────────────────────────────────
-    t = T{:, COL_time};                % [s]  — fTimer is already seconds
+    % ── Sign convention normalisation ────────────────────────────────────
+    % Down: spool > 0, flow > 0  → keep as-is
+    % Up:   spool < 0, flow < 0  → flip both so active stroke is positive
+    if strcmp(direction, 'Up')
+        T{:, COL_flow}     = -T{:, COL_flow};
+        T{:, COL_position} = -T{:, COL_position};
+    end
+
+    % ── Time ────────────────────────────────���────────────────────────────
+    t = T{:, COL_time};                % [s]
 
     % ── Pressures: bar → Pa ──────────────────────────────────────────────
     pS_Pa = T{:, COL_pSupply} * 1e5;  % supply pressure   [Pa]
@@ -129,16 +153,12 @@ for i = 1:numel(allRuns)
     dP = max(dP, 0);                   % clamp negatives (sensor noise)
 
     % ── Flow sensor: L/min → m³/s ────────────────────────────────────────
-    Q_sensor_m3s = abs(T{:, COL_flow}) / 60000;   % [m^3/s]
-
-    % ── Kv from flow sensor ───────────────────────────────────────────────
-    % Kv = Q / sqrt(dP)   [m^3/s / Pa^0.5]
-    Kv_flow = Q_sensor_m3s ./ sqrt(dP + eps);
+    % abs() kept as safety net for residual noise-driven sign flips near zero
+    Q_sensor = abs(T{:, COL_flow}) / 60000;   % [m^3/s]
 
     % ── Piston velocity from position (central finite difference) ─────────
-    pos = T{:, COL_position};          % [m]
-    dt  = mean(diff(t));               % actual mean sample interval [s]
-    vel = gradient(pos, t);            % [m/s]  — uses actual non-uniform t
+    pos = T{:, COL_position};          % [m]  — already sign-corrected above
+    vel = gradient(pos, t);            % [m/s]
 
     % ── Flow from piston kinematics ───────────────────────────────────────
     % Up   stroke: fluid enters full-bore side  → Q = A  * v
@@ -149,16 +169,56 @@ for i = 1:numel(allRuns)
         Q_piston = Aa * vel;
     end
 
+    % ── Kv from flow sensor ───────────────────────────────────────────────
+    Kv_flow   = Q_sensor  ./ sqrt(dP + eps);  % [m^3/s / Pa^0.5]
+
+    % ── Kv from piston kinematics ─────────────────────────────────────────
+    Kv_piston = abs(Q_piston)  ./ sqrt(dP + eps);  % [m^3/s / Pa^0.5]
+
+    % ── Smooth Kv_piston ─────────────────────────────────────────────────
+    % Adjust window size (number of samples) to taste
+    Kv_piston_smooth = smoothdata(Kv_piston, 'gaussian', 50);
+
+
+
     % ── Store ─────────────────────────────────────────────────────────────
     allRuns(i).t          = t;
     allRuns(i).pS_Pa      = pS_Pa;
     allRuns(i).pA_Pa      = pA_Pa;
     allRuns(i).pB_Pa      = pB_Pa;
     allRuns(i).dP         = dP;
-    allRuns(i).Q_sensor   = Q_sensor_m3s;
-    allRuns(i).Kv_flow    = Kv_flow;
-    allRuns(i).vel        = vel;
+    allRuns(i).Q_sensor   = Q_sensor;
     allRuns(i).Q_piston   = Q_piston;
+    allRuns(i).vel        = vel;
+    allRuns(i).Kv_flow    = Kv_flow;
+    allRuns(i).Kv_piston  = Kv_piston;
+    allRuns(i).Kv_piston_smooth = Kv_piston_smooth;
 end
 
 fprintf('Derived quantities computed for all %d runs.\n', numel(allRuns));
+
+%% ─── Quick test plot ─────────────────────────────────────────────────────────
+% Change these indices to inspect different runs
+runIdx = [1, 2, 3];
+
+figure;
+for k = 1:numel(runIdx)
+    i = runIdx(k);
+    t         = allRuns(i).t;
+    Kv_flow   = allRuns(i).Kv_flow;
+    Kv_piston = allRuns(i).Kv_piston_smooth;
+
+    titleStr = sprintf('%s | %d bar | %d%% signal', ...
+        allRuns(i).direction, allRuns(i).pressure, allRuns(i).signal);
+
+    subplot(numel(runIdx), 1, k);
+    plot(t, Kv_flow,   'b-', 'DisplayName', 'Kv flow sensor');
+    hold on
+    plot(t, Kv_piston, 'r-', 'DisplayName', 'Kv piston');
+    hold off
+    xlabel('Time [s]')
+    ylabel('Kv [m^3/s / Pa^{0.5}]')
+    title(titleStr)
+    legend
+    grid on
+end
