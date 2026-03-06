@@ -167,3 +167,30 @@ twincat program med faktsik cylinder pos
 Når vi kjører disse testene kan vi regne ut cylinderkraften som tidligere, og sammenligne med den første.
 
 
+///////// etter up and down //////////// 0603
+
+
+Regner ut Kv med reelt trykkfall og flow fra cylinderpositsjon, og med ett filter som gaussian eller moving avrage se excedl
+Regner ut flow Q  = v * 
+
+dp er ps - pa/pfb
+
+lag noen videoer og bilder når vi kjører
+
+// cbv //
+mulig vi kan finne noe av dataen i updown
+
+vi trenger alle tre trykk for å bestemme cbv samme med fjærer
+
+
+må lage friksjonsberegnerings
+
+
+
+///////////////////////////////dødband //////////////////
+
+finner u0 som er start og updown data så kan vi lage kurve og lage polynom for ventil 
+
+
+
+hydraulic theory mapping så simulering
