@@ -20,8 +20,8 @@ END_VAR]]></Declaration>
     // 2. Sjekk retning mot posisjon fra G_OPC
     // Positiv fU_TestValue (> 0) betyr NED/UT
     // Negativ fU_TestValue (< 0) betyr OPP/INN
-    IF (fU_TestValue > 0 AND G_OPC.fPistonPosMeasured <= fLimitDown) OR 
-       (fU_TestValue < 0 AND G_OPC.fPistonPosMeasured >= fLimitUp) THEN
+    IF (fU_TestValue > 0 AND G_OPC.fPistonPosition <= fLimitDown) OR 
+       (fU_TestValue < 0 AND G_OPC.fPistonPosition >= fLimitUp) THEN
         
         G_OPC.fU := 0.0;  // Stopp signalet til ventilen
         bHitLimit := TRUE;

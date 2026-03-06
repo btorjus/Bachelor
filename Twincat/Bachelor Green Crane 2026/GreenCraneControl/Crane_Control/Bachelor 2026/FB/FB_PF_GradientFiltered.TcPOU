@@ -37,12 +37,12 @@ fPxOld := fSelectedPressure;							// Selects pressure
 
 // Lowpass filter
 fbGradFilter(
-    FilterMode      := 1, 
-    Signal          := fRawGradient,
-    Num             := G_FilterConstants.fDerivatorFilterNum,    
-    Den             := G_FilterConstants.fDerivatorFilterDen,    
-    Initial         := G_FilterConstants.fDerivatorFilterInit,   
-    Signal_Filtered => fFilteredGrad
+    nFilterMode      := 1, 
+    fSignal          := fRawGradient,
+    fNum             := G_FilterConstants.fDerivatorFilterNum,    
+    fDen             := G_FilterConstants.fDerivatorFilterDen,    
+    fInitial         := G_FilterConstants.fDerivatorFilterInit,   
+    fSignal_Filtered => fFilteredGrad
 );
 
 // IF bEnable THEN

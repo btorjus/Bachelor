@@ -3,31 +3,26 @@
   <POU Name="PRG_Timer" Id="{9221d7e7-f8c8-4882-a322-8168f1bfcef8}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_Timer
 
-
 VAR
-    // --- Timer Variabler ---
-    fMyTimer          : LREAL;          // Selve timeren (0.0000)
-    bTimerRunning     : BOOL;           // Status for om timeren teller
-    fbStartTrigger    : R_TRIG;         // Oppdager akkurat når knappen trykkes
-    
-    // --- Parametere ---
-    fCycleTime        : LREAL := 0.001; // Din syklustid på 1ms
+    fTimer          	: LREAL;          	
+    bTimerStatus     	: BOOL;           
+    fbTrigger    		: R_TRIG;         		
+    fCycleTime        	: LREAL := 0.001;		// PLC cycle time
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// 1. Oppdag flanken (akkurat i det knappen trykkes ned)
-fbStartTrigger(CLK := G_Inputs.bStartButton);
+      <ST><![CDATA[
+fbTrigger(CLK := G_Inputs.bStartButton);								// Start when start button is pressed
 
-// 2. Hvis knappen trykkes: Reset timeren til 0 og start tellingen
-IF fbStartTrigger.Q THEN
-    fMyTimer := 0.0;
-    bTimerRunning := TRUE;
+IF fbTrigger.Q THEN														// Reset if start button is pressed 
+    fTimer := 0.0;
+    bTimerStatus := TRUE;
 END_IF
 
-// 3. Hvis timeren er aktiv, legg til syklustiden for hver runde PLS-en kjører
-IF bTimerRunning THEN
-    fMyTimer := fMyTimer + fCycleTime;
+IF bTimerStatus THEN
+    fTimer := fTimer + fCycleTime;										// PLC cycle tick conversion to real seconds
 END_IF
-]]></ST>
+
+fTimer := LINT_TO_LREAL(LREAL_TO_LINT(fTimer * 10000.0)) / 10000.0;		// Output in three decimals]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

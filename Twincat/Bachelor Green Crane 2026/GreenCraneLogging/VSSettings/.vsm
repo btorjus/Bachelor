@@ -4,6 +4,64 @@
   <FileName></FileName>
   <Children>
     <Node>
+      <Title>Scope Project1</Title>
+      <Expanded>False</Expanded>
+      <FileName>C:\Users\kimro\Documents\Bachelor\Twincat\Bachelor Green Crane 2026\GreenCraneLogging\Scope Project1.tcscopex</FileName>
+      <Children>
+        <Node>
+          <Title>DataPool</Title>
+          <Expanded>False</Expanded>
+          <FileName></FileName>
+          <Children>
+            <Node>
+              <Title>fSpoolPosition</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
+              <Title>fU</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+          </Children>
+        </Node>
+        <Node>
+          <Title>YT Chart</Title>
+          <Expanded>False</Expanded>
+          <FileName></FileName>
+          <Children>
+            <Node>
+              <Title>Axis Group</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children>
+                <Node>
+                  <Title>fU</Title>
+                  <Expanded>False</Expanded>
+                  <FileName></FileName>
+                  <Children />
+                </Node>
+                <Node>
+                  <Title>fSpoolPosition</Title>
+                  <Expanded>False</Expanded>
+                  <FileName></FileName>
+                  <Children />
+                </Node>
+              </Children>
+            </Node>
+          </Children>
+        </Node>
+        <Node>
+          <Title>Trigger</Title>
+          <Expanded>False</Expanded>
+          <FileName></FileName>
+          <Children />
+        </Node>
+      </Children>
+    </Node>
+    <Node>
       <Title>YT Scope Project</Title>
       <Expanded>False</Expanded>
       <FileName>C:\Users\kimro\Documents\Bachelor\Twincat\Bachelor Green Crane 2026\GreenCraneLogging\YT Scope Project.tcscopex</FileName>
@@ -104,6 +162,12 @@
               <Children />
             </Node>
             <Node>
+              <Title>fTimer</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
               <Title>fU</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
@@ -146,7 +210,7 @@
               <FileName></FileName>
               <Children>
                 <Node>
-                  <Title>fSpoolPosition</Title>
+                  <Title>fTimer</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
@@ -158,13 +222,25 @@
                   <Children />
                 </Node>
                 <Node>
-                  <Title>fFlow</Title>
+                  <Title>fSpoolPosition</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
                 </Node>
                 <Node>
-                  <Title>fFlowRef</Title>
+                  <Title>fPistonPosition</Title>
+                  <Expanded>False</Expanded>
+                  <FileName></FileName>
+                  <Children />
+                </Node>
+                <Node>
+                  <Title>fPistonPosMeasured</Title>
+                  <Expanded>False</Expanded>
+                  <FileName></FileName>
+                  <Children />
+                </Node>
+                <Node>
+                  <Title>fFlow</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
@@ -206,18 +282,6 @@
                   <Children />
                 </Node>
                 <Node>
-                  <Title>fPistonPosition</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fPistonPosMeasured</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
                   <Title>fPs</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
@@ -225,12 +289,6 @@
                 </Node>
                 <Node>
                   <Title>fPsFiltered</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fUpfb</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
