@@ -14,6 +14,10 @@ dpref  = 20e5;             % nominal pressure drop      [Pa]
 
 Kv_rated = Qref / dpref;
 
+uminA          =  0.2325;   % deadband limit port A (Up)
+uminB          =  0.2175;   % deadband limit port B (Down)
+targetPressure = 110; 
+
 %% ─── Data root & folder list ─────────────────────────────────────────────────
 dataRoot = '.';            % script lives in data/spool_mapping/
 
@@ -132,10 +136,14 @@ for i = 1:numel(allRuns)
     if strcmp(direction, 'Up')
         T{:, COL_flow}     = -T{:, COL_flow};
         T{:, COL_position} = -T{:, COL_position};
+        T{:, COL_spool}    = -T{:, COL_spool};
     end
 
-    % ── Time ────────────────────────────────���────────────────────────────
+    % ── Time ────────────────────────────────────────────────────────────
     t = T{:, COL_time};                % [s]
+
+    % ---Spool pos -------------------------------------------------
+    spool = T{:, COL_spool};                % [-1 to 1]
 
     % ── Pressures: bar → Pa ──────────────────────────────────────────────
     pS_Pa = T{:, COL_pSupply} * 1e5;  % supply pressure   [Pa]
@@ -176,13 +184,17 @@ for i = 1:numel(allRuns)
     Kv_piston = abs(Q_piston)  ./ sqrt(dP + eps);  % [m^3/s / Pa^0.5]
 
     % ── Smooth Kv_piston ─────────────────────────────────────────────────
-    % Adjust window size (number of samples) to taste
-    Kv_piston_smooth = smoothdata(Kv_piston, 'gaussian', 50);
+    % Savitzky-Golay: preserves peaks better than Gaussian
+    % window must be odd, order must be < window
+    window = 51;   % number of samples — increase for more smoothing
+    order  = 3;    % polynomial order  — 3 or 4 works well
+    Kv_piston_smooth = sgolayfilt(Kv_piston, order, window);
 
 
 
     % ── Store ─────────────────────────────────────────────────────────────
     allRuns(i).t          = t;
+    allRuns(i).spool      = spool;
     allRuns(i).pS_Pa      = pS_Pa;
     allRuns(i).pA_Pa      = pA_Pa;
     allRuns(i).pB_Pa      = pB_Pa;
@@ -199,7 +211,7 @@ fprintf('Derived quantities computed for all %d runs.\n', numel(allRuns));
 
 %% ─── Quick test plot ─────────────────────────────────────────────────────────
 % Change these indices to inspect different runs
-runIdx = [1, 2, 3];
+runIdx = [1, 26, 3];
 
 figure;
 for k = 1:numel(runIdx)
@@ -222,3 +234,62 @@ for k = 1:numel(runIdx)
     legend
     grid on
 end
+
+
+%% ─── Kv vs instantaneous spool position at 110 bar ──────────────────────────
+
+targetPressure = 110;
+
+% ── Collect all samples per direction ────────────────────────────────────────
+upSpool_all   = []; upKvFlow_all   = []; upKvPiston_all   = [];
+downSpool_all = []; downKvFlow_all = []; downKvPiston_all = [];
+
+for i = 1:numel(allRuns)
+    if allRuns(i).pressure ~= targetPressure
+        continue
+    end
+
+    if strcmp(allRuns(i).direction, 'Up')
+        upSpool_all      = [upSpool_all;      allRuns(i).spool];
+        upKvFlow_all     = [upKvFlow_all;     allRuns(i).Kv_flow];
+        upKvPiston_all   = [upKvPiston_all;   allRuns(i).Kv_piston_smooth];
+    else
+        downSpool_all    = [downSpool_all;    allRuns(i).spool];
+        downKvFlow_all   = [downKvFlow_all;   allRuns(i).Kv_flow];
+        downKvPiston_all = [downKvPiston_all; allRuns(i).Kv_piston_smooth];
+    end
+end
+
+% ── Plot ──────────────────────────────────────────────────────────────────────
+factor = 6e4 / sqrt(1e-5); % liter per min / bar^0.5
+
+figure;
+
+% Port A — Up
+subplot(2,1,1);
+scatter(upSpool_all, upKvFlow_all * factor,   2, 'b', 'filled', 'DisplayName', 'Kv flow sensor');
+hold on
+scatter(upSpool_all, upKvPiston_all * factor, 2, 'r', 'filled', 'DisplayName', 'Kv piston');
+xline(uminA, 'k--', sprintf('Deadband = %.4f', uminA), 'DisplayName', 'Deadband');
+hold off
+xlabel('Spool position [-]')
+ylabel('Kv [l/min / Bar^{0.5}]')
+title(sprintf('Port A (Up) — %d bar | instantaneous', targetPressure))
+legend
+grid on
+
+% Port B — Down
+subplot(2,1,2);
+scatter(downSpool_all, downKvFlow_all * factor,   2, 'b', 'filled', 'DisplayName', 'Kv flow sensor');
+hold on
+scatter(downSpool_all, downKvPiston_all * factor, 2, 'r', 'filled', 'DisplayName', 'Kv piston');
+xline(uminB, 'k--', sprintf('Deadband = %.4f', uminB), 'DisplayName', 'Deadband');
+hold off
+xlabel('Spool position [-]')
+ylabel('Kv [l/min / Bar^{0.5}]')
+title(sprintf('Port B (Down) — %d bar | instantaneous', targetPressure))
+legend
+grid on
+
+% må fjerne der vi ramper opp!! og husk at den skal stoppe når vi begynner
+% å lukke 
