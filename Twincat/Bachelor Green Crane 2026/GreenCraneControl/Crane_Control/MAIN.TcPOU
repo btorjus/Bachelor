@@ -15,9 +15,9 @@ PRG_Timer();
 IF G_Mode.bManual THEN		// Manual mode
 	PRG_ManualMode();
 ELSIF G_Mode.bAuto THEN		// Auto mode
-	//PRG_AutoRamp();
+	PRG_AutoRamp();
 	//RampfUTest();
-	fU_Testing();
+	//fU_Testing();
     
 ELSE
     G_OPC.fU := 0.0;		// Safety

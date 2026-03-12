@@ -31,15 +31,15 @@ END_VAR
       <ST><![CDATA[
 CASE nFilterMode OF
     SS_INITIALIZE:								
-        nInitialCondition := 1;							// If FilterMode = SS_INITIALIZE (0), set InitialCondition = 1 (reset filter)
+        nInitialCondition := 1;								// If FilterMode = SS_INITIALIZE (0), set InitialCondition = 1 and run again (reset filter)
 
     SS_STEP:
-        IF nInitialCondition <> 0 THEN					// If InitialCondition is not equal to zero, set initial filter values
+        IF nInitialCondition <> 0 THEN						// If InitialCondition is not equal to zero, set initial filter values
             fFilterState := fInitial;
-            nInitialCondition := 0;						// set InitialCondition = 0 after reset
+            nInitialCondition := 0;							// set initial condition = 0
         END_IF;
 
-        fSignal_Unfiltered := fSignal;					// Unfiltered input signal
+        fSignal_Unfiltered := fSignal;						// Unfiltered input signal
         fSignal_Filtered   := fNum * fFilterState;			// Filtered output
         
         fFilterState := fSignal - (fDen * fFilterState); 	// Update filter state (negative feedback)

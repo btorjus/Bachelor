@@ -6,7 +6,7 @@
 VAR
     fbStartDelay      : TON; 
     // Hastigheter
-    fMaxSpeedUp       : LREAL := 0.60;
+    fMaxSpeedUp       : LREAL := 1.0;
     fMaxSpeedDown     : LREAL := 0.35;     
     // Tider
     fRampTimeUp       : LREAL := 1.0;      // Raskere opp
@@ -28,7 +28,7 @@ VAR
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// 1. SIKKERHET (1s hold)
-fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#1S);
+fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#2S);
  
 IF fbStartDelay.Q THEN
     // 2. RETNINGSSTYRING

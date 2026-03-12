@@ -37,7 +37,7 @@ END_VAR
       <ST><![CDATA[// Crane is only supported for movement in the y-axis (up/down)
 
 fRawInput := INT_TO_LREAL(nRawInput);											// Converts input to decimal number
-fTempInput := fRawInput - fNeutralInputValue;									// Defines neutral point
+fTempInput := fRawInput - fNeutralInputValue;									// Calculates offset from neutral
 
 IF ABS(fTempInput) > fNeutralDeadband THEN										// If signal is above deadband
     IF fTempInput > 0 THEN														// Positive signal

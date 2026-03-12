@@ -41,9 +41,6 @@ fOutput := LIMIT(fMinOutputValue, fTempOut, fMaxOutputValue); 							// Safety l
 fActual := LIMIT(fMinOutputValue, fTempOut - 59.608 * EXPT(fTempOut, 6) + 86.335 * EXPT(fTempOut, 5) - 44.643 * EXPT(fTempOut, 4) + 8.5147 * EXPT(fTempOut, 3) - 0.1469 * EXPT(fTempOut, 2) - 0.0085 * fTempOut + 0.0002, fMaxOutputValue);
 // Curve fitting to remove offset. Polynom gathered from piston measurement testing
 
-// Old polynom:
-//fActual := LIMIT(fMinOutputValue, fTempOut - 0.0006 - 0.0109*fTempOut + 0.5855*EXPT(fTempOut,2) - 1.1291*EXPT(fTempOut,3), fMaxOutputValue);
-
 
 ]]></ST>
     </Implementation>

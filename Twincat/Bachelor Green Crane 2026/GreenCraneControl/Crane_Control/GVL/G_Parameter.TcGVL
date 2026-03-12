@@ -24,8 +24,8 @@ VAR_GLOBAL
 	
 
 	// Deadband
-	fDeadUp 		: LREAL := 0.12;  //  Fra sommer: 0.23  Torjus: 8/0.7 = 0.114
-	fDeadDown 		: LREAL := 0.12; // Fra sommer: 0.215	Torjus: 8/0.7 = 0.114
+	fDeadUp 		: LREAL := 0.2360;  	//  Fra sommer: 0.23  
+	fDeadDown 		: LREAL := 0.2073; 		// Fra sommer: 0.215	
 	
 	fMaxSpeed 		: LREAL := 0.01; 	// [m/s] 
 	fDeltaP0 		: LREAL := 8.0; 	// [Bar]
