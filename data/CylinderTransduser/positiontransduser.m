@@ -1,0 +1,50 @@
+close all; clc;
+
+% Transducer position (m)
+pos = [0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50];
+
+% Delta (m) -- measured
+error = [0.0000, 0.0010, 0.0010, 0.0090, 0.0130, 0.0170, 0.0185, 0.0190, 0.0150, 0.0100, 0.0000];
+
+% Dense x-grid for a smooth curve
+xq = linspace(min(pos), max(pos), 1000);
+
+% 6th-order polynomial evaluated on the dense grid (smooth)
+pol_q = -59.608.*xq.^6 + 86.335.*xq.^5 - 44.643.*xq.^4 + 8.5147.*xq.^3 ...
+        - 0.1469.*xq.^2 - 0.0085.*xq + 0.0002;
+
+% Optional: smooth interpolation of the measured data (spline)
+error_spline_q = spline(pos, error, xq);
+
+C_red    = [249. 38. 114]./255; 
+C_blue   = [129. 154. 255]./255; 
+C_green  = [166. 226. 46]./255;   
+C_magenta = [174. 129. 255]./255;
+C_black = [51. 51. 51]./255;
+
+hfig = figure;  % save the figure handle in a variable
+plot(pos, error, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 5, 'DisplayName', 'Measured deviation');
+hold on
+plot(xq, error_spline_q,'color',C_red, 'LineWidth', 1.5, 'DisplayName', 'Spline fit');
+plot(xq, pol_q, 'color',C_blue, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit ($6^{th}$ order)');
+xlabel('Stroke position (m)')
+ylabel('Deviation (m)')
+legend('Location','northwest');
+
+% File name
+fname = 'transdusererror';
+
+% Template figure sizing & formatting (kept from your template, with var fix)
+picturewidth = 20; % set this parameter and keep it forever
+hw_ratio = 0.65; % feel free to play with this ratio
+set(findall(hfig,'-property','FontSize'),'FontSize',17) % adjust fontsize to your document
+
+set(findall(hfig,'-property','Box'),'Box','Off') % optional
+set(findall(hfig,'-property','Interpreter'),'Interpreter','latex') 
+set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
+set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
+figpos = get(hfig,'Position');
+set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[figpos(3), figpos(4)])
+print(hfig, fname, '-dpdf', '-vector', '-fillpage')
+
+%fiks er stygg
