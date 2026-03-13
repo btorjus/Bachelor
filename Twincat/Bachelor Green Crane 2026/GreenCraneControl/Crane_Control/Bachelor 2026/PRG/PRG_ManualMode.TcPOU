@@ -2,6 +2,9 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PRG_ManualMode" Id="{4af9ddd0-9108-41ef-846b-b8d39f1bab86}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_ManualMode
+// BOOL:  True/False
+// LREAL: Long real decimal number
+// TON:   Timer On-delay function block
 
 
 VAR
@@ -48,9 +51,9 @@ END_IF
 IF bReturning THEN
     fHomeTimer := fHomeTimer + fCycleTime;  						// Updates timer for soft acceleration when returning home
     
-    fDistance := ABS(G_OPC.fPistonPosition - fHomePos); 				// Calculates distance home
+    fDistance := ABS(G_OPC.fPistonPosition - fHomePos); 			// Calculates distance home
     
-    IF G_OPC.fPistonPosition > fHomePos THEN 							// If cylinder is above home point
+    IF G_OPC.fPistonPosition > fHomePos THEN 						// If cylinder is above home point
         fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;   	// Calculates speed
         fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 			// Calculates breaking
         G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed); 				// Output for home-return

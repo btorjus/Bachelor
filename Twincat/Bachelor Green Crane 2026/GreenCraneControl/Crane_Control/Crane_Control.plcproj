@@ -19,10 +19,16 @@
     <CompilerDefines>VISU_USEPROPERTYINFO</CompilerDefines>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Bachelor 2026\Enumeration\E_MotionTrajectory.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\Enumeration\E_PressureFeedback.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\FB\FB_ControllerMode.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_FeedForward_.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\FB\FB_Filter.TcPOU">
@@ -66,6 +72,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ScaledInputs.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_SineWave.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_Timer.TcPOU">

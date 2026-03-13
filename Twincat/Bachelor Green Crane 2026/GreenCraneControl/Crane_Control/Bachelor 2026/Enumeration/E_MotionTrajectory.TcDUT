@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_MotionTrajectory" Id="{a50a2702-f044-4930-85d0-69fbdaa9544e}">
+    <Declaration><![CDATA[TYPE E_MotionTrajectory :
+(
+	Ramp := 0,
+	Sine := 1,
+	fUTest := 2
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

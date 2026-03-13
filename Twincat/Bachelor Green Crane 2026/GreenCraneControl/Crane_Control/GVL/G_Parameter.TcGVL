@@ -15,8 +15,8 @@ VAR_GLOBAL
 	
 	// Valve Values
 	// Flow
-	fQMaxDown 		: LREAL := 10.0; 	// [L/min]
-	fQMaxUp 		: LREAL := 10.0; 	// [L/min]	
+	fQMaxDown 		: LREAL := 10.0; 	// [L/min]		// 10
+	fQMaxUp 		: LREAL := 10.0; 	// [L/min]		// 10
 	
 	// Area
 	fAreaUp 		: LREAL := 33.100/1E4; 	//[m^2]

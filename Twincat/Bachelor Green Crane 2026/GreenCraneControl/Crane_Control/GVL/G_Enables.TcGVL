@@ -19,7 +19,7 @@ VAR_GLOBAL
 	bEnableComp 	: BOOL; 	// Driving with Compensator
 	
 	// Enumerators
-	nModeSelect		: E_Motion; // Motion Reference
+	eMotionTrajectory : E_MotionTrajectory := E_MotionTrajectory.Ramp;  // Default: Ramp
 	
 END_VAR ]]></Declaration>
   </GVL>

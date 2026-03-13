@@ -4,27 +4,27 @@
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Filter
 // SINT: Integer [-128, 127]
 // LREAL: Long Real decimal number
-// USINT: Integer, strictly positive [0,255]
+// USINT: Strictly positive [0,255]
 
 // Input variables
 VAR_INPUT
-	nFilterMode: SINT;			// 0/1 
-	fSignal: LREAL; 			// Input signal
-	fNum: LREAL; 				// Filter constant
-	fDen: LREAL; 				// Filter constant
-	fInitial: LREAL; 			// Filter constant
+	nFilterMode: SINT;				// 0/1 
+	fSignal: LREAL; 				// Input signal
+	fNum: LREAL; 					// Filter constant
+	fDen: LREAL; 					// Filter constant
+	fInitial: LREAL; 				// Filter constant
 END_VAR
 
 // Output variables
 VAR_OUTPUT
-	fSignal_Unfiltered: LREAL;	// Unfiltered signal
+	fSignal_Unfiltered: LREAL;		// Unfiltered signal
 	fSignal_Filtered: LREAL;		// Filtered signal
 END_VAR
 
 // Variables
 VAR
-	nInitialCondition: USINT; 	// Initial condition load (start value)
-	fFilterState: LREAL; 		// Filter state/memory (how the filter works)
+	nInitialCondition: USINT; 		// Initial condition (start value)
+	fFilterState: LREAL; 			// Filter state/memory 
 END_VAR
 ]]></Declaration>
     <Implementation>

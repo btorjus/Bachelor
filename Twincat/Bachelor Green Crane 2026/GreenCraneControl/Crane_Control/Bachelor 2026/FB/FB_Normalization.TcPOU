@@ -24,12 +24,11 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[fNormalizedInput := (fMaxValue	* INT_TO_LREAL(nRawInput)) / fMaxBitValue;
-// Value/Max value = Raw-value/Max raw-value. Use this definition to calculate value for normalized data.
+// Value/Max value = Raw-value/Max raw-value. Uses this definition to calculate value for normalized data.
 // 16 bit = [-32767, 32767], max value: 32 767
 
-fNormalizedInput := LIMIT(0, fNormalizedInput, fMaxValue); // Limit(min, test-value, max)
-// Safety function. Lowest value = 0, highest = f_MaxValue
-// Output scaled [0, f_MaxValue]
+fNormalizedInput := LIMIT(0, fNormalizedInput, fMaxValue); // Safety limit (min, test-value, max)
+
 
 ]]></ST>
     </Implementation>
