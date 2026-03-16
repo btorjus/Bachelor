@@ -41,6 +41,7 @@ VAR_GLOBAL
 	
 	
 	fSignalPID 			: LREAL; 	// PID signal value
+	fPID 				: LREAL;   	// Position feedback correction signal
 	fFF 				: LREAL; 	// FF signal Value
 	fUpfb 				: LREAL; 	// Pressure feedback signal
 	fU 					: LREAL; 	// [-1,1], Signal to set spool at wanted position 

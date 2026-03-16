@@ -12,6 +12,10 @@ VAR
  
     // Feed-forward
     fbFF            : FB_FeedForward_;          // FB for feed-forward
+	fbKvFF 			: FB_KvFeedForward;  		// FB for Kv-based feed-forward
+	
+	// Position feedback
+	fbPosFB : FB_PositionFeedback;
  
     // Start delay
     fbStartDelay    : TON;
@@ -39,23 +43,51 @@ IF fbStartDelay.Q THEN
     G_OPC.fXRef    := fXRef;
     G_OPC.fXDotRef := fXDotRef;
  
- // FB for Feed Forward
-fbFF(
-    bEnable   := G_Enables.bEnableFF,
-    fXDot     := fXDotRef,
-    fPa       := G_OPC.fPaFiltered,
-    fPb       := G_OPC.fPbFiltered,
-    fPs       := G_OPC.fPsFiltered,
-    fA        := G_Parameter.fAreaUp,
-    fAr       := G_Parameter.fAreaDown,
-    fQ0Up     := G_Parameter.fQMaxUp,
-    fQ0Down   := G_Parameter.fQMaxDown,
-    fDp0      := G_Parameter.fDeltaP0,
-    fDeadUp   := G_Parameter.fDeadUp,
-    fDeadDown := G_Parameter.fDeadDown,
-    fU_FF     => G_OPC.fFF
-);
-    G_OPC.fU := G_OPC.fFF;	// Valve command from FF
+ // Feed Forward selection
+ CASE G_Enables.eFFMode OF 
+ E_FFMode.FF:  
+			fbFF(
+    			bEnable   := G_Enables.bEnableFF,
+   	 			fXDot     := fXDotRef,
+    			fPa       := G_OPC.fPaFiltered,
+    			fPb       := G_OPC.fPbFiltered,
+    			fPs       := G_OPC.fPsFiltered,
+    			fA        := G_Parameter.fAreaUp,
+    			fAr       := G_Parameter.fAreaDown,
+    			fQ0Up     := G_Parameter.fQMaxUp,
+    			fQ0Down   := G_Parameter.fQMaxDown,
+    			fDp0      := G_Parameter.fDeltaP0,
+    			fDeadUp   := G_Parameter.fDeadUp,
+    			fDeadDown := G_Parameter.fDeadDown,
+    			fU_FF     => G_OPC.fFF
+			);
+
+ E_FFMode.KvFF:                              
+            fbKvFF(
+                bEnable := G_Enables.bEnableFF,
+                fXDot   := fXDotRef,
+                fPa     := G_OPC.fPaFiltered,
+                fPb     := G_OPC.fPbFiltered,
+                fPs     := G_OPC.fPsFiltered,
+                fA      := G_Parameter.fAreaUp,
+                fAr     := G_Parameter.fAreaDown,
+                fU_FF   => G_OPC.fFF
+            );
+    END_CASE
+	
+ // Position feedback
+    fbPosFB(
+        bEnable    := G_Enables.bEnablePositionFeedback,
+        fXRef      := fXRef,
+        fXActual   := G_OPC.fPistonPosition,
+        fKp        := G_Parameter.Kp,
+        fKi        := G_Parameter.Ki,
+        fKd        := G_Parameter.Kd,
+        fCycleTime := fCycleTime,
+        fU_PID     => G_OPC.fPID
+    );
+
+    G_OPC.fU := G_OPC.fFF + G_OPC.fPID;	// Valve command from FF and Position feedback
  
 ELSE
     fTime    := 0.0;

@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_KvFeedForward" Id="{0481b253-c5ae-423c-9bd3-30b2fe072313}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_KvFeedForward
+
+// BOOL:  True / False
+// LREAL: Long real decimal number
+ 
+// Input variables
+VAR_INPUT
+    bEnable         : BOOL;         // Enable signal for KvFF
+    fXDot           : LREAL;        // Velocity reference [m/s]
+    fPa             : LREAL;        // Pressure piston side [bar]
+    fPb             : LREAL;        // Pressure rod side [bar]
+    fPs             : LREAL;        // Supply pressure [bar]
+    fA              : LREAL;        // Piston area [m^2]
+    fAr             : LREAL;        // Rod side area [m^2]
+END_VAR
+ 
+// Output variables
+VAR_OUTPUT
+    fU_FF           : LREAL;        // Feed-forward valve command [-1, 1]
+    fKv             : LREAL;        // Calculated Kv [L/min / bar^0.5]
+    fFlow           : LREAL;        // Required flow [L/min]
+    fdP             : LREAL;        // Active pressure drop [bar]
+END_VAR
+ 
+// Variables
+VAR
+    fSpoolPos       : LREAL;        // Spool position from polynomial [-1, 1]
+    fKv_min         : LREAL := 0.1; // Minimum Kv for polynomial validity
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Feed forward based on calculated Kv with polynomial spool compensation.
+
+IF NOT bEnable THEN
+    fU_FF    := 0.0;
+    fKv      := 0.0;
+    fFlow    := 0.0;
+    fdP      := 0.0;
+ 
+ELSIF fXDot > 0.0 THEN                                         	// Cylinder moving up
+    fFlow   := fXDot * fA * 60000.0;                           	// Required flow [L/min]
+    fdP     := fPs - fPa;                                      	// Pressure drop [bar]
+ 
+    IF fdP <= 0.0 THEN                                         	// Avoiding division by zero
+        fKv := 4.0;
+    ELSE
+        fKv := ABS(fFlow) / SQRT(fdP);                         	// Calculates Kv [L/min / bar^0.5]
+    END_IF
+ 
+    IF fKv >= fKv_min THEN									 	// Upwards motion spool polynomial
+        fSpoolPos :=  -0.00038291 * EXPT(fKv, 6)
+                      -0.0083821  * EXPT(fKv, 5)
+                      +0.11362    * EXPT(fKv, 4)
+                      -0.44825    * EXPT(fKv, 3)
+                      +0.64863    * EXPT(fKv, 2)
+                      +0.019414   * fKv
+                      +0.25505;
+    ELSE
+		fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
+    END_IF
+    fU_FF := LIMIT(-1.0, -fSpoolPos, 1.0);                     	
+ 
+ELSIF fXDot < 0.0 THEN                                          // Cylinder going down
+    fFlow   := fXDot * fAr * 60000.0;                          	// Required flow [L/min]
+    fdP     := fPs - fPb;                                       // Pressure drop [bar]
+ 
+    IF fdP <= 0.0 THEN                                          // Avoiding division by zero
+        fKv := 4.0;
+    ELSE
+        fKv := ABS(fFlow) / SQRT(fdP);                         	// Calculates Kv [L/min / bar^0.5]
+    END_IF
+ 
+    IF fKv >= fKv_min THEN										// Downwards motion spool polynomial
+        fSpoolPos :=  0.001656  * EXPT(fKv, 6)
+                      -0.026792 * EXPT(fKv, 5)
+                      +0.16458  * EXPT(fKv, 4)
+                      -0.46999  * EXPT(fKv, 3)
+                      +0.56415  * EXPT(fKv, 2)
+                      +0.08632  * fKv
+                      +0.22422;
+    ELSE
+		fSpoolPos := 0.215 + 0.230397 * fKv;   					// Linear from deadband to polynomial
+    END_IF
+    fU_FF := LIMIT(-1.0, fSpoolPos, 1.0);                      	
+ 
+ELSE
+    fU_FF    := 0.0;
+    fKv      := 0.0;
+    fFlow    := 0.0;
+    fdP      := 0.0;
+ 
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
