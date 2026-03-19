@@ -7,7 +7,7 @@
 
 // Input variables
 VAR_INPUT
-	bEnable : BOOL; 		// Start signal on controller
+	bEnable : BOOL; 		// Enable signal 
 	fCurrentPos : LREAL; 	// Piston position [m]
 END_VAR
 

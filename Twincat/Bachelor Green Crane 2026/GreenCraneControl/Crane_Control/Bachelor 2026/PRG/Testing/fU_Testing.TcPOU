@@ -2,36 +2,35 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="fU_Testing" Id="{a2a695bb-a141-4af0-97b4-2d34bb7d91d9}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM fU_Testing
+// BOOL:  True/False
+// LREAL: Long real decimal number
+
 VAR
-    fU_TestValue      : LREAL := 0.0; 
-    bEnableTesting    : BOOL  := FALSE;
+    fU_TestValue      : LREAL := 0.0; 		// Test value to change [-1,1]
+    bEnableTesting    : BOOL  := FALSE;		// Enable this for testing
     
-    // Grenseverdier for sikkerhet
-    fLimitDown        : LREAL := 0.10; // Stopper her på vei ned
-    fLimitUp          : LREAL := 0.45; // Stopper her på vei opp
+    fLimitDown        : LREAL := 0.10; 
+    fLimitUp          : LREAL := 0.45; 
     
-    bHitLimit         : BOOL;          // Indikator hvis grensen er nådd
+    bHitLimit         : BOOL;          		// Indicates when limit is hit
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF bEnableTesting THEN
-    // 1. Begrens inngangsverdien mellom -1 og 1
-    fU_TestValue := LIMIT(-1.0, fU_TestValue, 1.0);
+    fU_TestValue := LIMIT(-1.0, fU_TestValue, 1.0);		// Safety limit
 
-    // 2. Sjekk retning mot posisjon fra G_OPC
-    // Positiv fU_TestValue (> 0) betyr NED/UT
-    // Negativ fU_TestValue (< 0) betyr OPP/INN
+	// Limit check based on motion
     IF (fU_TestValue > 0 AND G_OPC.fPistonPosition <= fLimitDown) OR 
        (fU_TestValue < 0 AND G_OPC.fPistonPosition >= fLimitUp) THEN
         
-        G_OPC.fU := 0.0;  // Stopp signalet til ventilen
+        G_OPC.fU := 0.0;  
         bHitLimit := TRUE;
     ELSE
-        G_OPC.fU := fU_TestValue; // Kjør manuelt
+        G_OPC.fU := fU_TestValue; 
         bHitLimit := FALSE;
     END_IF
     
 ELSE
-    // Sikkerhet: Hvis manuell test ikke er på, skal fU alltid være 0
+    // Safety 
     G_OPC.fU := 0.0;
     bHitLimit := FALSE;
 END_IF]]></ST>

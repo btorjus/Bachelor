@@ -2,43 +2,38 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="RampfUTest" Id="{27f9a70c-3f92-47a4-b845-4f79a0edad15}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM RampfUTest
+// BOOL:  True/False
+// LREAL: Long real decimal number
+// TIME:  Time duration
+// TON:   Timer On-delay function block
 
 VAR
-    // Innstillinger
-    fTargetSpeed      : LREAL := -1.0;	// Endre denne for opp/ned kjøring (-1: oppover)
+    fTargetSpeed      : LREAL := 0;		// Speed up/down to change [-1,1]
     tRampTime         : TIME := T#5S;      
     fTotalTimeSec     : LREAL := 5.0;      
     
-    // Timer og Kontroll
-    fbRampTimer       : TON;               
+    fbRampTimer       : TON;       		// Timer        
     fCurrentTimeSec   : LREAL;             
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// 1. KJØR TIMER PÅ STARTKNAPP
-// Timeren starter på 0ms hver gang bStartButton går fra FALSE til TRUE.
-// Den resetter seg til 0ms hver gang du slipper knappen.
+      <ST><![CDATA[
+// Timer starts when start button is held, resets when unpressed.
 fbRampTimer(IN := G_Inputs.bStartButton, PT := tRampTime);
 
-// 2. RAMPELOGIKK
 IF G_Inputs.bStartButton THEN
-    // Konverterer ET (Elapsed Time) til sekunder
-    fCurrentTimeSec := TIME_TO_LREAL(fbRampTimer.ET) / 1000.0;
+    fCurrentTimeSec := TIME_TO_LREAL(fbRampTimer.ET) / 1000.0;			// Converts elapsed time to seconds
     
-    // Lineær beregning: (Tid / 5.0) * -1.0
-    G_OPC.fU := (fCurrentTimeSec / fTotalTimeSec) * fTargetSpeed;
+    G_OPC.fU := (fCurrentTimeSec / fTotalTimeSec) * fTargetSpeed;		// Linear calculation
     
-    // Sikkerhet: Stopper på -1.0 selv om du holder lenger enn 5 sek
-    IF G_OPC.fU < -1.0 THEN
+    IF G_OPC.fU < -1.0 THEN		
         G_OPC.fU := -1.0;
     END_IF
 ELSE
-    // Når knappen slippes, tvinges utgangen til 0 umiddelbart
     G_OPC.fU := 0;
     fCurrentTimeSec := 0;
 END_IF
 
-// 3. DIREKTE UT (Ingen PF, Ingen Deadband)
-G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);		// No deadband compensation, no PF (for testing fU)]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

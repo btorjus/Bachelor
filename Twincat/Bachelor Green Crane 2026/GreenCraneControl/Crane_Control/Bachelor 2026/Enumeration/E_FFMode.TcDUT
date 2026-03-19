@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_FFMode" Id="{b863c1e8-012e-42a0-b36f-00427d6c0534}">
+    <Declaration><![CDATA[TYPE E_FFMode :
+(
+    FF    := 0,    // Standard FF
+    KvFF  := 1     // Kv-based FF with polynomial for spool
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

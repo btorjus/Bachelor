@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_SineWave" Id="{0d8dbe2f-c428-4c3a-9aaf-fe8a8124e3c3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_SineWave
+
+VAR
+    // Sine trajectory
+    fTime           : LREAL;                    // Elapsed time [s]
+    fCycleTime      : LREAL := 0.001;           // PLC cycle time [s]
+    fXRef           : LREAL;                    // Position reference [m]
+    fXDotRef        : LREAL;                    // Velocity reference [m/s]
+ 
+    // Feed-forward
+    fbFF            : FB_FeedForward_;          // FB for feed-forward
+	fbKvFF 			: FB_KvFeedForward;  		// FB for Kv-based feed-forward
+	
+	// Position feedback
+	fbPosFB : FB_PositionFeedback;
+ 
+    // Start delay
+    fbStartDelay    : TON;
+ 
+    // PF damping
+    fbDamping       : FB_PF_GradientFiltered;
+    ePFMode         : E_PressureFeedback := E_PressureFeedback.PF_ON;
+    fSelectedPressure : LREAL;
+    fDampingGain    : LREAL := 0.005;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#2S);		// 2s safety delay
+ 
+IF fbStartDelay.Q THEN
+    fTime := fTime + fCycleTime;
+ 
+    // Sine position reference: x(t) = Mean + A * sin(2*pi*f*t)
+    fXRef    := G_Parameter.fMean + G_Parameter.fAmplitude * SIN(2.0 * 3.14159265 * G_Parameter.fFrequency * fTime);
+ 
+    // Velocity reference: x_dot(t) = A * 2*pi*f * cos(2*pi*f*t)
+    fXDotRef := G_Parameter.fAmplitude * 2.0 * 3.14159265 * G_Parameter.fFrequency * COS(2.0 * 3.14159265 * G_Parameter.fFrequency * fTime);
+ 
+    G_OPC.fXRef    := fXRef;
+    G_OPC.fXDotRef := fXDotRef;
+ 
+ // Feed Forward selection
+ CASE G_Enables.eFFMode OF 
+ E_FFMode.FF:  
+			fbFF(
+    			bEnable   := G_Enables.bEnableFF,
+   	 			fXDot     := fXDotRef,
+    			fPa       := G_OPC.fPaFiltered,
+    			fPb       := G_OPC.fPbFiltered,
+    			fPs       := G_OPC.fPsFiltered,
+    			fA        := G_Parameter.fAreaUp,
+    			fAr       := G_Parameter.fAreaDown,
+    			fQ0Up     := G_Parameter.fQMaxUp,
+    			fQ0Down   := G_Parameter.fQMaxDown,
+    			fDp0      := G_Parameter.fDeltaP0,
+    			fDeadUp   := G_Parameter.fDeadUp,
+    			fDeadDown := G_Parameter.fDeadDown,
+    			fU_FF     => G_OPC.fFF
+			);
+
+ E_FFMode.KvFF:                              
+            fbKvFF(
+                bEnable := G_Enables.bEnableFF,
+                fXDot   := fXDotRef,
+                fPa     := G_OPC.fPaFiltered,
+                fPb     := G_OPC.fPbFiltered,
+                fPs     := G_OPC.fPsFiltered,
+                fA      := G_Parameter.fAreaUp,
+                fAr     := G_Parameter.fAreaDown,
+                fU_FF   => G_OPC.fFF
+            );
+    END_CASE
+	
+ // Position feedback
+    fbPosFB(
+        bEnable    := G_Enables.bEnablePositionFeedback,
+        fXRef      := fXRef,
+        fXActual   := G_OPC.fPistonPosition,
+        fKp        := G_Parameter.Kp,
+        fKi        := G_Parameter.Ki,
+        fKd        := G_Parameter.Kd,
+        fCycleTime := fCycleTime,
+        fU_PID     => G_OPC.fPID
+    );
+
+    G_OPC.fU := G_OPC.fFF + G_OPC.fPID;	// Valve command from FF and Position feedback
+ 
+ELSE
+    fTime    := 0.0;
+    G_OPC.fU := 0.0;
+END_IF
+ 
+// Selects pressure based on direction (Pb: Up, Pa: Down)
+IF G_OPC.fU > 0 THEN
+    fSelectedPressure := G_OPC.fPb;
+ELSIF G_OPC.fU < 0 THEN
+    fSelectedPressure := G_OPC.fPa;
+ELSE
+    fSelectedPressure := 0.0;
+END_IF
+ 
+// FB for Pressure Feedback
+fbDamping(
+    bEnable           := (ePFMode = E_PressureFeedback.PF_ON),
+    fJoystick         := G_OPC.fU,
+    fSelectedPressure := fSelectedPressure,
+    fDampingGain      := fDampingGain,
+    fU_Out            => G_OPC.fU
+);
+ 
+// Valve deadband compensation
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+ 
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);   // Safety limit]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -2,6 +2,8 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="FB_PF_GradientFiltered" Id="{3b0d8671-4fe9-4e52-80cb-49f7ba1699ed}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_PF_GradientFiltered
+// BOOL:  True/False
+// LREAL: Long real decimal number
 
 VAR_INPUT
     bEnable           : BOOL;           	// Enable signal for PF
@@ -17,7 +19,7 @@ END_VAR
 VAR
     fbGradFilter  : FB_Filter;      		// FB for lowpass filter
     fPxOld        : LREAL;          		// Pressure last PLC cycle
-    fDt           : LREAL := 0.001;  		// PLS cycle time (1ms)
+    fDt           : LREAL := 0.001;  		// PLS cycle (1ms)
     fRawGradient  : LREAL;          		// Unfiltered gradient
     fFilteredGrad : LREAL;          		// Filtered gradient
 	bFirstCycle       : BOOL := TRUE;		// Start-up check to avoid initial gradient spike
@@ -45,11 +47,6 @@ fbGradFilter(
     fSignal_Filtered => fFilteredGrad
 );
 
-// IF bEnable THEN
-//     fU_Out := fJoystick - (ABS(fFilteredGrad) * fDampingGain);     // Subtracts filtered pressure change from joystick to dampen oscillations
-// ELSE
-//     fU_Out := fJoystick;
-// END_IF;
 
 IF bEnable THEN
     IF ABS(fJoystick) < 0.05 THEN 		// Joystick deadband 5%

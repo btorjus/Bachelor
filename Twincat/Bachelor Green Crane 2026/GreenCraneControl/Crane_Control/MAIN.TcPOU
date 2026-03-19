@@ -14,18 +14,19 @@ PRG_Timer();
 
 IF G_Mode.bManual THEN		// Manual mode
 	PRG_ManualMode();
-ELSIF G_Mode.bAuto THEN		// Auto mode
-	//PRG_AutoRamp();
-	//RampfUTest();
-	fU_Testing();
+ELSIF G_Mode.bAuto THEN		// Auto modes
+    CASE G_Enables.eMotionTrajectory OF
+        E_MotionTrajectory.Ramp: PRG_AutoRamp();
+        E_MotionTrajectory.Sine: PRG_SineWave();
+		E_MotionTrajectory.fUTest: fU_Testing();
+    END_CASE
     
 ELSE
     G_OPC.fU := 0.0;		// Safety
 END_IF
 
 PRG_Output();
-// PID - NOT created
-// FeedForward - not created	
+	
 
 
 	

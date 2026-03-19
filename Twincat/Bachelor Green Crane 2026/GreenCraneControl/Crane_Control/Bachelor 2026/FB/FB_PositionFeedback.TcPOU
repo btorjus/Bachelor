@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PositionFeedback" Id="{d1cfe364-fde7-4e02-ba7f-8a6d953c1c43}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PositionFeedback
+// BOOL:  True/False
+// LREAL: Long real decimal number
+ 
+// Input variables
+VAR_INPUT
+    bEnable         : BOOL;         
+    fXRef           : LREAL;        // Position reference [m]
+    fXActual        : LREAL;        // Actual piston position [m]
+    fKp             : LREAL;        // Proportional gain
+    fKi             : LREAL;        // Integral gain
+    fKd             : LREAL;        // Derivative gain
+    fCycleTime      : LREAL;        // PLC cycle time [s]
+END_VAR
+ 
+// Output variables
+VAR_OUTPUT
+    fU_PID          : LREAL;        // Correction signal [-1, 1]
+    fError          : LREAL;        // Position error [m]
+END_VAR
+ 
+// Variables
+VAR
+    fErrorPrev      : LREAL;        // Error previous cycle 
+    fErrorSum       : LREAL;        // Accumulated error for integration 
+    fTempP          : LREAL;        // Proportional term
+    fTempI          : LREAL;        // Integral term
+    fTempD          : LREAL;        // Derivative term
+    fTempOut        : LREAL;        // Temporary output
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bEnable THEN
+    fU_PID   := 0.0;
+    fError   := 0.0;
+    fErrorSum := 0.0;
+    fErrorPrev := 0.0;
+ 
+ELSE
+    fError := fXRef - fXActual;							// Calculated position error
+    fErrorSum := fErrorSum + fError * fCycleTime;		// Integral (accumulated error)
+ 
+    // PID terms
+    fTempP := fKp * fError;
+    fTempI := fKi * fErrorSum;
+    fTempD := fKd * (fError - fErrorPrev) / fCycleTime;
+ 
+    fErrorPrev := fError;								// Error for next cycle
+    fTempOut := -(fTempP + fTempI + fTempD);
+ 
+    fU_PID := LIMIT(-1.0, fTempOut, 1.0);				// Safety limit
+ 
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

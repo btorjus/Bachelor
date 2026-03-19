@@ -5,6 +5,8 @@
 VAR_GLOBAL CONSTANT
 	SS_INITIALIZE: SINT := 0; 	// Initial system state value
 	SS_STEP: SINT := 1;			// Step sequence state value
-END_VAR]]></Declaration>
+END_VAR
+
+// SS: State Space]]></Declaration>
   </GVL>
 </TcPlcObject>

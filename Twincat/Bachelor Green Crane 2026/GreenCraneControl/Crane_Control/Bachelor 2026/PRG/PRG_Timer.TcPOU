@@ -2,6 +2,8 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PRG_Timer" Id="{9221d7e7-f8c8-4882-a322-8168f1bfcef8}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_Timer
+// BOOL: True/False
+// LREAL: Long Real decimal number
 
 VAR
     fTimer          	: LREAL;          	
