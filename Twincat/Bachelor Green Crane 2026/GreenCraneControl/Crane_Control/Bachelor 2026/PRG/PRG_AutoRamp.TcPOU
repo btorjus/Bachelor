@@ -26,8 +26,9 @@ VAR
     fSelectedPressure : LREAL;             
 
     ePFMode           : E_PressureFeedback := E_PressureFeedback.PF_ON; 
-    fbPF_Filtered     : FB_PF_GradientFiltered;    
-    fDampingGain      : LREAL := 0.005;    
+    fbPF_Filtered     : FB_PF_GradientFiltered;
+    fDampingGain      : LREAL := 0.005;
+	
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -60,11 +61,11 @@ ELSE
     G_OPC.fU := 0; fCurrentTimer := 0;
 END_IF
 
-// Select pressure for PF
+//Select pressure FOR PF
 fSelectedPressure := SEL(G_OPC.fU > 0, G_OPC.fPa, G_OPC.fPb);
 IF G_OPC.fU = 0 THEN fSelectedPressure := 0; END_IF
  
-// FB for PF
+//FB FOR PF
 fbPF_Filtered(
     bEnable := (ePFMode = E_PressureFeedback.PF_ON), 
     fJoystick := G_OPC.fU, 
@@ -72,7 +73,7 @@ fbPF_Filtered(
     fDampingGain := fDampingGain, 
     fU_Out => G_OPC.fU
 );
- 
+
 // Valve deadband
 IF G_OPC.fU > 0 THEN 
     G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;

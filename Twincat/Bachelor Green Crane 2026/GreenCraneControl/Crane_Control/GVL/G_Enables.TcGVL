@@ -7,15 +7,15 @@
 VAR_GLOBAL
 	
 	// Control Enables
-	bEnablePID 		: BOOL; 			// Enable PID Control
+	//bEnablePID 		: BOOL; 			// Enable PID Control
 	bEnableFF 		: BOOL; 			// Enable FeedForward	
-	bEnablePFB		: BOOL; 			// Enable Pressure Feedback
+	//bEnablePFB		: BOOL; 			// Enable Pressure Feedback
 	bEnableU 		: BOOL; 			// Enable Signal to Valve
 
-	bCharTesting	: BOOL; 			// Enable Characteristic testing
-	bMove2Home		: BOOL; 			// Enable Home-function
+	//bCharTesting	: BOOL; 			// Enable Characteristic testing
+	//bMove2Home		: BOOL; 			// Enable Home-function
 	
-	bEnableComp 	: BOOL; 			// Driving with Compensator
+	//bEnableComp 	: BOOL; 			// Driving with Compensator
 	bEnablePositionFeedback : BOOL;     // Enable position feedback
 	
 	// Enumerators

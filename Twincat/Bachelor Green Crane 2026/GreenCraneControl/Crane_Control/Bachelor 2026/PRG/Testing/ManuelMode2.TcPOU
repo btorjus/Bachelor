@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ManuelMode2" Id="{49f5f6a6-24e2-48c0-93b7-82305af70e63}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ManuelMode2
+// BOOL:  True/False
+// LREAL: Long real decimal number
+// TON:   Timer On-delay function block
+
+VAR
+    bReturning        : BOOL;                 					// True when returning home
+	ePFMode : E_PressureFeedback := E_PressureFeedback.PF_ON; 	// PF mode (starting ON)
+    
+    fSelectedPressure : LREAL;                					// Pa/Pb based on direction
+    fDistance         : LREAL;                					// Distance for breaking when returning home
+    
+    fbInitialPos      : FB_InitialPos;        					// FB for initial position
+    fbReturnTimer     : TON;                  					// Timer for home command
+    fbDamping         : FB_PF_Auto; 							// FB for PF
+    
+    fDampingGain      : LREAL := 0.005;       					// Damping gain for PF (fKf)
+    FilterTime        : LREAL := 0.01;        					// Filter time constant (fTauF)
+    fSpeed            : LREAL;                					// Speed for home return
+    fHomeTimer        : LREAL;                					// Timer for home return
+    fHomeRampTime     : LREAL := 4.0;         					// Timer to full speed when returning home
+    fHomeMaxSpeed     : LREAL := 0.5;        					// Max speed for home return
+    fCycleTime        : LREAL := 0.001;        					// Cycle time PLC 
+	fHomePos		  : LREAL := 0.01;							// Piston position at home
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Updates initial position when start button is pressed
+fbInitialPos(
+    bEnable := G_Inputs.bStartButton AND G_Mode.bRunning,
+    fCurrentPos := G_OPC.fPistonPosition
+);
+// Return home if start button is pushed for set seconds
+fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#0.5S);
+IF fbReturnTimer.Q THEN
+    bReturning := TRUE;
+END_IF
+// Cancel return-home if joystick is activated 
+IF ABS(G_OPC.fJoystick) > 0.1 THEN 
+    bReturning := FALSE;
+END_IF
+// Drive logic (Home/Manual)
+IF bReturning THEN
+    fHomeTimer := fHomeTimer + fCycleTime;  						// Updates timer for soft acceleration when returning home
+    
+    fDistance := ABS(G_OPC.fPistonPosition - fHomePos); 			// Calculates distance home
+    
+    IF G_OPC.fPistonPosition > fHomePos THEN 						// If cylinder is above home point
+        fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;   	// Calculates speed
+        fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 			// Calculates breaking
+        G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed); 			// Output for home-return
+    ELSE
+        G_OPC.fU := 0.0;
+        bReturning := FALSE;
+        fHomeTimer := 0.0; 
+    END_IF
+ELSE
+    fHomeTimer := 0.0;
+    IF G_Mode.bManual AND G_Mode.bRunning THEN 						// Manual mode
+        G_OPC.fU := -G_OPC.fJoystick;
+    ELSE
+        G_OPC.fU := 0.0; 
+    END_IF
+END_IF
+// Selects pressure based on direction (Pb:Up, Pa:Down) - beholdes for fSelectedPressure selv om FB_PF_Auto ikke bruker den
+IF G_OPC.fU > 0 THEN
+    fSelectedPressure := G_OPC.fPb;
+ELSIF G_OPC.fU < 0 THEN
+    fSelectedPressure := G_OPC.fPa;
+ELSE
+    fSelectedPressure := 0.0;
+END_IF
+// Uses FB for PF (only active during return to home)
+fbDamping(
+    bEnable := (ePFMode = E_PressureFeedback.PF_ON) AND bReturning,
+    fU_In   := G_OPC.fU,
+    fKf     := fDampingGain,
+    fTauF   := FilterTime,
+    fU_Out  => G_OPC.fU
+);
+// Valve deadband compensation
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0); 	// Safety limit]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

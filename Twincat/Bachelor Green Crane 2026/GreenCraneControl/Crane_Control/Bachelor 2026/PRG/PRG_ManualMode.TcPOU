@@ -22,9 +22,9 @@ VAR
 
     fSpeed            : LREAL;                					// Speed for home return
     fHomeTimer        : LREAL;                					// Timer for home return
-    fHomeRampTime     : LREAL := 2.0;         					// Timer to full speed when returning home
+    fHomeRampTime     : LREAL := 5.0;         					// Timer to full speed when returning home
     fHomeMaxSpeed     : LREAL := 0.5;        					// Max speed for home return
-    fCycleTime        : LREAL := 0.001;        					// Cycle time PLC (endret fra 0.01)
+    fCycleTime        : LREAL := 0.001;        					// Cycle time PLC 
 	fHomePos		  : LREAL := 0.01;							// Piston position at home
 END_VAR]]></Declaration>
     <Implementation>
