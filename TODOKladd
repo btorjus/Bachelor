@@ -187,10 +187,39 @@ må lage friksjonsberegnerings
 
 
 
-///////////////////////////////dødband //////////////////
+/////////////////////////////// dødband //////////////////
 
 finner u0 som er start og updown data så kan vi lage kurve og lage polynom for ventil 
 
 
 
 hydraulic theory mapping så simulering
+
+//////////////// Overleaf 130326 //////////////
+
+Hele chapter fem er ganske cooked, må lese over og skrive om, det er alt for likt tidligere bachleor. 5.3 er bare claude som har skrevet, en del er nok feil og jeg
+ga ikke nok info, trenger forklaring av blokker, og litt oppsett mange flere figurer. 5.4 er ganske bra. Trenger bedre plot og utdype mer. 5.2 har en grei struktur 
+men er veldig likt, må få inn figurer for de er dritt. 5.1 er egentlig ikke noe på, vet ikke om ligninerne er riktige. Kan skrive ganske mye om databehandlingen av 
+og utregnigen av opp ned testene vi kjørte for å lage polynom av ventilen.
+
+/// Til møte 1803 ////////
+
+Videre, har ikke modelerert directional controll valve og lagt en modell som ikke er naiv
+-- lag matlab block for å holde p-a og b-t åpen sammen. koble b og a samme med en strupning. matlab block med fire styresignal. Regner fra der dødband starter. Tune sånn den passer til måling.
+
+Har ikke funnet ut noe om CBV, kan vi finne crack og delta open, hva slags ligning kan brukes i matlab for å styre u_CBV (ventet?) ta bilde av den.
+ta med ligning. må ha saturation slik at vi har u mellom 0 og 1, og transfer så ikek den stiller seg til den verdi uendlig rask. 
+crack er når den begynner å åpne seg, alle trykk hvis den er unvented pb ikke så viktig hvis vented.
+
+Struktur på rapport, tenkte på modelerings delen, siden vi har mapping før så trenger vi kanskje ikke så mye her, tenkte CBV mapping osv
+
+Hvor skal vi sette dødband, minste verdi vi finner eller bruke signal som alltid gir bevegelse? hva er dødband i start og stopp posisjon. skriv om det
+
+Riktig tegning av hydraulisk krets CBV
+
+
+
+Hva jeg skal gjøre,.... finn hva slags lastholdeventil.
+
+
+friksjon. cbv. dcv og michael må se over mapping av valve.

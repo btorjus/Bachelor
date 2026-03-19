@@ -375,10 +375,20 @@ print(hfig, 'kv_spool_scatter', '-dpdf', '-vector', '-fillpage')
 
 
 
-% må ha polynom for u ikke kv
+%%  SCATTER: u vs Kv (and polynomial curve) ──────────────────────────────────
+% NOTE: This plot is the one where x = Kv*factor and y = spool.
+% We'll add u(Kv) curves computed from your 6th order polynomials.
 
-%%  SCATTER: Kv vs instantaneous spool position
+% 6th order polynomial coefficients for u(Kv) at 120 bar
+% y = u = p1*x^6 + p2*x^5 + p3*x^4 + p4*x^3 + p5*x^2 + p6*x + p7
+% x = Kv [L/min/bar^0.5]
+pUp_u_of_Kv_120   = [-0.00038291, -0.0083821,  0.11362, -0.44825, 0.64863, 0.019414, 0.25505];
+pDown_u_of_Kv_120 = [ 0.001656,   -0.026792,   0.16458, -0.46999, 0.56415, 0.08632,  0.22422];
 
+% (optional) line styling: you said you'll choose color; default here
+C_fit = C_black;
+
+% --- Collect data once (avoid duplicating the collection loop) -------------
 upSpool_all   = []; upKvFlow_all   = []; upKvPiston_all   = [];
 downSpool_all = []; downKvFlow_all = []; downKvPiston_all = [];
 
@@ -386,42 +396,74 @@ for i = 1:numel(allRuns)
     if allRuns(i).pressure ~= targetPressure; continue; end
 
     if strcmp(allRuns(i).direction, 'Up')
-        upSpool_all    = [upSpool_all;    allRuns(i).spool];             %#ok<AGROW>
-        upKvFlow_all   = [upKvFlow_all;   allRuns(i).Kv_flow];           %#ok<AGROW>
+        upSpool_all    = [upSpool_all;    allRuns(i).spool];      %#ok<AGROW>
+        upKvFlow_all   = [upKvFlow_all;   allRuns(i).Kv_flow];    %#ok<AGROW>
         upKvPiston_all = [upKvPiston_all; allRuns(i).Kv_piston];  %#ok<AGROW>
     else
-        downSpool_all    = [downSpool_all;    allRuns(i).spool];              %#ok<AGROW>
-        downKvFlow_all   = [downKvFlow_all;   allRuns(i).Kv_flow];            %#ok<AGROW>
-        downKvPiston_all = [downKvPiston_all; allRuns(i).Kv_piston];   %#ok<AGROW>
+        downSpool_all    = [downSpool_all;    allRuns(i).spool];      %#ok<AGROW>
+        downKvFlow_all   = [downKvFlow_all;   allRuns(i).Kv_flow];    %#ok<AGROW>
+        downKvPiston_all = [downKvPiston_all; allRuns(i).Kv_piston];  %#ok<AGROW>
     end
 end
 
+% --- Build fit x-vectors in the SAME units as the polynomial expects --------
+% Your polynomial uses x = Kv [L/min/bar^0.5] (same as Kv*factor in the plot).
+KvFlowUp_plot   = upKvFlow_all   * factor;
+KvPistonUp_plot = upKvPiston_all * factor;
+KvFlowDn_plot   = downKvFlow_all   * factor;
+KvPistonDn_plot = downKvPiston_all * factor;
 
+% Use robust finite bounds to avoid NaN/Inf and a few extreme outliers
+% (these can happen when dP is small even after masking)
+KvUp_all = [KvFlowUp_plot; KvPistonUp_plot];
+KvDn_all = [KvFlowDn_plot; KvPistonDn_plot];
+KvUp_all = KvUp_all(isfinite(KvUp_all));
+KvDn_all = KvDn_all(isfinite(KvDn_all));
+
+% If you have the Statistics toolbox: prctile is available. If not, replace
+% with min/max of finite values.
+KvUp_lo = prctile(KvUp_all, 1);
+KvUp_hi = prctile(KvUp_all, 99);
+KvDn_lo = prctile(KvDn_all, 1);
+KvDn_hi = prctile(KvDn_all, 99);
+
+xFitKvUp = linspace(KvUp_lo, KvUp_hi, 400);
+xFitKvDn = linspace(KvDn_lo, KvDn_hi, 400);
+
+uFitUp   = polyval(pUp_u_of_Kv_120,   xFitKvUp);
+uFitDown = polyval(pDown_u_of_Kv_120, xFitKvDn);
+
+% --- Plot ---------------------------------------------------------------
 picturewidth = 20;
 hw_ratio     = 0.65;
 
 hfig = figure;
 
 subplot(2,1,1);
-scatter(upKvFlow_all   * factor, upSpool_all, 3, C_blue,   'filled', 'DisplayName', '$K_v$ flow sensor');
+scatter(KvFlowUp_plot,   upSpool_all, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow sensor');
 hold on
-scatter(upKvPiston_all * factor, upSpool_all, 3, C_red, 'filled', 'DisplayName', '$K_v$ piston ');
+scatter(KvPistonUp_plot, upSpool_all, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
+plot(xFitKvUp, uFitUp, '-', 'Color', C_fit, 'LineWidth', 1.6, 'DisplayName', 'Polynomial fit');
 hold off
-ylabel('Spool position (--)')
+ylabel('Spool position $u$ (--)')
 xlabel('$K_v$ (L/min/bar$^{0.5}$)')
 title(sprintf('Port A (Up) $-$ %d bar', targetPressure))
 legend('Location', 'northwest');
+grid on
 
 subplot(2,1,2);
-scatter(downKvFlow_all   * factor, downSpool_all, 3, C_blue,   'filled', 'DisplayName', '$K_v$ flow sensor');
+scatter(KvFlowDn_plot,   downSpool_all, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow sensor');
 hold on
-scatter(downKvPiston_all * factor, downSpool_all, 3, C_red, 'filled', 'DisplayName', '$K_v$ piston');
+scatter(KvPistonDn_plot, downSpool_all, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
+plot(xFitKvDn, uFitDown, '-', 'Color', C_fit, 'LineWidth', 1.6, 'DisplayName', 'Polynomial fit');
 hold off
-ylabel('Spool position (--)')
+ylabel('Spool position $u$ (--)')
 xlabel('$K_v$ (L/min/bar$^{0.5}$)')
 title(sprintf('Port B (Down) $-$ %d bar', targetPressure))
 legend('Location', 'northwest');
+grid on
 
+% --- Apply your export/format template ----------------------------------
 set(findall(hfig, '-property', 'FontSize'),             'FontSize',             11)
 set(findall(hfig, '-property', 'Box'),                  'Box',                  'off')
 set(findall(hfig, '-property', 'Interpreter'),          'Interpreter',          'latex')
