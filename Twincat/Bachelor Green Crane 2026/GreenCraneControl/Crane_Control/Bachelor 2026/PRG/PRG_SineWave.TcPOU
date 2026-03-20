@@ -93,7 +93,7 @@ ELSE
     G_OPC.fU := 0.0;
 END_IF
 
-// Pressure feedback damping (trykkvalg håndteres inne i FB)
+// Pressure feedback damping
 fbDamping(
     bEnable := (ePFMode = E_PressureFeedback.PF_ON),
     fU_In   := G_OPC.fU,
@@ -102,7 +102,7 @@ fbDamping(
     fU_Out  => G_OPC.fU
 );
  
-G_OPC.fU := G_OPC.fU; // Deadband compensated for in the FF
+G_OPC.fU := G_OPC.fU; // Deadband is compensated for in the FF 
  
 G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);    // Safety limit]]></ST>
     </Implementation>
