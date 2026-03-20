@@ -14,7 +14,7 @@ PRG_Timer();
 
 IF G_Mode.bManual THEN		// Manual mode
 	PRG_ManualMode();
-	//ManuelMode2();
+	//ManuelMode3();
 ELSIF G_Mode.bAuto THEN		// Auto modes
     CASE G_Enables.eMotionTrajectory OF
         E_MotionTrajectory.Ramp: PRG_AutoRamp();

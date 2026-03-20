@@ -95,9 +95,6 @@
     <Compile Include="Bachelor 2026\PRG\Testing\fU_Testing.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\PRG\Testing\ManuelMode2.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Bachelor 2026\PRG\Testing\RampfUTest.TcPOU">
       <SubType>Code</SubType>
     </Compile>

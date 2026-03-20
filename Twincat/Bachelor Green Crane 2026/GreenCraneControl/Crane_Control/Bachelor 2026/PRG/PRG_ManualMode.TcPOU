@@ -23,7 +23,7 @@ VAR
     fSpeed            : LREAL;                					// Speed for home return
     fHomeTimer        : LREAL;                					// Timer for home return
     fHomeRampTime     : LREAL := 5.0;         					// Timer to full speed when returning home
-    fHomeMaxSpeed     : LREAL := 0.5;        					// Max speed for home return
+    fHomeMaxSpeed     : LREAL := 0.35;        					// Max speed for home return
     fCycleTime        : LREAL := 0.001;        					// Cycle time PLC 
 	fHomePos		  : LREAL := 0.01;							// Piston position at home
 END_VAR]]></Declaration>
@@ -44,6 +44,7 @@ END_IF
 // Cancel return-home if joystick is activated 
 IF ABS(G_OPC.fJoystick) > 0.1 THEN 
     bReturning := FALSE;
+	fHomeTimer := 0.0;
 END_IF
 
 
@@ -55,7 +56,7 @@ IF bReturning THEN
     
     IF G_OPC.fPistonPosition > fHomePos THEN 						// If cylinder is above home point
         fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;   	// Calculates speed
-        fSpeed := LIMIT(0.12, fDistance * 2.0, fSpeed); 			// Calculates breaking
+        fSpeed := LIMIT(0.01, fDistance * 2.0, fSpeed); 			// Calculates breaking
         G_OPC.fU := LIMIT(0.0, fSpeed, fHomeMaxSpeed); 				// Output for home-return
     ELSE
         G_OPC.fU := 0.0;
