@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_fUTesting" Id="{6a37a795-f0b1-46bf-a3fc-f5f0b0a4f992}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_fUTesting
+
+// BOOL:  True/False
+// LREAL: Long real decimal number
+
+VAR
+    fU_TestValue      : LREAL := 0.0; 		// Test value to change [-1,1]
+    bEnableTesting    : BOOL  := FALSE;		// Enable this for testing
+    
+    fLimitDown        : LREAL := 0.10; 
+    fLimitUp          : LREAL := 0.45; 
+    
+    bHitLimit         : BOOL;          		// Indicates when limit is hit
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bEnableTesting THEN
+    fU_TestValue := LIMIT(-1.0, fU_TestValue, 1.0);		// Safety limit
+
+	// Limit check based on motion
+    IF (fU_TestValue > 0 AND G_OPC.fPistonPosition <= fLimitDown) OR 
+       (fU_TestValue < 0 AND G_OPC.fPistonPosition >= fLimitUp) THEN
+        
+        G_OPC.fU := 0.0;  
+        bHitLimit := TRUE;
+    ELSE
+        G_OPC.fU := fU_TestValue; 
+        bHitLimit := FALSE;
+    END_IF
+    
+ELSE
+    // Safety 
+    G_OPC.fU := 0.0;
+    bHitLimit := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

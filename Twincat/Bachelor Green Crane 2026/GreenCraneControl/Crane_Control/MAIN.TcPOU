@@ -14,12 +14,11 @@ PRG_Timer();
 
 IF G_Mode.bManual THEN		// Manual mode
 	PRG_ManualMode();
-	//ManuelMode3();
 ELSIF G_Mode.bAuto THEN		// Auto modes
     CASE G_Enables.eMotionTrajectory OF
         E_MotionTrajectory.Ramp: PRG_AutoRamp();
         E_MotionTrajectory.Sine: PRG_SineWave();
-		E_MotionTrajectory.fUTest: fU_Testing();
+		E_MotionTrajectory.fUTest: PRG_fUTesting();
     END_CASE
     
 ELSE

@@ -74,6 +74,9 @@
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_fUTesting.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ManualMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
