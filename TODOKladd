@@ -231,3 +231,55 @@ Mener p_cr = 236bar til 246bar
 ////////møte 2503 ///////////
 
 michael snakket om hvordan volum og pilot forhold er det store problemet i ringsiden
+
+////// DCV /////
+Må få michael til å dobbelt sjekke 
+%% DCV Orifice Area Vectors
+
+% Deadband control signal thresholds
+u_dead_up    = 0.236;
+u_dead_down  = 0.206;
+u_poly_start = 0.25; % Control signal where polynomial becomes valid
+
+% Corresponding spool positions (linear mapping from control signal)
+spool_dead_up         = 1.1182 * u_dead_up    - 0.0325;
+spool_dead_down       = 1.1075 * u_dead_down  - 0.0416;
+spool_poly_start_up   = 1.1182 * u_poly_start - 0.0325;
+spool_poly_start_down = 1.1075 * u_poly_start - 0.0416;
+
+% Polynomial: spool position as function of Kv [L/min/sqrt(bar)]
+% Valid from u = 0.25 to max stroke
+p_spool_of_Kv_up   = [0.0018653, -0.033672,  0.22033, -0.65618,  0.83411, -0.047269, 0.26252];
+p_spool_of_Kv_down = [0.00098272, -0.017507,  0.11599, -0.34851,  0.41222,  0.17643,  0.2076];
+
+% Linear model slopes (from TwinCAT): spool_pos = spool_dead + slope * Kv
+slope_Kv_up   = 0.270407;
+slope_Kv_down = 0.230397;
+
+% Kv at middle breakpoint (transition from linear to polynomial region)
+Kv_middle_up   = (spool_poly_start_up   - spool_dead_up)   / slope_Kv_up;
+Kv_middle_down = (spool_poly_start_down - spool_dead_down) / slope_Kv_down;
+
+% Evaluate polynomial over valid Kv range
+Kv_range   = linspace(0.09, 4, 10000);
+spool_up   = polyval(p_spool_of_Kv_up,   Kv_range);
+spool_down = polyval(p_spool_of_Kv_down, Kv_range);
+
+% Kv at max spool using index lookup
+[~, idx_max_up]   = max(spool_up);
+[~, idx_max_down] = max(spool_down);
+Kv_max_up   = Kv_range(idx_max_up);
+Kv_max_down = Kv_range(idx_max_down);
+
+% Unit conversion: L/min/sqrt(bar) -> m³/s/sqrt(Pa)
+Kv_unit_conv = sqrt(1e-5) / 6e4;
+
+% Convert Kv breakpoints to orifice area [m²]
+A_middle_up   = (Kv_middle_up   * Kv_unit_conv) / (Cd * sqrt(2/rho));
+A_middle_down = (Kv_middle_down * Kv_unit_conv) / (Cd * sqrt(2/rho));
+A_max_up      = (Kv_max_up      * Kv_unit_conv) / (Cd * sqrt(2/rho));
+A_max_down    = (Kv_max_down    * Kv_unit_conv) / (Cd * sqrt(2/rho));
+
+% Orifice area vectors [m²]: [leakage, crack-open, fully-open]
+orifice_area_up   = [1e-9, A_middle_up,   A_max_up];
+orifice_area_down = [1e-9, A_middle_down, A_max_down];

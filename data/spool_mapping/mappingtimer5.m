@@ -285,3 +285,4 @@ function v = prctileFinite(x, p)
     x = x(isfinite(x));
     if isempty(x), v = NaN; else, v = prctile(x, p); end
 end
+
