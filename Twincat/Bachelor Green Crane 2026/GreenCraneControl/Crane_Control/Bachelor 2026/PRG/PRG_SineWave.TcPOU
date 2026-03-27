@@ -2,7 +2,6 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PRG_SineWave" Id="{0d8dbe2f-c428-4c3a-9aaf-fe8a8124e3c3}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_SineWave
-
 VAR
     // Sine trajectory
     fTime           : LREAL;                    // Elapsed time [s]
@@ -12,25 +11,26 @@ VAR
  
     // Feed-forward
     fbFF            : FB_FeedForward_;          // FB for feed-forward
-	fbKvFF 			: FB_KvFeedForward;  		// FB for Kv-based feed-forward
+    fbKvFF          : FB_KvFeedForward;         // FB for Kv-based feed-forward
 	
-	// Position feedback
-	fbPosFB : FB_PositionFeedback;
+    // Position feedback
+    fbPosFB         : FB_PositionFeedback;
  
     // Start delay
     fbStartDelay    : TON;
  
     // PF damping
-    fbDamping       : FB_PF_GradientFiltered;
+    fbDamping       : FB_PF_Auto;
     ePFMode         : E_PressureFeedback := E_PressureFeedback.PF_ON;
-    fSelectedPressure : LREAL;
-    fDampingGain    : LREAL := 0.005;
+    fDampingGain    : LREAL := 0.0005;
+	FilterTime		: LREAL := 0.01;
+	       
 END_VAR
+
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#2S);		// 2s safety delay
- 
+      <ST><![CDATA[fbStartDelay(IN := G_Inputs.bStartButton AND G_Mode.bRunning AND G_Mode.bAuto, PT := T#2S);
+
 IF fbStartDelay.Q THEN
     fTime := fTime + fCycleTime;
  
@@ -43,29 +43,28 @@ IF fbStartDelay.Q THEN
     G_OPC.fXRef    := fXRef;
     G_OPC.fXDotRef := fXDotRef;
  
- // Feed Forward selection
- CASE G_Enables.eFFMode OF 
- E_FFMode.FF:  
-			fbFF(
-    			bEnable   := G_Enables.bEnableFF,
-   	 			fXDot     := fXDotRef,
-    			fPa       := G_OPC.fPaFiltered,
-    			fPb       := G_OPC.fPbFiltered,
-    			fPs       := G_OPC.fPsFiltered,
-    			fA        := G_Parameter.fAreaUp,
-    			fAr       := G_Parameter.fAreaDown,
-    			fQ0Up     := G_Parameter.fQMaxUp,
-    			fQ0Down   := G_Parameter.fQMaxDown,
-    			fDp0      := G_Parameter.fDeltaP0,
-    			fDeadUp   := G_Parameter.fDeadUp,
-    			fDeadDown := G_Parameter.fDeadDown,
-    			fU_FF     => G_OPC.fFF
-			);
-
- E_FFMode.KvFF:                              
+    // Feed Forward selection
+    CASE G_Enables.eFFMode OF 
+        E_FFMode.FF:  
+            fbFF(
+                bEnable   := G_Enables.bEnableFF,
+                fXDot     := fXDotRef,
+                fPa       := G_OPC.fPaFiltered,
+                fPb       := G_OPC.fPbFiltered,
+                fPs       := G_OPC.fPsFiltered,
+                fA        := G_Parameter.fAreaUp,
+                fAr       := G_Parameter.fAreaDown,
+                fQ0Up     := G_Parameter.fQMaxUp,
+                fQ0Down   := G_Parameter.fQMaxDown,
+                fDp0      := G_Parameter.fDeltaP0,
+                fDeadUp   := G_Parameter.fDeadUp,
+                fDeadDown := G_Parameter.fDeadDown,
+                fU_FF     => G_OPC.fFF
+            );
+        E_FFMode.KvFF:                              
             fbKvFF(
                 bEnable := G_Enables.bEnableFF,
-                fXDot   := fXDotRef,
+                fXDotref   := fXDotRef,
                 fPa     := G_OPC.fPaFiltered,
                 fPb     := G_OPC.fPbFiltered,
                 fPs     := G_OPC.fPsFiltered,
@@ -75,7 +74,7 @@ IF fbStartDelay.Q THEN
             );
     END_CASE
 	
- // Position feedback
+    // Position feedback
     fbPosFB(
         bEnable    := G_Enables.bEnablePositionFeedback,
         fXRef      := fXRef,
@@ -87,39 +86,25 @@ IF fbStartDelay.Q THEN
         fU_PID     => G_OPC.fPID
     );
 
-    G_OPC.fU := G_OPC.fFF + G_OPC.fPID;	// Valve command from FF and Position feedback
+    G_OPC.fU := G_OPC.fFF + G_OPC.fPID;    // Valve command from FF and position feedback
  
 ELSE
     fTime    := 0.0;
     G_OPC.fU := 0.0;
 END_IF
- 
-// Selects pressure based on direction (Pb: Up, Pa: Down)
-IF G_OPC.fU > 0 THEN
-    fSelectedPressure := G_OPC.fPb;
-ELSIF G_OPC.fU < 0 THEN
-    fSelectedPressure := G_OPC.fPa;
-ELSE
-    fSelectedPressure := 0.0;
-END_IF
- 
-// FB for Pressure Feedback
+
+// Pressure feedback damping
 fbDamping(
-    bEnable           := (ePFMode = E_PressureFeedback.PF_ON),
-    fJoystick         := G_OPC.fU,
-    fSelectedPressure := fSelectedPressure,
-    fDampingGain      := fDampingGain,
-    fU_Out            => G_OPC.fU
+    bEnable := (ePFMode = E_PressureFeedback.PF_ON),
+    fU_In   := G_OPC.fU,
+    fKf     := fDampingGain,
+    fTauF   := FilterTime,
+    fU_Out  => G_OPC.fU
 );
  
-// Valve deadband compensation
-IF G_OPC.fU > 0.0 THEN
-    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
-ELSIF G_OPC.fU < 0.0 THEN
-    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
-END_IF
+G_OPC.fU := G_OPC.fU; // Deadband is compensated for in the FF 
  
-G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);   // Safety limit]]></ST>
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);    // Safety limit]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

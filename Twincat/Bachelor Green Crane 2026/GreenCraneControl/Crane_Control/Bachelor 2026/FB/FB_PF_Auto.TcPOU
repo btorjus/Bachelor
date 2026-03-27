@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PF_Auto" Id="{5b20325e-aae6-45d1-8863-a463f7127030}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PF_Auto
+// BOOL:  True/False
+// LREAL: Long real decimal number
+
+VAR_INPUT
+    bEnable      : BOOL;                // Enable signal for PF
+    fU_In        : LREAL;               // Valve command 
+    fKf          : LREAL := 0.005;  	// Pressure feedback gain
+    fTauF        : LREAL := 0.01;       // Filter time constant [s]
+END_VAR
+VAR_OUTPUT
+    fU_Out       : LREAL;               // Output to valve
+    fUpfb        : LREAL;               // Pressure feedback signal
+    fUpfbGrad    : LREAL;               // Pressure feedback gradient
+    fPxGrad      : LREAL;               // Pressure gradient [Bar/s]
+END_VAR
+VAR
+    fDt          : LREAL := 0.001;      // PLC cycle time [s]
+    fPx          : LREAL := 0.0;        // Selected pressure [Bar]
+    fPxOld       : LREAL := 0.0;        // Previous pressure [Bar]
+    bFirstCycle  : BOOL := TRUE;        
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Initializes fPxOld to avoid gradient spike
+IF bFirstCycle THEN
+    IF G_OPC.fU < 0.0 THEN
+        fPxOld := G_OPC.fPa;
+    ELSIF G_OPC.fU > 0.0 THEN
+        fPxOld := G_OPC.fPb;
+    ELSE
+        fPxOld := 0.0;
+    END_IF
+    bFirstCycle := FALSE;
+END_IF
+
+// Pressure chosen based on direction
+IF G_OPC.fU < 0.0 THEN
+    fPx := G_OPC.fPa;           					// Upwards direction: Pa 
+ELSIF G_OPC.fU > 0.0 THEN
+    fPx := G_OPC.fPb;           					// Downwards direction: Pb 
+ELSE
+    fPx := 0.0;
+END_IF
+
+fPxGrad   := (fPx - fPxOld) / fDt;					// Calculates gradient
+fUpfbGrad := (fKf * fPxGrad - fUpfb) / fTauF; 		// Implements a low-pass filter
+fUpfb     := fUpfb + fUpfbGrad * fDt;				// Euler integration (new value = old value + rate of change * time step)
+
+fUpfb     := LIMIT(-0.1, fUpfb, 0.1);    			// Clamps PF to 10%
+
+fPxOld := fPx;  
+
+IF bEnable THEN
+    fU_Out := fU_In - fUpfb;
+ELSE
+    fU_Out := fU_In;
+END_IF
+
+fU_Out := LIMIT(-1.0, fU_Out, 1.0);    				// Safety limit]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

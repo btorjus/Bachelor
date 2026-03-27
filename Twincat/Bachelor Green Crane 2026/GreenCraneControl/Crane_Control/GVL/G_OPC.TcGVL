@@ -30,7 +30,7 @@ VAR_GLOBAL
 	fFlowRef 			: LREAL; 	// [L/min], Flow reference calculated form fXDotRef
 	
 	fFFFlow				: LREAL;	// [L/min], Flow form feed forward
-	fKv					: LREAL; 	// [L/min / bar^0.5] K value 
+	fKv					: LREAL; 	// [L/min / bar^0.5] K value used in FF
 
 	fWantedSpoolPos 	: LREAL; 	// [-1,1], Wanted spool position
 	fUpfbGrad 			: LREAL; 	// Pressure feedback gradient

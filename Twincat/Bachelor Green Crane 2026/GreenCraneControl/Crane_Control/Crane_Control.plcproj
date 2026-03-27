@@ -43,6 +43,9 @@
     <Compile Include="Bachelor 2026\FB\FB_KvFeedForward.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bachelor 2026\FB\FB_PF_Auto.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\FB\FB_PositionFeedback.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -71,6 +74,9 @@
     <Compile Include="Bachelor 2026\PRG\PRG_ControllerMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bachelor 2026\PRG\PRG_fUTesting.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_ManualMode.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -90,6 +96,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\Testing\fU_Testing.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bachelor 2026\PRG\Testing\PRG_fUOscTest.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bachelor 2026\PRG\Testing\RampfUTest.TcPOU">

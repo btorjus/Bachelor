@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_fUOscTest" Id="{a906e9e5-415e-4aa8-adff-173402530028}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_fUOscTest
+
+VAR
+    fU_TestValue      : LREAL := 0.0;                                   // Test value to change [-1,1]
+    bEnableTesting    : BOOL  := FALSE;                                 // Enable this for testing
+    
+    fLimitDown        : LREAL := 0.10; 
+    fLimitUp          : LREAL := 0.45; 
+    
+    bHitLimit         : BOOL;                                           // Indicates when limit is hit
+
+    // PF damping
+    fbDamping         : FB_PF_Auto;
+    ePFMode           : E_PressureFeedback := E_PressureFeedback.PF_ON;
+    fDampingGain      : LREAL := 0.005;
+    fFilterTime       : LREAL := 0.01;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF bEnableTesting THEN
+    fU_TestValue := LIMIT(-1.0, fU_TestValue, 1.0);                    // Safety limit
+
+    // Limit check based on motion
+    IF (fU_TestValue > 0 AND G_OPC.fPistonPosition <= fLimitDown) OR 
+       (fU_TestValue < 0 AND G_OPC.fPistonPosition >= fLimitUp) THEN
+        
+        G_OPC.fU := 0.0;  
+        bHitLimit := TRUE;
+    ELSE
+        G_OPC.fU := fU_TestValue; 
+        bHitLimit := FALSE;
+    END_IF
+
+ELSE
+    // Safety 
+    G_OPC.fU := 0.0;
+    bHitLimit := FALSE;
+END_IF
+
+// Pressure feedback damping
+fbDamping(
+    bEnable := (ePFMode = E_PressureFeedback.PF_ON),
+    fU_In   := G_OPC.fU,
+    fKf     := fDampingGain,
+    fTauF   := fFilterTime,
+    fU_Out  => G_OPC.fU
+);
+
+// Valve deadband compensation
+IF G_OPC.fU > 0.0 THEN
+    G_OPC.fU := G_OPC.fU + G_Parameter.fDeadUp;
+ELSIF G_OPC.fU < 0.0 THEN
+    G_OPC.fU := G_OPC.fU - G_Parameter.fDeadDown;
+END_IF
+
+G_OPC.fU := LIMIT(-1.0, G_OPC.fU, 1.0);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

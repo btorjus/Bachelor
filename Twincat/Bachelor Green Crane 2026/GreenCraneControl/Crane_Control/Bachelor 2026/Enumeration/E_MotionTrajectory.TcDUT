@@ -5,7 +5,8 @@
 (
 	Ramp := 0,
 	Sine := 1,
-	fUTest := 2
+	fUTest := 2,
+	fUOscTest :=3
 );
 END_TYPE
 ]]></Declaration>

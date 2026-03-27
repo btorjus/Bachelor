@@ -10,7 +10,10 @@
     <Content Include="Scope Project1.tcscopex">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="YT Scope Project.tcscopex">
+    <Content Include="SineWave Scoping.tcscopex">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Start Oscillation.tcscopex">
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>

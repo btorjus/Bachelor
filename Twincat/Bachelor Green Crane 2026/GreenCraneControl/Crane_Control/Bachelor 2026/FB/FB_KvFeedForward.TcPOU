@@ -9,7 +9,7 @@
 // Input variables
 VAR_INPUT
     bEnable         : BOOL;         // Enable signal for KvFF
-    fXDot           : LREAL;        // Velocity reference [m/s]
+    fXDotref        : LREAL;     	// Velocity reference [m/s]
     fPa             : LREAL;        // Pressure piston side [bar]
     fPb             : LREAL;        // Pressure rod side [bar]
     fPs             : LREAL;        // Supply pressure [bar]
@@ -29,6 +29,7 @@ END_VAR
 VAR
     fSpoolPos       : LREAL;        // Spool position from polynomial [-1, 1]
     fKv_min         : LREAL := 0.1; // Minimum Kv for polynomial validity
+	fSpoolPosCtrl   : LREAL;        
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -40,8 +41,8 @@ IF NOT bEnable THEN
     fFlow    := 0.0;
     fdP      := 0.0;
  
-ELSIF fXDot > 0.0 THEN                                         	// Cylinder moving up
-    fFlow   := fXDot * fA * 60000.0;                           	// Required flow [L/min]
+ELSIF fXDotref > 0.0 THEN                                       // Cylinder moving up
+    fFlow   := fXDotref * fA * 60000.0;                         // Required flow [L/min]
     fdP     := fPs - fPa;                                      	// Pressure drop [bar]
  
     IF fdP <= 0.0 THEN                                         	// Avoiding division by zero
@@ -61,10 +62,12 @@ ELSIF fXDot > 0.0 THEN                                         	// Cylinder movi
     ELSE
 		fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
     END_IF
-    fU_FF := LIMIT(-1.0, -fSpoolPos, 1.0);                     	
+	fSpoolPosCtrl := 1.1182 * fSpoolPos - 0.0325;	
+    fU_FF := LIMIT(-1.0, -fSpoolPosCtrl, 1.0);		
+                     	
  
-ELSIF fXDot < 0.0 THEN                                          // Cylinder going down
-    fFlow   := fXDot * fAr * 60000.0;                          	// Required flow [L/min]
+ELSIF fXDotref < 0.0 THEN                                       // Cylinder going down
+    fFlow   := fXDotref * fAr * 60000.0;                        // Required flow [L/min]
     fdP     := fPs - fPb;                                       // Pressure drop [bar]
  
     IF fdP <= 0.0 THEN                                          // Avoiding division by zero
@@ -84,7 +87,8 @@ ELSIF fXDot < 0.0 THEN                                          // Cylinder goin
     ELSE
 		fSpoolPos := 0.215 + 0.230397 * fKv;   					// Linear from deadband to polynomial
     END_IF
-    fU_FF := LIMIT(-1.0, fSpoolPos, 1.0);                      	
+		fSpoolPosCtrl := 1.1075 * fSpoolPos - 0.0416;	
+    	fU_FF := LIMIT(-1.0, fSpoolPosCtrl, 1.0);		                      	
  
 ELSE
     fU_FF    := 0.0;
