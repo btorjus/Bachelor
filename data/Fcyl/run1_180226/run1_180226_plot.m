@@ -130,3 +130,4 @@ set(hfig2,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewid
 pos = get(hfig2,'Position');
 set(hfig2,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
 print(hfig2,fname,'-dpdf','-vector','-fillpage')
+

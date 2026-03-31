@@ -135,6 +135,8 @@ for i = 1:numel(allRuns)
     allRuns(i).Kv_piston   = Kv_piston;
 end
 
+
+
 %% Debug plot
 if ~isempty(DEBUG_RUN)
     r = allRuns(DEBUG_RUN);
@@ -286,3 +288,8 @@ function v = prctileFinite(x, p)
     if isempty(x), v = NaN; else, v = prctile(x, p); end
 end
 
+%% Finn Kv range
+fprintf('Up   Kv range: %.4f to %.4f L/min/bar^0.5\n', ...
+    min([upKvF; upKvP]*Kv_display_factor), max([upKvF; upKvP]*Kv_display_factor))
+fprintf('Down Kv range: %.4f to %.4f L/min/bar^0.5\n', ...
+    min([dnKvF; dnKvP]*Kv_display_factor), max([dnKvF; dnKvP]*Kv_display_factor))
