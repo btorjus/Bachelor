@@ -64,10 +64,6 @@
     <Compile Include="Bachelor 2026\FB\FB_ValveControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bachelor 2026\HMI\HMI.TcVIS">
-      <SubType>Code</SubType>
-      <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
-    </Compile>
     <Compile Include="Bachelor 2026\PRG\PRG_AutoRamp.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -245,7 +241,6 @@
   <ItemGroup>
     <Folder Include="Bachelor 2026" />
     <Folder Include="Bachelor 2026\FB" />
-    <Folder Include="Bachelor 2026\HMI" />
     <Folder Include="Bachelor 2026\Enumeration" />
     <Folder Include="Bachelor 2026\PRG" />
     <Folder Include="Bachelor 2026\PRG\Testing" />

@@ -60,7 +60,8 @@ ELSIF fXDotref > 0.0 THEN                                       // Cylinder movi
                       +0.019414   * fKv
                       +0.25505;
     ELSE
-		fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
+		//fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
+		fSpoolPos := 0.231 + 0.270407 * fKv;   						// Linear approximation for low Kv
     END_IF
 	fSpoolPosCtrl := 1.1182 * fSpoolPos - 0.0325;	
     fU_FF := LIMIT(-1.0, -fSpoolPosCtrl, 1.0);		
@@ -85,7 +86,9 @@ ELSIF fXDotref < 0.0 THEN                                       // Cylinder goin
                       +0.08632  * fKv
                       +0.22422;
     ELSE
-		fSpoolPos := 0.215 + 0.230397 * fKv;   					// Linear from deadband to polynomial
+		//fSpoolPos := 0.215 + 0.230397 * fKv;   					// Linear from deadband to polynomial
+		fSpoolPos := 0.1965 + 0.230397 * fKv;   					// Linear from deadband to polynomial
+		// change to 0.1865
     END_IF
 		fSpoolPosCtrl := 1.1075 * fSpoolPos - 0.0416;	
     	fU_FF := LIMIT(-1.0, fSpoolPosCtrl, 1.0);		                      	
