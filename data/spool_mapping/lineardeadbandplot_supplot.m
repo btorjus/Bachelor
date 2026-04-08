@@ -28,8 +28,17 @@ Kv_max_down = 4.2579;
 %% Plot settings
 picturewidth    = 20;
 EXPORT_fontsize = 11;
-C_black         = [ 51,  51,  51] ./ 255;
-C_blue          = [129, 154, 255] ./ 255;
+C_red    = '#f21a00'; 
+C_blue   = '#3b9ab2'; 
+C_lblue  = '#78b7c5';   
+C_yellow = '#ebcc2a';
+C_orange = '#e1af00';
+C_red = '#f21a00';
+
+M_green = '#798e87';
+M_brown = '#c27d38';
+M_besh = '#ccc591';
+M_black = '#29211f';
 
 %% Build curve segments
 
@@ -53,10 +62,10 @@ hfig = figure('Name','DCV spool characterization');
 % Subplot 1 — Linear approximation only
 subplot(2,1,1);
 xline(0, 'k:', 'LineWidth', 0.8, 'HandleVisibility', 'off'); hold on
-plot(Kv_lin_up,    spool_lin_up,   '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Up (Port A)');
-plot(-Kv_lin_down, spool_lin_down, '-', 'Color', C_blue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
+plot(Kv_lin_up,    spool_lin_up,   '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Up (Port A)');
+plot(-Kv_lin_down, spool_lin_down, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
 hold off;
-xlabel('$K_v$ (L/min/bar$^{0.5}$)');
+xlabel('$K_v$ [L/min/bar$^{0.5}$]');
 ylabel('Spool position (norm.)');
 legend('Location', 'north');
 title('Linear approximation')
@@ -64,12 +73,12 @@ title('Linear approximation')
 % Subplot 2 — Combined linear + polynomial
 subplot(2,1,2);
 xline(0, 'k:', 'LineWidth', 0.8, 'HandleVisibility', 'off'); hold on
-plot(Kv_lin_up,     spool_lin_up,    '-', 'Color', C_black, 'LineWidth', 1.5, 'HandleVisibility', 'off');
-plot(Kv_poly_up,    spool_poly_up,   '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Up (Port A)');
-plot(-Kv_lin_down,  spool_lin_down,  '-', 'Color', C_blue,  'LineWidth', 1.5, 'HandleVisibility', 'off');
-plot(-Kv_poly_down, spool_poly_down, '-', 'Color', C_blue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
+plot(Kv_lin_up,     spool_lin_up,    '-', 'Color', C_red, 'LineWidth', 1.5, 'HandleVisibility', 'off');
+plot(Kv_poly_up,    spool_poly_up,   '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Up (Port A)');
+plot(-Kv_lin_down,  spool_lin_down,  '-', 'Color', C_lblue,  'LineWidth', 1.5, 'HandleVisibility', 'off');
+plot(-Kv_poly_down, spool_poly_down, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
 hold off;
-xlabel('$K_v$ (L/min/bar$^{0.5}$)');
+xlabel('$K_v$ [L/min/bar$^{0.5}$]');
 ylabel('Spool position (norm.)');
 legend('Location', 'north');
 title('Combined characterization')

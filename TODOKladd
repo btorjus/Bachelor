@@ -283,3 +283,29 @@ A_max_down    = (Kv_max_down    * Kv_unit_conv) / (Cd * sqrt(2/rho));
 % Orifice area vectors [m²]: [leakage, crack-open, fully-open]
 orifice_area_up   = [1e-9, A_middle_up,   A_max_up];
 orifice_area_down = [1e-9, A_middle_down, A_max_down];
+
+
+
+
+///////////// 0604 struktur ///////////
+
+1  Introduction
+2  System Overview
+3  System Modifications
+4  Theoretical Background          ← NEW dedicated chapter
+   4.1  Hydraulic flow through orifices (Bernoulli → Kv)
+   4.2  Directional Control Valve behaviour
+   4.3  Counter Balance Valve mechanics (force balance → u_CBV)
+   4.4  Crane arm dynamics / kinematics   ← move from Ch.5
+5  System Characterization         ← renamed, purely experimental
+   5.1  Test procedure and setup
+   5.2  Cylinder position transducer
+   5.3  Directional Control Valve (DCV)
+   5.4  Counter Balance Valve (CBV)
+6  Simulation and Modelling
+   6.1  Multi-body system
+   6.2  Hydraulic system
+        6.2.1  CBV model
+        6.2.2  DCV model
+   6.3  Verification of initial conditions
+7  Control Implementation

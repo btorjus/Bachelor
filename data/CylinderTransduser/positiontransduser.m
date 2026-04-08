@@ -16,19 +16,20 @@ pol_q = -59.608.*xq.^6 + 86.335.*xq.^5 - 44.643.*xq.^4 + 8.5147.*xq.^3 ...
 % Optional: smooth interpolation of the measured data (spline)
 error_spline_q = spline(pos, error, xq);
 
-C_red    = [249. 38. 114]./255; 
-C_blue   = [129. 154. 255]./255; 
-C_green  = [166. 226. 46]./255;   
-C_magenta = [174. 129. 255]./255;
-C_black = [51. 51. 51]./255;
+C_red    = '#f21a00'; 
+C_blue   = '#3b9ab2'; 
+C_lblue  = '#78b7c5';   
+C_yellow = '#ebcc2a';
+C_orange = '#e1af00';
+C_red = '#f21a00';
 
 hfig = figure;  % save the figure handle in a variable
 plot(pos, error, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 5, 'DisplayName', 'Measured deviation');
 hold on
-plot(xq, error_spline_q,'color',C_red, 'LineWidth', 1.5, 'DisplayName', 'Spline fit');
-plot(xq, pol_q, 'color',C_blue, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit ($6^{th}$ order)');
-xlabel('Stroke position (m)')
-ylabel('Deviation (m)')
+plot(xq, error_spline_q,'color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Spline fit');
+plot(xq, pol_q, 'color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit ($6^{th}$ order)');
+xlabel('Stroke position [m]')
+ylabel('Deviation [m]')
 legend('Location','northwest');
 
 % File name
@@ -36,8 +37,8 @@ fname = 'transdusererror';
 
 % Template figure sizing & formatting (kept from your template, with var fix)
 picturewidth = 20; % set this parameter and keep it forever
-hw_ratio = 0.65; % feel free to play with this ratio
-set(findall(hfig,'-property','FontSize'),'FontSize',17) % adjust fontsize to your document
+hw_ratio = 0.45; % feel free to play with this ratio
+set(findall(hfig,'-property','FontSize'),'FontSize',11) % adjust fontsize to your document
 
 set(findall(hfig,'-property','Box'),'Box','Off') % optional
 set(findall(hfig,'-property','Interpreter'),'Interpreter','latex') 
