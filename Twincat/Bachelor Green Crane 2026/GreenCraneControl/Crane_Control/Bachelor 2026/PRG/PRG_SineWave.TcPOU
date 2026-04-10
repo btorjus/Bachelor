@@ -45,22 +45,7 @@ IF fbStartDelay.Q THEN
  
     // Feed Forward selection
     CASE G_Enables.eFFMode OF 
-        E_FFMode.FF:  
-            fbFF(
-                bEnable   := G_Enables.bEnableFF,
-                fXDot     := fXDotRef,
-                fPa       := G_OPC.fPaFiltered,
-                fPb       := G_OPC.fPbFiltered,
-                fPs       := G_OPC.fPsFiltered,
-                fA        := G_Parameter.fAreaUp,
-                fAr       := G_Parameter.fAreaDown,
-                fQ0Up     := G_Parameter.fQMaxUp,
-                fQ0Down   := G_Parameter.fQMaxDown,
-                fDp0      := G_Parameter.fDeltaP0,
-                fDeadUp   := G_Parameter.fDeadUp,
-                fDeadDown := G_Parameter.fDeadDown,
-                fU_FF     => G_OPC.fFF
-            );
+        
         E_FFMode.KvFF:                              
             fbKvFF(
                 bEnable := G_Enables.bEnableFF,

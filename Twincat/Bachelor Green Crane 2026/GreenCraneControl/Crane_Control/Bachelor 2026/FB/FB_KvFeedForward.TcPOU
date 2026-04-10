@@ -59,6 +59,17 @@ ELSIF fXDotref > 0.0 THEN                                       // Cylinder movi
                       +0.64863    * EXPT(fKv, 2)
                       +0.019414   * fKv
                       +0.25505;
+					  
+// 		fSpoolPos :=  	-0.0063408 * EXPT(fKv, 8)
+//      			  	+ 0.10007  * EXPT(fKv, 7)
+//      				- 0.64343  * EXPT(fKv, 6)
+//      				+ 2.1505   * EXPT(fKv, 5)
+//      				- 3.9245   * EXPT(fKv, 4)
+//      				+ 3.6979   * EXPT(fKv, 3)
+//      				- 1.4898   * EXPT(fKv, 2)
+//      				+ 0.45974  * fKv
+//      				+ 0.24071;
+	 
     ELSE
 		//fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
 		fSpoolPos := 0.231 + 0.270407 * fKv;   						// Linear approximation for low Kv
