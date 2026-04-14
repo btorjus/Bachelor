@@ -42,9 +42,12 @@ COL_position = 'fPistonPosition';
 
 %% Plot settings
 targetPressure  = 120;
-C_red           = [249,  38, 114] ./ 255;
-C_blue          = [129, 154, 255] ./ 255;
-C_black         = [ 51,  51,  51] ./ 255;
+C_red    = [0.9490, 0.1020, 0.0000];
+C_blue   = [0.2314, 0.6039, 0.6980];
+C_lblue  = [0.4706, 0.7176, 0.7725];
+C_yellow = [0.9216, 0.8000, 0.1647];
+C_orange = [0.8824, 0.6863, 0.0000];
+C_black  = [0.1608, 0.1294, 0.1216];
 picturewidth    = 20;
 EXPORT_fontsize = 11;
 
@@ -175,7 +178,7 @@ hfig = figure('Name','Kv time series');
 for k = 1:numel(runIdx)
     i = runIdx(k);
     subplot(numel(runIdx), 1, k);
-    plot(allRuns(i).t, allRuns(i).Kv_flow*Kv_display_factor,   '-','Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$K_v$ flow');   hold on
+    plot(allRuns(i).t, allRuns(i).Kv_flow*Kv_display_factor,   '-','Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$K_v$ flow');   hold on
     plot(allRuns(i).t, allRuns(i).Kv_piston*Kv_display_factor, '-','Color', C_red,  'LineWidth', 1.5, 'DisplayName', '$K_v$ piston'); hold off
     xlabel('Timer $t$ (s)'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
     title(sprintf('%s $|$ %d bar $|$ %d\\%% signal', allRuns(i).direction, allRuns(i).pressure, allRuns(i).signal))
@@ -191,7 +194,7 @@ print(hfig, 'kv_timeseries', '-dpdf', '-vector', '-fillpage')
 hfig = figure('Name','Kv vs spool position');
 
 subplot(2,1,1);
-scatter(upSpool, upKvF*Kv_display_factor, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
+scatter(upSpool, upKvF*Kv_display_factor, 3, C_lblue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
 scatter(upSpool, upKvP*Kv_display_factor, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
 xFit = linspace(min(upSpool), max(upSpool), 300);
 plot(xFit, polyval(pA_Kv_of_spool_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
@@ -200,7 +203,7 @@ xlabel('Spool position (norm.)'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
 title(sprintf('Port A (Up) $-$ %d bar', targetPressure)); legend('Location','northwest');
 
 subplot(2,1,2);
-scatter(dnSpool, dnKvF*Kv_display_factor, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
+scatter(dnSpool, dnKvF*Kv_display_factor, 3, C_lblue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
 scatter(dnSpool, dnKvP*Kv_display_factor, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
 xFit = linspace(min(dnSpool), max(dnSpool), 300);
 plot(xFit, polyval(pB_Kv_of_spool_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
@@ -215,22 +218,22 @@ print(hfig, 'kv_spool_scatter', '-dpdf', '-vector', '-fillpage')
 hfig = figure('Name','Spool position vs Kv');
 
 subplot(2,1,1);
-scatter(upKvF*Kv_display_factor, upSpool, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
+scatter(upKvF*Kv_display_factor, upSpool, 3, C_lblue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
 scatter(upKvP*Kv_display_factor, upSpool, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
 xFit = linspace(prctileFinite([upKvF;upKvP]*Kv_display_factor,1), prctileFinite([upKvF;upKvP]*Kv_display_factor,99), 400);
 plot(xFit, polyval(pUp_spool_of_Kv_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
-hold off; grid on
-xlabel('$K_v$ (L/min/bar$^{0.5}$)'); ylabel('Spool position (norm.)')
-title(sprintf('Port A (Up) $-$ %d bar', targetPressure)); legend('Location','northwest');
+hold off; grid off
+xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('Spool position (norm.)')
+title(sprintf('Port A (Up) $-$ %d bar', targetPressure)); legend('Location','southeast');
 
 subplot(2,1,2);
-scatter(dnKvF*Kv_display_factor, dnSpool, 3, C_blue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
+scatter(dnKvF*Kv_display_factor, dnSpool, 3, C_lblue, 'filled', 'DisplayName', '$K_v$ flow'); hold on
 scatter(dnKvP*Kv_display_factor, dnSpool, 3, C_red,  'filled', 'DisplayName', '$K_v$ piston');
 xFit = linspace(prctileFinite([dnKvF;dnKvP]*Kv_display_factor,1), prctileFinite([dnKvF;dnKvP]*Kv_display_factor,99), 400);
 plot(xFit, polyval(pDown_spool_of_Kv_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
-hold off; grid on
-xlabel('$K_v$ (L/min/bar$^{0.5}$)'); ylabel('Spool position (norm.)')
-title(sprintf('Port B (Down) $-$ %d bar', targetPressure)); legend('Location','northwest');
+hold off; grid off
+xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('Spool position (norm.)')
+title(sprintf('Port B (Down) $-$ %d bar', targetPressure)); legend('Location','southeast');
 
 applyFigureExportTemplate(hfig, picturewidth, 0.65, EXPORT_fontsize);
 print(hfig, 'spool_kv_scatter', '-dpdf', '-vector', '-fillpage')
