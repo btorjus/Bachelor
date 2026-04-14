@@ -19,7 +19,6 @@ ELSIF G_Mode.bAuto THEN		// Auto modes
         E_MotionTrajectory.Ramp: PRG_AutoRamp();
         E_MotionTrajectory.Sine: PRG_SineWave();
 		E_MotionTrajectory.fUTest: PRG_fUTesting();
-		E_MotionTrajectory.fUOscTest: PRG_fUOscTest();
     END_CASE
     
 ELSE

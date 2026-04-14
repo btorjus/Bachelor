@@ -48,7 +48,7 @@ ELSE
     fTempD := fKd * (fError - fErrorPrev) / fCycleTime;
  
     fErrorPrev := fError;								// Error for next cycle
-    fTempOut := -(fTempP + fTempI + fTempD);
+    fTempOut := -(fTempP + fTempI + fTempD);			// Combine terms
  
     fU_PID := LIMIT(-1.0, fTempOut, 1.0);				// Safety limit
  
