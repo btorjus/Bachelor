@@ -1,4 +1,3 @@
-
 %% Hand calc comparison with run 1
 clear; clc; close all;
 
@@ -9,23 +8,24 @@ C_yellow = [0.9216, 0.8000, 0.1647];
 C_orange = [0.8824, 0.6863, 0.0000];
 C_black  = [0.1608, 0.1294, 0.1216];
 
-I_PU = [153, 134, 165]./255;
-I_B = [121, 64, 46]./255;
-I_Y = [204, 186, 114]./255;
-I_P = [217, 208, 211]./255;
-I_G = [141, 134, 128]./255;
+% Astroid city
+C_teal   = [13, 166, 151]./255;    % #0DA697
+C_olive  = [119, 140, 74]./255;    % #778C4A
+C_sand   = [217, 185, 126]./255;   % #D9B97E
+C_brown  = [191, 129, 75]./255;    % #BF814B
+C_rust   = [217, 68, 35]./255;     % #D94423
 
 % Load sensor data
 load FF_ramp_96bar_run1_bachelorship.mat
 
-% Cylinder dimensions
+%% Cylinder dimensions
 d_piston = 0.065;                      % Piston diameter [m]
 d_rod    = 0.035;                      % Rod diameter [m]
 A_piston = pi*(d_piston/2)^2;          % Piston area [m^2]
 A_rod    = pi*(d_rod/2)^2;             % Rod area [m^2]
 A_a      = A_piston - A_rod;           % Ring side area [m^2]
 
-% Sensor data
+%% Sensor data
 piston_pos = data{14}.extractTimetable;
 pA_filter  = data{8}.extractTimetable;
 pB_filter  = data{12}.extractTimetable;
@@ -43,8 +43,8 @@ n_cut = 6102;
 L_cyl_meas = L_cyl_meas(1:n_cut);
 F_hyd      = F_hyd(1:n_cut);
 
-% Beam and geometry parameters
-m_beam  = 415.74;                       % Beam mass [kg] Øke for å få fikse (CAD 415.74kg)
+%% Beam and geometry parameters
+m_beam  = 415.74;                       % Beam mass [kg] (CAD 415.74kg)
 g       = 9.81;                         % Gravitational acceleration [m/s^2]
 x_c     = 3.21615;                      % COM in x direction local [m] (CAD 3.01315m)
 y_c     = 0.06148;                      % COM in y direction local [m]
@@ -53,10 +53,9 @@ r_bot   = [0.427; -1.057];             % Cylinder bottom mount in global coords 
 L_min   = 0.772;                        % Min cylinder length [m]
 L_max   = 1.272;                        % Max cylinder length [m]
 
-% Sweep beam angle
+%% Theoretical cylinder force
 theta = deg2rad(linspace(-16.6, 30, 400));
 
-% Compute theoretical cylinder force and length
 F_cyl_theo = zeros(size(theta));
 L_cyl_theo = zeros(size(theta));
 for i = 1:length(theta)
@@ -68,8 +67,8 @@ for i = 1:length(theta)
     L_cyl_theo(i) = sqrt((r_top_global(1)-r_bot(1))^2 + (r_top_global(2)-r_bot(2))^2);
 end
 
-% Plot
-hfig = figure;
+%% Plot 1 — Raw force comparison
+hfig1 = figure;
 
 plot(L_cyl_meas, F_hyd/1000, 'k-', 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ (measured)'); hold on;
 plot(L_cyl_theo, F_cyl_theo/1000, '--', 'color', C_red, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
@@ -79,35 +78,24 @@ legend('Location','northeast');
 grid off;
 
 fname = 'run1_180226_plot';
-picturewidth = 20;
-hw_ratio = 0.65;
-set(findall(hfig,'-property','FontSize'),'FontSize',17)
-set(findall(hfig,'-property','Box'),'Box','off')
-set(findall(hfig,'-property','Interpreter'),'Interpreter','latex')
-set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
-set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
-pos = get(hfig,'Position');
-set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
-%print(hfig,fname,'-dpdf','-vector','-fillpage')
+picturewidth = 20; hw_ratio = 0.65;
+set(findall(hfig1,'-property','FontSize'),'FontSize',17)
+set(findall(hfig1,'-property','Box'),'Box','off')
+set(findall(hfig1,'-property','Interpreter'),'Interpreter','latex')
+set(findall(hfig1,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
+set(hfig1,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
+pos = get(hfig1,'Position');
+set(hfig1,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
+%print(hfig1,fname,'-dpdf','-vector','-fillpage')
 
-
-
-
-%  Legg til moving avrage slik at oscilasjoner
-% og vi kan vise hva som skjer når vi flytter COm og MAsse og skriv litt om
-% det
-
-%% Smoothed force comparison
-
-% --- Three smoothing methods ---
+%% Plot 2 — Smoothed force comparison
 F_smooth_movmean = smoothdata(F_hyd, 'movmean', 80);
 F_smooth_gauss   = smoothdata(F_hyd, 'gaussian', 120);
 F_smooth_sgolay  = smoothdata(F_hyd, 'sgolay', 80);
 
-% --- Plot ---
 hfig2 = figure;
 
-plot(L_cyl_meas, F_hyd/1000, 'Color', [0.7 0.7 0.7], 'LineWidth', 0.5, 'DisplayName', '$F_{hyd}$ (raw)'); 
+plot(L_cyl_meas, F_hyd/1000, 'Color', [0.7 0.7 0.7], 'LineWidth', 0.5, 'DisplayName', '$F_{hyd}$ (raw)');
 hold on;
 
 % plot(L_cyl_meas, F_smooth_movmean/1000, ...
@@ -120,7 +108,7 @@ plot(L_cyl_meas, F_smooth_gauss/1000, 'k-', 'LineWidth', 1.5, 'DisplayName', '$F
 %     'g-', 'LineWidth', 1.5, ...
 %     'DisplayName', '$F_{hyd}$ (sgolay)');
 
-plot(L_cyl_theo, F_cyl_theo/1000, '--','color', C_red, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
+plot(L_cyl_theo, F_cyl_theo/1000, '--', 'color', C_red, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
 
 xlabel('Cylinder length [m]');
 ylabel('Force [kN]');
@@ -128,8 +116,7 @@ legend('Location','northeast');
 grid off;
 
 fname = 'run1_smoothed_comparison';
-picturewidth = 20;
-hw_ratio = 0.65;
+picturewidth = 20; hw_ratio = 0.65;
 set(findall(hfig2,'-property','FontSize'),'FontSize',17)
 set(findall(hfig2,'-property','Box'),'Box','off')
 set(findall(hfig2,'-property','Interpreter'),'Interpreter','latex')
@@ -138,7 +125,6 @@ set(hfig2,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewid
 pos = get(hfig2,'Position');
 set(hfig2,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
 print(hfig2,fname,'-dpdf','-vector','-fillpage')
-
 
 %% Extension/retraction split and midline check
 % L_cyl_meas and F_hyd already cover the full up+down stroke (1:n_cut)
@@ -153,20 +139,18 @@ v_thr = 1e-3;                       % [m/s] — tune from a plot of Ldot
 ext = Ldot >  v_thr;
 ret = Ldot < -v_thr;
 
-% --- Check Velocity and Thresholds ---
-figure;
-plot(t, Ldot, 'k', 'LineWidth', 1.2); 
-hold on;
+%% Velocity check (debug)
+hfig_dbg = figure;
+plot(t, Ldot, 'k', 'LineWidth', 1.2); hold on;
 yline(v_thr, 'b--', 'v_{thr} (Extension)');
 yline(-v_thr, 'r--', '-v_{thr} (Retraction)');
-% Also plot the plateau threshold you use later
-yline(140e-3, 'g:', 'v_{plateau} (Ext)'); 
+yline(140e-3, 'g:', 'v_{plateau} (Ext)');
 yline(-160e-3, 'g:', '-v_{plateau} (Ret)');
 xlabel('Time [s]');
-ylabel('Velocity (Ldot) [m/s]');
-title('Cylinder Velocity Check');
+ylabel('Velocity [m/s]');
 grid on;
 
+%% Midline computation
 % Common L grid where both branches exist
 L_grid = linspace(max(min(L_s(ext)), min(L_s(ret))), ...
                   min(max(L_s(ext)), max(L_s(ret))), 400)';
@@ -176,19 +160,21 @@ F_ret = interp1(L_s(ret), F_s(ret), L_grid, 'linear');
 F_mid      = 0.5*(F_ext + F_ret);
 F_fric_est = 0.5*(F_ext - F_ret);
 
+%% Plot 3 — Extension/retraction with midline
 hfig3 = figure;
-plot(L_s(ext), F_s(ext)/1000, '-', 'Color', I_Y,   'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ extension'); 
+
+plot(L_s(ext), F_s(ext)/1000, '-', 'Color', C_teal, 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ extension');
 hold on;
-plot(L_s(ret), F_s(ret)/1000, '-', 'Color', I_B, 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ retraction');
+plot(L_s(ret), F_s(ret)/1000, '-', 'Color', C_olive, 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ retraction');
 plot(L_grid, F_mid/1000, ':k', 'LineWidth', 1.5, 'DisplayName', 'midline');
-plot(L_cyl_theo, F_cyl_theo/1000, '--', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
-xlabel('Cylinder length [m]'); 
+plot(L_cyl_theo, F_cyl_theo/1000, '--', 'Color', C_rust, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
+xlabel('Cylinder length [m]');
 ylabel('Force [kN]');
 legend('Location','northeast');
+grid off;
 
 fname = 'extension_retraction_midline';
-picturewidth = 20;
-hw_ratio = 0.65;
+picturewidth = 20; hw_ratio = 0.65;
 set(findall(hfig3,'-property','FontSize'),'FontSize',17)
 set(findall(hfig3,'-property','Box'),'Box','off')
 set(findall(hfig3,'-property','Interpreter'),'Interpreter','latex')
@@ -202,98 +188,25 @@ F_theo_on_grid = interp1(L_cyl_theo, F_cyl_theo, L_grid, 'linear', 'extrap');
 fprintf('Mean (midline - theory) = %.1f N\n', mean(F_mid - F_theo_on_grid, 'omitnan'));
 fprintf('Mean friction estimate  = %.1f N\n', mean(F_fric_est, 'omitnan'));
 
-%% Friction identification 
+%% Friction identification (plateau averaging)
 
-% We need F_fric as a function of Ldot, not L. Easiest path: go back to the
-% samples and compute F_fric pointwise as F_hyd - F_load(L), where F_load
-% is the midline (not the hand-calc theory — midline is what the data says
-% the load actually is, so any residual model error doesn't leak in).
-
-F_load_samp = interp1(L_grid, F_mid, L_s, 'linear', NaN);
-%F_load_samp = interp1(L_cyl_theo, F_cyl_theo, L_s, 'linear', NaN);
-F_fric_samp = F_s - F_load_samp;
-
-% Keep only samples inside the L overlap region AND clearly in motion
-in_overlap = L_s >= min(L_grid) & L_s <= max(L_grid);
-
-% Define separate thresholds based on your new velocity plot!
-v_plateau_ext = 140e-3;   % [m/s] Tune this to be just below max extension speed
-v_plateau_ret = 160e-3;  % [m/s] Tune this to be just below max retraction speed (positive number)
-
-% Create the mask using the separate thresholds
-mask_ext = in_overlap & (Ldot > v_plateau_ext);
-mask_ret = in_overlap & (Ldot < -v_plateau_ret);
-mask = mask_ext | mask_ret; % Combine both (logical OR)
-
-v  = Ldot(mask);
-Ff = F_fric_samp(mask);
-
-% --- Coulomb + viscous fit: Ff = Fc*sign(v) + b*v ---
-X = [sign(v), v];
-coef = X \ Ff;
-Fc = coef(1);
-b  = coef(2);
-
-fprintf('\nFriction fit (Coulomb + viscous):\n');
-fprintf('  F_C = %.1f N\n', Fc);
-fprintf('  b   = %.1f N/(m/s)\n', b);
-
-% --- Direction-split fit (checks asymmetry) ---
-mE = v >  0;  mR = v <  0;
-cE = [ones(sum(mE),1), v(mE)] \ Ff(mE);   % Ff = Fc_ext + b_ext*v
-cR = [ones(sum(mR),1), v(mR)] \ Ff(mR);   % Ff = -Fc_ret + b_ret*v (Fc_ret > 0)
-fprintf('  Extension:   F_C = %+6.1f N, b = %6.1f N/(m/s)\n', cE(1), cE(2));
-fprintf('  Retraction:  F_C = %+6.1f N, b = %6.1f N/(m/s)\n', cR(1), cR(2));
-
-% --- Plot Ff vs v with fit overlay ---
-v_fit = linspace(min(v), max(v), 200)';
-Ff_fit = Fc*sign(v_fit) + b*v_fit;
-
-hfig4 = figure;
-plot(v*1e3, Ff/1000, '.', 'Color', [0.7 0.7 0.7], 'MarkerSize', 4, 'DisplayName', 'samples'); 
-hold on;
-plot(v_fit*1e3, Ff_fit/1000, '-', 'Color', C_red, 'LineWidth', 1.5,'DisplayName', '$F_C\,\mathrm{sgn}(\dot L) + b\,\dot L$');
-xlabel('$\dot L$ [mm/s]');
-ylabel('$F_\mathrm{fric}$ [kN]');
-legend('Location','northwest');
-
-fname = 'run1_friction_fit';
-picturewidth = 20; 
-hw_ratio = 0.65;
-set(findall(hfig4,'-property','FontSize'),'FontSize',17)
-set(findall(hfig4,'-property','Box'),'Box','off')
-set(findall(hfig4,'-property','Interpreter'),'Interpreter','latex')
-set(findall(hfig4,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
-set(hfig4,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
-pos = get(hfig4,'Position');
-set(hfig4,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
-print(hfig4,fname,'-dpdf','-vector','-fillpage')
-
-%% Friction identification (Coulomb / Average)
-
-% We need F_fric pointwise as F_hyd - F_load(L).
-% We use the midline as the true load to avoid CAD errors leaking in.
-F_load_samp = interp1(L_grid, F_mid, L_s, 'linear', NaN);
+% F_load_samp = interp1(L_grid, F_mid, L_s, 'linear', NaN);       % midline reference
+F_load_samp = interp1(L_cyl_theo, F_cyl_theo, L_s, 'linear', NaN); % hand-calc reference
 F_fric_samp = F_s - F_load_samp;
 
 % Keep only samples inside the L overlap region
 in_overlap = L_s >= min(L_grid) & L_s <= max(L_grid);
 
-% --- NEW: Add a position window to crop out acceleration/cushioning ---
-L_min_flat = 0.95; % [m] Start of the steady sliding zone
-L_max_flat = 1.15; % [m] End of the steady sliding zone
+% Position window to crop out acceleration/cushioning zones
+L_min_flat = 0.95;  % [m] Start of the steady sliding zone
+L_max_flat = 1.15;  % [m] End of the steady sliding zone
 in_flat_region = (L_s >= L_min_flat) & (L_s <= L_max_flat);
 
-% Define separate thresholds based on your velocity plot
-v_plateau_ext = 140e-3;   % [m/s] Tune this to be just below max extension speed
-v_plateau_ret = 160e-3;  % [m/s] Tune this to be just below max retraction speed (positive number)
+% Separate velocity thresholds for ext/ret plateaus
+v_plateau_ext = 140e-3;  % [m/s] just below max extension speed
+v_plateau_ret = 160e-3;  % [m/s] just below max retraction speed (positive number)
 
-% Create masks for steady-state motion
-% mask_ext = in_overlap & (Ldot > v_plateau_ext);
-% mask_ret = in_overlap & (Ldot < -v_plateau_ret);
-% mask = mask_ext | mask_ret;
-
-% Create masks for steady-state motion AND steady-state position
+% Masks for steady-state motion AND steady-state position
 mask_ext = in_overlap & in_flat_region & (Ldot > v_plateau_ext);
 mask_ret = in_overlap & in_flat_region & (Ldot < -v_plateau_ret);
 mask = mask_ext | mask_ret;
@@ -303,41 +216,35 @@ v_steady  = Ldot(mask);
 Ff_steady = F_fric_samp(mask);
 L_steady  = L_s(mask);
 
-% Calculate average Coulomb friction for both directions
+% Average Coulomb friction for both directions
 idx_ext = v_steady > 0;
 idx_ret = v_steady < 0;
 
 F_fric_ext_mean = mean(Ff_steady(idx_ext), 'omitnan');
-% Note: Retraction friction is naturally negative (opposes negative velocity). 
+% Note: Retraction friction is naturally negative (opposes negative velocity).
 % We take the absolute value so we can compare the magnitudes side-by-side.
 F_fric_ret_mean = mean(abs(Ff_steady(idx_ret)), 'omitnan');
 
-fprintf('\nLumped Friction Results (at steady speed):\n');
-fprintf('  Average Extension Friction  = %.1f N\n', F_fric_ext_mean);
-fprintf('  Average Retraction Friction = %.1f N\n', F_fric_ret_mean);
+fprintf('\nFriction results (steady-state plateau averaging):\n');
+fprintf('  Extension Coulomb  = %.1f N\n', F_fric_ext_mean);
+fprintf('  Retraction Coulomb = %.1f N\n', F_fric_ret_mean);
+fprintf('  Symmetric average  = %.1f N\n', 0.5*(F_fric_ext_mean + F_fric_ret_mean));
 
-% --- Plot: Friction vs Position ---
+%% Plot 4 — Friction vs position
 hfig4 = figure;
 
-% Plot extension friction
-plot(L_steady(idx_ext), Ff_steady(idx_ext)/1000, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Ext Friction'); 
+plot(L_steady(idx_ext), Ff_steady(idx_ext)/1000, '-', 'Color', C_teal, 'LineWidth', 1.5, 'DisplayName', 'Extension friction');
 hold on;
-% Plot retraction friction (absolute value for visual comparison)
-plot(L_steady(idx_ret), abs(Ff_steady(idx_ret))/1000, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Ret Friction (Absolute)');
-
-% Plot the average lines
-yline(F_fric_ext_mean/1000, '--', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Avg Ext');
-yline(F_fric_ret_mean/1000, ':', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', 'Avg Ret');
-
+plot(L_steady(idx_ret), abs(Ff_steady(idx_ret))/1000, '-', 'Color', C_olive, 'LineWidth', 1.5, 'DisplayName', 'Retraction friction (abs)');
+yline(F_fric_ext_mean/1000, '--', 'Color', C_rust, 'LineWidth', 1.5, 'DisplayName', 'Avg extension');
+yline(F_fric_ret_mean/1000, '--', 'Color', C_brown, 'LineWidth', 1.5, 'DisplayName', 'Avg retraction');
 xlabel('Cylinder length [m]');
-ylabel('Friction Force Magnitude [kN]');
-title('Steady-State Friction across Cylinder Stroke');
+ylabel('$F_\mathrm{fric}$ [kN]');
 legend('Location','best');
+grid off;
 
-% Formatting for export
 fname = 'run1_friction_vs_position';
-picturewidth = 20; 
-hw_ratio = 0.65;
+picturewidth = 20; hw_ratio = 0.65;
 set(findall(hfig4,'-property','FontSize'),'FontSize',17)
 set(findall(hfig4,'-property','Box'),'Box','off')
 set(findall(hfig4,'-property','Interpreter'),'Interpreter','latex')
@@ -345,4 +252,4 @@ set(findall(hfig4,'-property','TickLabelInterpreter'),'TickLabelInterpreter','la
 set(hfig4,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
 pos = get(hfig4,'Position');
 set(hfig4,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
-%print(hfig4,fname,'-dpdf','-vector','-fillpage')
+print(hfig4,fname,'-dpdf','-vector','-fillpage')

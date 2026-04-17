@@ -332,6 +332,30 @@ Funker det med 0 til 1?
 
 Ser ikke ut som den nye hastigheten hjalp.
 Må fullføre friksjon
-Må skrive ferdig CBV og lage plot som er i excedl
-Fiks FBD
-Finn ut om ofrice vector greia vi snakka om
+Må skrive ferdig CBV og lage plot som er i excel
+
+
+Mulig friksjonsutregningen burde bli gjort på nytt med annen data. vi har en litt rar ramp data. Kan bruke to av opp og ned testene muligens
+og få.
+
+
+Fiks frikson og modell, så er det bare å skrive og skrive. Kim må få fiksa feed forward til over 95 prosent.
+
+
+
+//////
+
+Twc pp pA xdotRef Qref Kvref u umag ureel
+
+tre punkter
+
+sjekk med simsc når du har pp pa og xdotRef
+
+sjekk at det er samme sledeposisjon
+
+
+
+må ha med alle friksjonsplot og jeg må skrive om den naive modellen.
+
+
+vis den naive foroverkoblkng. Michael skal hjelpe. Vi må sammeligne med den naive modellen og vise at den er bedre enn den
