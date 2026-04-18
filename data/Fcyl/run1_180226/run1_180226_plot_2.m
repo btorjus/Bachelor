@@ -163,11 +163,11 @@ F_fric_est = 0.5*(F_ext - F_ret);
 %% Plot 3 — Extension/retraction with midline
 hfig3 = figure;
 
-plot(L_s(ext), F_s(ext)/1000, '-', 'Color', C_teal, 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ extension');
+plot(L_s(ext), F_s(ext)/1000, '--k', 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ extension');
 hold on;
-plot(L_s(ret), F_s(ret)/1000, '-', 'Color', C_olive, 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ retraction');
-plot(L_grid, F_mid/1000, ':k', 'LineWidth', 1.5, 'DisplayName', 'midline');
-plot(L_cyl_theo, F_cyl_theo/1000, '--', 'Color', C_rust, 'LineWidth', 1.5, 'DisplayName', '$F_{cyl}$ (theoretical)');
+plot(L_s(ret), F_s(ret)/1000, '-k', 'LineWidth', 1.5, 'DisplayName', '$F_{hyd}$ retraction');
+plot(L_grid, F_mid/1000, ':k', 'LineWidth', 1.5, 'DisplayName', '$F_\mathrm{mid}(L)$');
+plot(L_cyl_theo, F_cyl_theo/1000, '--', 'Color', C_rust, 'LineWidth', 1.5, 'DisplayName', '$F_\mathrm{cyl}(L)$');
 xlabel('Cylinder length [m]');
 ylabel('Force [kN]');
 legend('Location','northeast');
