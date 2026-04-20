@@ -50,7 +50,7 @@ IF fbStartDelay.Q THEN
             fbKvFF(
                 bEnable := G_Enables.bEnableFF,
                 fXDotref   := fXDotRef,
-                fPa     := G_OPC.fPaFiltered,
+                fPa     := G_OPC.fPaLowerFiltered,
                 fPb     := G_OPC.fPbFiltered,
                 fPs     := G_OPC.fPsFiltered,
                 fA      := G_Parameter.fAreaUp,

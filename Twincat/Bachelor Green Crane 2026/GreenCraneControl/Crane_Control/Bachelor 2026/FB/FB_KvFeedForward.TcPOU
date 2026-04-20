@@ -52,29 +52,29 @@ ELSIF fXDotref > 0.0 THEN                                       // Cylinder movi
     END_IF
  
     IF fKv >= fKv_min THEN									 	// Upwards motion spool polynomial
-        fSpoolPos :=  -0.00038291 * EXPT(fKv, 6)
-                      -0.0083821  * EXPT(fKv, 5)
-                      +0.11362    * EXPT(fKv, 4)
-                      -0.44825    * EXPT(fKv, 3)
-                      +0.64863    * EXPT(fKv, 2)
-                      +0.019414   * fKv
-                      +0.25505;
+//         fSpoolPos :=  -0.00038291 * EXPT(fKv, 6)
+//                       -0.0083821  * EXPT(fKv, 5)
+//                       +0.11362    * EXPT(fKv, 4)
+//                       -0.44825    * EXPT(fKv, 3)
+//                       +0.64863    * EXPT(fKv, 2)
+//                       +0.019414   * fKv
+//                       +0.25505;
 					  
-// 		fSpoolPos :=  	-0.0063408 * EXPT(fKv, 8)
-//      			  	+ 0.10007  * EXPT(fKv, 7)
-//      				- 0.64343  * EXPT(fKv, 6)
-//      				+ 2.1505   * EXPT(fKv, 5)
-//      				- 3.9245   * EXPT(fKv, 4)
-//      				+ 3.6979   * EXPT(fKv, 3)
-//      				- 1.4898   * EXPT(fKv, 2)
-//      				+ 0.45974  * fKv
-//      				+ 0.24071;
+		fSpoolPos :=  +0.0018653  * EXPT(fKv, 6)
+              -0.033672    * EXPT(fKv, 5)
+              +0.22033     * EXPT(fKv, 4)
+              -0.65618     * EXPT(fKv, 3)
+              +0.83411     * EXPT(fKv, 2)
+              -0.047269    * fKv
+              +0.26252;
+					   		
 	 
     ELSE
 		//fSpoolPos := 0.236 + 0.270407 * fKv;   					// Linear approximation for low Kv
 		fSpoolPos := 0.231 + 0.270407 * fKv;   						// Linear approximation for low Kv
     END_IF
-	fSpoolPosCtrl := 1.1182 * fSpoolPos - 0.0325;	
+	//fSpoolPosCtrl := 1.1182 * fSpoolPos - 0.0325;			// Original
+	fSpoolPosCtrl := (fSpoolPos + 0.0325) / 1.1182;	
     fU_FF := LIMIT(-1.0, -fSpoolPosCtrl, 1.0);		
                      	
  
@@ -89,19 +89,29 @@ ELSIF fXDotref < 0.0 THEN                                       // Cylinder goin
     END_IF
  
     IF fKv >= fKv_min THEN										// Downwards motion spool polynomial
-        fSpoolPos :=  0.001656  * EXPT(fKv, 6)
-                      -0.026792 * EXPT(fKv, 5)
-                      +0.16458  * EXPT(fKv, 4)
-                      -0.46999  * EXPT(fKv, 3)
-                      +0.56415  * EXPT(fKv, 2)
-                      +0.08632  * fKv
-                      +0.22422;
+//         fSpoolPos :=  0.001656  * EXPT(fKv, 6)
+//                       -0.026792 * EXPT(fKv, 5)
+//                       +0.16458  * EXPT(fKv, 4)
+//                       -0.46999  * EXPT(fKv, 3)
+//                       +0.56415  * EXPT(fKv, 2)
+//                       +0.08632  * fKv
+//                       +0.22422;
+					  
+		fSpoolPos :=  +0.00098272 * EXPT(fKv, 6)
+              -0.017507    * EXPT(fKv, 5)
+              +0.11599     * EXPT(fKv, 4)
+              -0.34851     * EXPT(fKv, 3)
+              +0.41222     * EXPT(fKv, 2)
+              +0.17643     * fKv
+              +0.2076;  
+					
     ELSE
 		//fSpoolPos := 0.215 + 0.230397 * fKv;   					// Linear from deadband to polynomial
 		fSpoolPos := 0.1865 + 0.230397 * fKv;   					// Linear from deadband to polynomial
 		// change from 0.1965
     END_IF
-		fSpoolPosCtrl := 1.1075 * fSpoolPos - 0.0416;	
+		//fSpoolPosCtrl := 1.1075 * fSpoolPos - 0.0416;		// Original 
+		fSpoolPosCtrl := (fSpoolPos + 0.0416) / 1.1075;
     	fU_FF := LIMIT(-1.0, fSpoolPosCtrl, 1.0);		                      	
  
 ELSE
