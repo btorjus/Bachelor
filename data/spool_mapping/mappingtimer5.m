@@ -116,7 +116,12 @@ for i = 1:numel(allRuns)
 
     % Piston kinematics
     pos     = T{:,COL_position};
-    vel     = smoothdata(gradient(pos, t), VEL_SMOOTH_METHOD, VEL_SMOOTH_SPAN);
+    %vel     = smoothdata(gradient(pos, t), VEL_SMOOTH_METHOD, VEL_SMOOTH_SPAN); % SE om jeg kan gjøre vel enda mer stabil. bare ta hele greia og regn hastiget
+    
+    %tester ved å lage en ramp for hastigheten istende, pvel og vel er nå
+    %nye det gamle er smothdata oplegget
+    p_vel = polyfit(t, pos, 1); 
+    vel   = repmat(p_vel(1), size(t));
     if strcmp(dirn,'Up'), Q_piston = A*vel; else, Q_piston = Aa*vel; end
 
     % Kv
