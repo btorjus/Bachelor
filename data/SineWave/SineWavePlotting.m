@@ -2,61 +2,51 @@ clc; clear; close all;
 % Ctrl R for comment
 % Ctrl T for uncomment
 
-%% 100 bar, 0.05 Hz - Sine Wave
-data1 = loadCSV('SineWave_PF_KVFF_100bar_0.05freq_26.03.26.csv');
+%%
+% Sine lower reversal point
+%data1 = loadCSV('SineWave_PF_KVFF_100bar_0.05freq_26.03.26.csv');
 data2 = loadCSV('SineWave_NoPF_KVFF_100bar_0.05freq_26.03.26.csv');
+data1 = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
 
+%%
 % PF vs no PF
 hfig = plotPistonPosition(data1, data2, 'Active PF', 'No PF', 1, 1);
 title('Cylinder Position (100 bar, 0.05 Hz)')
 xlabel('Time [s]')
 ylabel('Position [m]')
 saveFigure(hfig, 'SineReversalPoint')
-
-% % Position vs Xref
-% reset1 = find(data1.fXRef(1:end-1) > 0.25 & data1.fXRef(2:end) <= 0.33, 1, 'first');
-% hfig2 = plotPistonVsXRef(data1, '', 1);
-% title('Piston Position (100 bar, 0.05 Hz)')
-% xlabel('Time [s]')
-% ylabel('Position [m]')
-% saveFigure(hfig2, 'pistonpos_xref_100bar_005hz')
-
-
-
-
-
-
+%%
 % No PF and Active PF vs Xref - subplot
-% idx1 = data1.fTimer >= 6 & data1.fTimer <= 72;
-% idx2 = data2.fTimer >= 6 & data2.fTimer <= 72;
+idx1 = data1.fTimer >= 6 & data1.fTimer <= 72;
+idx2 = data2.fTimer >= 6 & data2.fTimer <= 72;
 
-% hfig3 = figure;
-% subplot(2,1,1)
-% plot(data2.fTimer(idx2), data2.fPistonPosition(idx2), '-', 'Color', '#000000', 'LineWidth', 1.5, 'DisplayName', 'No PF')
-% hold on
-% plot(data2.fTimer(idx2), data2.fXRef(idx2), '-', 'Color', '#F92672', 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
-% hold off
-% grid off;
-% title('Cylinder Position (100 bar, 0.05 Hz)')
-% ylabel('Position [m]')
-% xlim([8, 85]);
-% lg = legend('Interpreter', 'latex');
-% lg.Position(1) = lg.Position(1) - 0.0;
-% 
-% subplot(2,1,2)
-% plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), 'k-', 'LineWidth', 1.5, 'DisplayName', 'Active PF')
-% hold on
-% plot(data1.fTimer(idx1), data1.fXRef(idx1), '-', 'Color', '#F92672', 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
-% hold off
-% grid off;
-% title('')
-% xlabel('Time [s]')
-% ylabel('Position [m]')
-% xlim([8, 85]);
-% lg = legend('Interpreter', 'latex');
-% lg.Position(1) = lg.Position(1) - 0.0;
-% saveFigure(hfig3, 'PF_noPF_SineWave_Subplot')
-% 
+hfig3 = figure;
+subplot(2,1,1)
+plot(data2.fTimer(idx2), data2.fPistonPosition(idx2), '-', 'Color', '#000000', 'LineWidth', 1.5, 'DisplayName', 'No PF')
+hold on
+plot(data2.fTimer(idx2), data2.fXRef(idx2), '-', 'Color', '#F92672', 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
+hold off
+grid off;
+title('Cylinder Position (100 bar, 0.05 Hz)')
+ylabel('Position [m]')
+xlim([8, 85]);
+lg = legend('Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) - 0.0;
+
+subplot(2,1,2)
+plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), 'k-', 'LineWidth', 1.5, 'DisplayName', 'Active PF')
+hold on
+plot(data1.fTimer(idx1), data1.fXRef(idx1), '-', 'Color', '#F92672', 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
+hold off
+grid off;
+title('')
+xlabel('Time [s]')
+ylabel('Position [m]')
+xlim([8, 85]);
+lg = legend('Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) - 0.0;
+saveFigure(hfig3, 'PF_noPF_SineWave_Subplot')
+
 
 
 
