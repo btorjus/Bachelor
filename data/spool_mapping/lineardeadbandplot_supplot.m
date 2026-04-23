@@ -28,12 +28,18 @@ Kv_max_down = 4.2579;
 %% Plot settings
 picturewidth    = 20;
 EXPORT_fontsize = 11;
-C_red    = '#f21a00'; 
-C_blue   = '#3b9ab2'; 
-C_lblue  = '#78b7c5';   
-C_yellow = '#ebcc2a';
-C_orange = '#e1af00';
-C_red = '#f21a00';
+% C_red    = '#f21a00'; 
+% C_blue   = '#3b9ab2'; 
+% C_lblue  = '#78b7c5';   
+% C_yellow = '#ebcc2a';
+% C_orange = '#e1af00';
+% C_red = '#f21a00';
+C_red    = [0.9490, 0.0196, 0.0196];  % #F20505
+C_blue   = [0.3725, 0.7608, 0.8510];  % #5FC2D9
+C_lblue  = [0.0118, 0.6510, 0.5333];  % #03A688
+C_yellow = [0.9490, 0.6235, 0.0196];  % #F29F05
+C_orange = [0.9490, 0.4549, 0.0196];  % #F27405
+C_black  = [0.1608, 0.1294, 0.1216];
 
 M_green = '#798e87';
 M_brown = '#c27d38';

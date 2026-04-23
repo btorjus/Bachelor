@@ -359,3 +359,30 @@ må ha med alle friksjonsplot og jeg må skrive om den naive modellen.
 
 
 vis den naive foroverkoblkng. Michael skal hjelpe. Vi må sammeligne med den naive modellen og vise at den er bedre enn den
+
+/// Forsalg til story her ///
+
+vi har pressure feedback
+nominell vs reel
+feedforward vs ren feedback
+
+la os starte med pure feedback
+så pressure feedback
+Feedforward  nominell
+ekte feed forward
+
+
+
+måte å måle at vi er flinke med å gå gjennom null hastighet og gå gjennom dødband
+
+bruk twincad tidsserie med styresignal og sammenlign posisjon og trykk  slede og pumpetrykk
+
+kan ta sledepos in simulering som input
+
+sørg form at målingene så ta med pumpetrykk
+
+///////////////// Mulig feil navn på komponenter
+Fikk ark av daniel hagen med liste
+
+
+//// test forskjellige hastiger 
