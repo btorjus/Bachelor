@@ -24,7 +24,8 @@ VAR
     ePFMode         : E_PressureFeedback := E_PressureFeedback.PF_ON;
     fDampingGain    : LREAL := 0.0005;
 	FilterTime		: LREAL := 0.01;
-	       
+	fVelocityThr    : LREAL := 0.01;            // Velocity threshold, below this PF will not be active
+    bPF_Enabled     : BOOL;                     // Enable signal for PF   
 END_VAR
 
 ]]></Declaration>
@@ -45,12 +46,29 @@ IF fbStartDelay.Q THEN
  
     // Feed Forward selection
     CASE G_Enables.eFFMode OF 
+		
+		 E_FFMode.FF:                              
+        	fbFF(
+    			bEnable    := G_Enables.bEnableFF,
+    			fXDot      := fXDotRef,
+    			fPa        := G_OPC.fPaFiltered,
+    			fPb        := G_OPC.fPbFiltered,
+    			fPs        := G_OPC.fPsFiltered,
+    			fA         := G_Parameter.fAreaUp,
+    			fAr        := G_Parameter.fAreaDown,
+    			fQ0Up      := G_Parameter.fQMaxUp,        
+    			fQ0Down    := G_Parameter.fQMaxDown,     
+    			fDp0       := G_Parameter.fDeltaP0,       
+   				fDeadUp    := G_Parameter.fDeadUp,
+    			fDeadDown  := G_Parameter.fDeadDown,
+    			fU_FF      => G_OPC.fFF
+				);
         
         E_FFMode.KvFF:                              
             fbKvFF(
                 bEnable := G_Enables.bEnableFF,
                 fXDotref   := fXDotRef,
-                fPa     := G_OPC.fPaFiltered,
+                fPa     := G_OPC.fPaLowerFiltered,
                 fPb     := G_OPC.fPbFiltered,
                 fPs     := G_OPC.fPsFiltered,
                 fA      := G_Parameter.fAreaUp,
@@ -79,8 +97,10 @@ ELSE
 END_IF
 
 // Pressure feedback damping
+bPF_Enabled := (ePFMode = E_PressureFeedback.PF_ON) AND (ABS(fXDotRef) > fVelocityThr);	// Controls enable signal according to velocity treshold
+
 fbDamping(
-    bEnable := (ePFMode = E_PressureFeedback.PF_ON),
+    bEnable := bPF_Enabled,
     fU_In   := G_OPC.fU,
     fKf     := fDampingGain,
     fTauF   := FilterTime,
