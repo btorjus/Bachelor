@@ -198,12 +198,6 @@
           <FileName></FileName>
           <Children>
             <Node>
-              <Title>fDeltaP_Ratio</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
               <Title>fError</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
@@ -217,12 +211,6 @@
             </Node>
             <Node>
               <Title>fFlowRef</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
-              <Title>fFlowRef (1)</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
@@ -318,12 +306,6 @@
               <Children />
             </Node>
             <Node>
-              <Title>fRequiredFlow</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
               <Title>fSignalPID</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
@@ -360,12 +342,6 @@
               <Children />
             </Node>
             <Node>
-              <Title>fU_FF (1)</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
               <Title>fUpfb</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
@@ -397,12 +373,6 @@
             </Node>
             <Node>
               <Title>fWantedSpoolPos</Title>
-              <Expanded>False</Expanded>
-              <FileName></FileName>
-              <Children />
-            </Node>
-            <Node>
-              <Title>fXDot</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
@@ -571,36 +541,6 @@
                 </Node>
                 <Node>
                   <Title>fPx</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fU_FF_Naive</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fXDot_Naive</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fRequiredFlow_Naive</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fDeltaP_Ratio_Naive</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
-                <Node>
-                  <Title>fFlowRef_Naive</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
