@@ -1,12 +1,17 @@
 %% Hand calc comparison with run 1
 clear; clc; close all;
 
-C_red    = [0.9490, 0.1020, 0.0000];
-C_blue   = [0.2314, 0.6039, 0.6980];
-C_lblue  = [0.4706, 0.7176, 0.7725];
-C_yellow = [0.9216, 0.8000, 0.1647];
-C_orange = [0.8824, 0.6863, 0.0000];
-C_black  = [0.1608, 0.1294, 0.1216];
+% C_red    = [0.9490, 0.1020, 0.0000];
+% C_blue   = [0.2314, 0.6039, 0.6980];
+% C_lblue  = [0.4706, 0.7176, 0.7725];
+% C_yellow = [0.9216, 0.8000, 0.1647];
+% C_orange = [0.8824, 0.6863, 0.0000];
+% C_black  = [0.1608, 0.1294, 0.1216];
+C_red    = [0.9490, 0.0196, 0.0196];  % #F20505
+C_blue   = [0.3725, 0.7608, 0.8510];  % #5FC2D9
+C_lblue  = [0.0118, 0.6510, 0.5333];  % #03A688
+C_yellow = [0.9490, 0.6235, 0.0196];  % #F29F05
+C_orange = [0.9490, 0.4549, 0.0196];  % #F27405
 
 % Astroid city
 C_teal   = [13, 166, 151]./255;    % #0DA697
@@ -44,7 +49,7 @@ L_cyl_meas = L_cyl_meas(1:n_cut);
 F_hyd      = F_hyd(1:n_cut);
 
 %% Beam and geometry parameters
-m_beam  = 415.74;                       % Beam mass [kg] (CAD 415.74kg)
+m_beam  = 415.74;                       % Beam mass [kg] (CAD 415.74kg) 
 g       = 9.81;                         % Gravitational acceleration [m/s^2]
 x_c     = 3.21615;                      % COM in x direction local [m] (CAD 3.01315m)
 y_c     = 0.06148;                      % COM in y direction local [m]
@@ -233,11 +238,11 @@ fprintf('  Symmetric average  = %.1f N\n', 0.5*(F_fric_ext_mean + F_fric_ret_mea
 %% Plot 4 — Friction vs position
 hfig4 = figure;
 
-plot(L_steady(idx_ext), Ff_steady(idx_ext)/1000, '-', 'Color', C_teal, 'LineWidth', 1.5, 'DisplayName', 'Extension friction');
+plot(L_steady(idx_ext), Ff_steady(idx_ext)/1000, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', 'Extension friction');
 hold on;
-plot(L_steady(idx_ret), abs(Ff_steady(idx_ret))/1000, '-', 'Color', C_olive, 'LineWidth', 1.5, 'DisplayName', 'Retraction friction (abs)');
-yline(F_fric_ext_mean/1000, '--', 'Color', C_rust, 'LineWidth', 1.5, 'DisplayName', 'Avg extension');
-yline(F_fric_ret_mean/1000, '--', 'Color', C_brown, 'LineWidth', 1.5, 'DisplayName', 'Avg retraction');
+plot(L_steady(idx_ret), abs(Ff_steady(idx_ret))/1000, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Retraction friction (abs)');
+yline(F_fric_ext_mean/1000, '--', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Avg extension');
+yline(F_fric_ret_mean/1000, '--', 'Color', C_orange, 'LineWidth', 1.5, 'DisplayName', 'Avg retraction');
 xlabel('Cylinder length [m]');
 ylabel('$F_\mathrm{fric}$ [kN]');
 legend('Location','best');
