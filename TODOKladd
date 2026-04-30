@@ -386,3 +386,21 @@ Fikk ark av daniel hagen med liste
 
 
 //// test forskjellige hastiger 
+
+
+//// Skriving jeg må gjøre //
+- Skal jeg skrive om feed forward implementasjon? og pressure gradient og positition feedback?///
+- Referanse hastighet og posisjon//
+- Sammenligne data fra krana og simulering til torsdag.
+- Skrive om den naive modellen? vet ikke om det er nok. Eventuelt så kan det bare være i ekte systemet, der vi har naiv FF tror ikke jeg rekker
+- Flytt center of mass i modellen //
+- Sammenlign med trykkkompensert mekanisk?
+- Check valve parameter
+- PCRACK plot og tankemåte lavere signal!! i plot osv la os ta tre punker og lag en linje tre forskjellig hastigheter kombo veldig lav midt der jeg har topp
+- Trykk ser greit u men har noen spikes, vet ikke hvorfor pressure feedback ikke har lyst å funke med pB ref
+- Reaction time for pvg32
+
+/// Første mai jobb!!!
+- Pcr plot tre punkter etter det første plottet med hastighet x akse og pressure eller flow y akse.
+- Fiks alt Michael har gitt kommentarer om!!
+- Send til michael nytt utkast
