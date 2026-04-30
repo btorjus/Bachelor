@@ -60,7 +60,7 @@ ELSIF fXDot > 0.0 THEN											// Cylinder moving up
     fFlowRef     := (fQreq * SQRT(fDeltaP_Ratio)) * 60000.0; 	// Pressure-compensated flow [L/min] (for valve command)
  
     fUtemp_FF     := fFlowRef / fQ0Up;                   		// Normalize [0, 1]
-    fUtemp_FF     := -fUtemp_FF * (1.0 - fDeadUp);        		// Apply deadband and direction
+    fUtemp_FF     := -fUtemp_FF * (1.0 - 0.214);        		// Apply deadband (0.214) and direction
  
  
 ELSIF fXDot < 0.0 THEN											// Cylinder moving down
@@ -75,7 +75,7 @@ ELSIF fXDot < 0.0 THEN											// Cylinder moving down
     fFlowRef     := (fQreq * SQRT(fDeltaP_Ratio)) * 60000.0; 	// Pressure-compensated flow [L/min] (for valve command)
  
     fUtemp_FF     := fFlowRef / fQ0Down;                 		// Normalize [-1, 0]
-    fUtemp_FF     := -fUtemp_FF * (1.0 - fDeadDown);      		// Apply deadband and direction
+    fUtemp_FF     := -fUtemp_FF * (1.0 - 0.214);      			// Apply deadband (0.214) and direction
  
 ELSE
     fU_FF    := 0.0;

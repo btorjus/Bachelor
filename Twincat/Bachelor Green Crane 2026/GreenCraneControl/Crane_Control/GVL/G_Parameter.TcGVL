@@ -15,11 +15,11 @@ VAR_GLOBAL
 	
 	// Valve Values
 	// Flow
-	fQMaxDown 		: LREAL := 10.0; 	// [L/min]		// 10
-	fQMaxUp 		: LREAL := 10.0; 	// [L/min]		// 10
+	fQMaxDown 		: LREAL := 18.0; 	// [L/min]		10 before
+	fQMaxUp 		: LREAL := 18.0; 	// [L/min]		10 before
 	
 	// Area
-	fAreaUp 		: LREAL := 33.100/1E4; 	//[m^2]
+	fAreaUp 		: LREAL := 33.180/1E4; 	//[m^2]		33.100 before
 	fAreaDown 		: LREAL := 23.560/1E4; 	//[m^2]
 	
 
@@ -28,7 +28,7 @@ VAR_GLOBAL
 	fDeadDown 		: LREAL := 0.206; 		// Fra sommer: 0.215, test: 0.206
 	
 	fMaxSpeed 		: LREAL := 0.01; 	// [m/s] 
-	fDeltaP0 		: LREAL := 8.0; 	// [Bar]
+	fDeltaP0 		: LREAL := 20.0; 	// [Bar]		8 before
 	
 	// Deadband test
 	fConst 			: LREAL := 0.0; 	// [-1, 1]
