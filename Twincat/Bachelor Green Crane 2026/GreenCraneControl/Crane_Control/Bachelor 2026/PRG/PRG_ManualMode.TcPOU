@@ -36,7 +36,7 @@ fbInitialPos(
 );
 
 // Return home if start button is pushed for set seconds
-fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#0.5S);
+fbReturnTimer(IN := G_Inputs.bStartButton AND G_Mode.bRunning, PT := T#1.5S);
 IF fbReturnTimer.Q THEN
     bReturning := TRUE;
 END_IF
@@ -48,12 +48,10 @@ IF ABS(G_OPC.fJoystick) > 0.1 THEN
 END_IF
 
 
-// Drive logic (Home/Manual)
+// Drive logic 
 IF bReturning THEN
     fHomeTimer := fHomeTimer + fCycleTime;  						// Updates timer for soft acceleration when returning home
-    
     fDistance := ABS(G_OPC.fPistonPosition - fHomePos); 			// Calculates distance home
-    
     IF G_OPC.fPistonPosition > fHomePos THEN 						// If cylinder is above home point
         fSpeed := (fHomeTimer / fHomeRampTime) * fHomeMaxSpeed;   	// Calculates speed
         fSpeed := LIMIT(0.01, fDistance * 2.0, fSpeed); 			// Calculates breaking
