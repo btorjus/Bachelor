@@ -9,8 +9,8 @@ clc; clear; close all;
 % data1    = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_23.04.26.csv'); 
 
 %data1    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-data1     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-%data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+%data1     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
+data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
 %data1     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 data2    = loadCSV('SineWave_NoPF_KVFF_100bar_0.05freq_26.03.26.csv');
@@ -41,9 +41,9 @@ C_black  = [0.1608, 0.1294, 0.1216];
 %% Fig1
 % Lower reversal point
 hfig1 = figure;
-plot(data1.fTimer, data1.fPistonPosition, '-', 'Color', C_red, 'LineWidth', 3, 'DisplayName', 'Active PF')
+plot(data1.fTimer, data1.fPistonPosition, '-', 'Color', C_red, 'LineWidth', 3, 'DisplayName', '$x$ - Active PF')
 hold on
-plot(data2.fTimer, data2.fPistonPosition, '-', 'Color', C_blue, 'LineWidth', 3, 'DisplayName', 'No PF')
+plot(data2.fTimer, data2.fPistonPosition, '-', 'Color', C_blue, 'LineWidth', 3, 'DisplayName', '$x$ - No PF')
 plot(data1.fTimer, data1.fXRef, '-', 'Color', C_black, 'LineWidth', 3, 'DisplayName', '$x_{ref}$')
 hold off
 grid off
@@ -53,6 +53,7 @@ title('Cylinder Position (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
 xlabel('Time [s]')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) - 0.06;
 saveFigure(hfig1, 'SineReversalPoint')
 
 
@@ -68,19 +69,19 @@ hfig2 = figure;
 subplot(2,1,1)
 plot(data2.fTimer(idx2), data2.fXRef(idx2), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(data2.fTimer(idx2), data2.fPistonPosition(idx2), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'No PF')
+plot(data2.fTimer(idx2), data2.fPistonPosition(idx2), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
 title('Cylinder Position (100 bar, 0.05 Hz) - No Pressure Feedback', 'FontWeight', 'normal')
 ylabel('Position [m]')
 xlim([15, 92]);
 lg = legend('Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.02;
+lg.Position(1) = lg.Position(1) + 0.05;
 
 subplot(2,1,2)
 plot(data1.fTimer(idx1), data1.fXRef(idx1), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Active PF')
+plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
 title('Cylinder Position (100 bar, 0.05 Hz) - Active Pressure Feedback', 'FontWeight', 'normal')
@@ -101,13 +102,13 @@ hfig3 = figure;
 subplot(2,1,1)
 plot(t, posref, '-', 'Color', C_black,'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(t, posSmooth, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Active PF')
+plot(t, posSmooth, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 xlim([14, 89])
 grid off;
 title('Pressure Feedback (100 bar, 0.05 Hz) - Cylinder Position')
 ylabel('Position [m]')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.05;
+lg.Position(1) = lg.Position(1) + 0.04;
 lg.Position(2) = lg.Position(2) - 0.03;
 
 subplot(2,1,2)
@@ -122,7 +123,7 @@ xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Pressure Feedback (100 bar, 0.05 Hz) - Valve Signals')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.01;
+lg.Position(1) = lg.Position(1) + 0.05;
 lg.Position(2) = lg.Position(2) - 0.03;
 saveFigure(hfig3, 'PF_CompletePosition')
 
@@ -134,14 +135,14 @@ hfig4 = figure;
 subplot(2,1,1)
 plot(t, posref, '-', 'Color', C_black,'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(t, posSmooth, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Active PF')
+plot(t, posSmooth, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 xlim([54, 62])
 ylim([0.048, 0.1])
 grid off;
 title('Pressure Feedback (100 bar, 0.05 Hz) - Cylinder Position')
 ylabel('Position [m]')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.05;
+lg.Position(1) = lg.Position(1) + 0.04;
 %lg.Position(2) = lg.Position(2) - 0.03;
 
 subplot(2,1,2)
@@ -156,7 +157,7 @@ xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Pressure Feedback (100 bar, 0.05 Hz) - Valve Signals')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.01;
+lg.Position(1) = lg.Position(1) + 0.05;
 %lg.Position(2) = lg.Position(2) - 0.03;
 saveFigure(hfig4, 'PF_Position_Signal')
 
@@ -231,7 +232,7 @@ hfig7 = figure;
 subplot(2,1,1)
 plot(data3.fTimer(idx3), data3.fXRef(idx3), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(data3.fTimer(idx3), data3.fPistonPosition(idx3), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Cylinder Position')
+plot(data3.fTimer(idx3), data3.fPistonPosition(idx3), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
 title('Cylinder Position (100 bar, 0.05 Hz) - PF Always Active', 'FontWeight', 'normal')
@@ -245,7 +246,7 @@ lg.Position(2) = lg.Position(2) + 0.015;
 subplot(2,1,2)
 plot(data1.fTimer(idx1), data1.fXRef(idx1), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', 'Cylinder Position')
+plot(data1.fTimer(idx1), data1.fPistonPosition(idx1), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 
 % Shaded region and border lines
 yLims = [0.33, 0.355];
