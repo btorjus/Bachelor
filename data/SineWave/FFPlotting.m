@@ -2,6 +2,7 @@ clc; clear; close all;
 % Ctrl R for comment
 % Ctrl T for uncomment
 
+
 % Loading csv
 %dataKVFF    = loadCSV('SineWave_PF_KVFF_100bar_0.05freq_26.03.26.csv');
 %dataKVFF = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
@@ -12,11 +13,13 @@ clc; clear; close all;
 
 %dataKVFF    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
 %dataKVFF     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+%%dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+dataKVFF    = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %dataKVFF     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 dataNoFF    = loadCSV('SineWave_NoFF_PF_KVFF_100bar_0.05freq_31.03.26.csv');
-dataNoPosFB = loadCSV('SineWave_NoPositionFeedback_PF_KVFF_100bar_0.05freq_31.03.26.csv');
+%%dataNoPosFB = loadCSV('SineWave_NoPositionFeedback_PF_KVFF_100bar_0.05freq_31.03.26.csv');
+dataNoPosFB = loadCSV('SineWave_NoPID_100bar_0.05freq_04.05.26.csv');
 %dataNaiveFF = loadCSV('SineWave_OtherFF_PF_100bar_0.05freq_31.03.26.csv');
 %dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_21.04.26.csv');
 dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_22.04.26.csv');
@@ -97,7 +100,7 @@ saveFigure(hfig1, 'Subplot_NoFF')
 
 %% Fig2
 % Sine trajectory and speed + speed ref
-mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 110;
+mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 91.9;
 
 t_KVFF   = dataKVFF.fTimer(mask);
 pos_KVFF = dataKVFF.fPistonPosition(mask);
@@ -112,7 +115,7 @@ hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([45, 130]);
+xlim([26.8, 100]);
 title('Active Kv FF (100 bar, 0.05 Hz)')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
@@ -124,7 +127,7 @@ hold on
 plot(dataKVFF.fTimer(mask), vSmoothKVFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
 hold off
 grid off
-xlim([45, 130]);
+xlim([26.8, 100]);
 ylim([-0.06, 0.06])
 xlabel('Time [s]')
 ylabel('Velocity [m/s]')
@@ -144,7 +147,7 @@ plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_blue, 'LineWidth', 2, 'Dis
 %plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', '#2ECC71', 'LineWidth', 1.5, 'DisplayName', '$u_{PF}$')
 hold off
 grid off
-xlim([45, 105])
+xlim([25, 85])
 xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Valve Signals, Active Kv FF (100 bar, 0.05 Hz)')
@@ -169,8 +172,10 @@ hold off
 grid off;
 title('No Position Feedback (100 bar, 0.05 Hz)')
 ylabel('Position [m]')
-xlim([27,197])
-lg = legend('location', 'northwest', 'Interpreter', 'latex');
+%xlim([27,197])
+xlim([10,100])
+ylim([-0.01,0.35])
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.05;
 lg.Position(2) = lg.Position(2) - 0.01;
 
@@ -185,7 +190,7 @@ xlabel('Time [s]')
 ylabel('Position [m]')
 xlim([8,85])
 ylim([0.04,0.5])
-lg = legend('location', 'northwest', 'Interpreter', 'latex');
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.05;
 lg.Position(2) = lg.Position(2) - 0.01;
 

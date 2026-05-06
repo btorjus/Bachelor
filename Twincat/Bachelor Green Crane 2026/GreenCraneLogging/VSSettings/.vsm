@@ -545,12 +545,6 @@
                   <FileName></FileName>
                   <Children />
                 </Node>
-                <Node>
-                  <Title>fPistonPosition (1)</Title>
-                  <Expanded>False</Expanded>
-                  <FileName></FileName>
-                  <Children />
-                </Node>
               </Children>
             </Node>
           </Children>
