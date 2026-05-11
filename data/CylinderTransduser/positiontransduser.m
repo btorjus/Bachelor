@@ -16,12 +16,19 @@ pol_q = -59.608.*xq.^6 + 86.335.*xq.^5 - 44.643.*xq.^4 + 8.5147.*xq.^3 ...
 % Optional: smooth interpolation of the measured data (spline)
 error_spline_q = spline(pos, error, xq);
 
-C_red    = '#f21a00'; 
-C_blue   = '#3b9ab2'; 
-C_lblue  = '#78b7c5';   
-C_yellow = '#ebcc2a';
-C_orange = '#e1af00';
-C_red = '#f21a00';
+% C_red    = '#f21a00'; 
+% C_blue   = '#3b9ab2'; 
+% C_lblue  = '#78b7c5';   
+% C_yellow = '#ebcc2a';
+% C_orange = '#e1af00';
+% C_red = '#f21a00';
+
+C_red    = [0.9490, 0.0196, 0.0196];  % #F20505
+C_blue   = [0.3725, 0.7608, 0.8510];  % #5FC2D9
+C_lblue  = [0.0118, 0.6510, 0.5333];  % #03A688
+C_yellow = [0.9490, 0.6235, 0.0196];  % #F29F05
+C_orange = [0.9490, 0.4549, 0.0196];  % #F27405
+C_black  = [0.1608, 0.1294, 0.1216];
 
 hfig = figure;  % save the figure handle in a variable
 plot(pos, error, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 5, 'DisplayName', 'Measured deviation');

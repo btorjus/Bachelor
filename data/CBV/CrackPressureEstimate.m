@@ -5,7 +5,7 @@ alpha = 5;
 T1    = 0.03;
 T2    = 2.24;
 % filepath = 'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown110Bar060326\Down110Bar65Signal060326.csv';
-filepath = 'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown100Bar040326\Down100Bar35Signal040326.csv';
+filepath = 'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown100Bar040326\Down100Bar65Signal040326.csv';
 
 VEL_SMOOTH_METHOD = 'sgolay';
 VEL_SMOOTH_SPAN   = 50;
@@ -26,6 +26,7 @@ C_orange = [0.9490, 0.4549, 0.0196];  % #F27405
 C_black  = [0.1608, 0.1294, 0.1216];
 picturewidth    = 20;
 hw_ratio        = 0.65;
+hw_ratio2       = 0.45;
 EXPORT_fontsize = 17;
 
 %% Load and window
@@ -74,6 +75,55 @@ legend('Location','best')
 
 applyFigureExportTemplate(hfig, picturewidth, hw_ratio, EXPORT_fontsize);
 print(hfig, 'cbv_crack_pressure', '-dpdf', '-vector', '-fillpage')
+
+%% Three-run pressure-flow summary
+files3 = { ...
+    'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown100Bar040326\Down100Bar25Signal040326.csv', ...
+    'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown100Bar040326\Down100Bar65Signal040326.csv', ...
+    'C:\Users\sujro\Documents\GitHub\Bachelor\data\spool_mapping\UpDown100Bar040326\Down100Bar100Signal040326.csv'};
+
+% Annular area (Down direction → flow on rod side)
+d_bore = 65e-3;
+d_rod  = 35e-3;
+Aa     = pi*(d_bore^2 - d_rod^2)/4;
+
+pCrackVec = zeros(1, numel(files3));
+flowVec   = zeros(1, numel(files3));
+
+for k = 1:numel(files3)
+    Tk = loadAndClean(files3{k}, COL_fU);
+    tAllk = Tk{:,COL_time};
+    Tk = Tk((tAllk >= T1) & (tAllk <= T2), :);
+
+    tk   = Tk{:,COL_time};
+    pAk  = Tk{:,COL_pA};
+    pBk  = Tk{:,COL_pB};
+    posk = Tk{:,COL_position};
+
+    pCrackVec(k) = median(pAk + alpha*pBk);
+    p_velk       = polyfit(tk, posk, 1);
+    flowVec(k)   = Aa * abs(p_velk(1)) * 60000;   % m³/s → L/min
+
+    fprintf('Run %d: pCrack = %.2f bar, flow = %.3f L/min\n', k, pCrackVec(k), flowVec(k));
+end
+
+% Linear fit
+pfit = polyfit(flowVec, pCrackVec, 1);
+xfit = linspace(min(flowVec), max(flowVec), 50);
+yfit = polyval(pfit, xfit);
+
+hfig2 = figure('Name','CBV pressure-flow');
+plot(flowVec, pCrackVec, 'o', 'Color', C_red, 'MarkerFaceColor', C_red, ...
+    'MarkerSize', 8, 'DisplayName', 'Median $p_A + \alpha \cdot p_B$'); hold on
+plot(xfit, yfit, '-', 'Color', C_black, 'LineWidth', 1.5, ...
+    'DisplayName', sprintf('Linear fit: $%.2f\\,Q + %.1f$', pfit(1), pfit(2)));
+hold off
+xlabel('Flow $Q$ [L/min]')
+ylabel('$p_A + \alpha \cdot p_B$ [bar]')
+legend('Location','best')
+
+applyFigureExportTemplate(hfig2, picturewidth, hw_ratio2, EXPORT_fontsize);
+print(hfig2, 'cbv_pressure_flow', '-dpdf', '-vector', '-fillpage')
 
 %% Local functions
 function T = loadAndClean(filepath, COL_fU)

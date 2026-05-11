@@ -401,6 +401,21 @@ Fikk ark av daniel hagen med liste
 - Reaction time for pvg32
 
 /// Første mai jobb!!!
-- Pcr plot tre punkter etter det første plottet med hastighet x akse og pressure eller flow y akse.
-- Fiks alt Michael har gitt kommentarer om!!
-- Send til michael nytt utkast
+- Pcr plot tre punkter etter det første plottet med hastighet x akse og pressure eller flow y akse. ////
+- Fiks alt Michael har gitt kommentarer om!! /// 
+- Send til michael nytt utkast ///
+
+Figurer ikke fiska enda
+
+Gå gjennom og ha riktig navn på kran, fiks figurnavn, og legg til piler med navn
+Payload, arm, arm supports, fixed pivot, cylinder (actuator), endplates etc.
+
+- De andre bruker en annen friksjonsmodell
+
+- Lag alle Blokk screenshots i vector
+
+- Sammelign simscape med ekte eventuelt time series sammenligning.
+
+- start pos burde implimenteres i refereanse bane slik at vi har smooth start også.
+
+- Fortsett å samenligne simulering
