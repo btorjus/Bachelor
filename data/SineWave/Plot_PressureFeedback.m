@@ -179,7 +179,7 @@ lg.Position(1) = lg.Position(1) + 0.05;
 %lg.Position(2) = lg.Position(2) - 0.03;
 
 subplot(2,1,2)
-plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p_x$')
+plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
 xlim([14, 70])
 ylim([-1500, 1400])
 grid off;
@@ -207,7 +207,7 @@ lg.Position(1) = lg.Position(1) + 0.07;
 lg.Position(2) = lg.Position(2) + 0.015;
 
 subplot(2,1,2)
-plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p_x$')
+plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
 xlim([65, 69])
 ylim([-1500, 400])
 grid off;
