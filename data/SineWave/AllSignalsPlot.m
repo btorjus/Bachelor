@@ -2,12 +2,10 @@ clc; clear; close all;
 % Ctrl R for comment
 % Ctrl T for uncomment
 
-% Loading csv
+
 %dataKVFF    = loadCSV('SineWave_PF_KVFF_100bar_0.05freq_26.03.26.csv');
 %dataKVFF     = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
 %dataKVFF    = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_21.04.26.csv');
-
-
 
 %dataKVFF_25    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
 dataKVFF_25     = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
@@ -15,8 +13,13 @@ dataKVFF_25     = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
 %dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
 
 %dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
-dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
-%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.075freq_04.05.26.csv');
+%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
+%dataKVFF        = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+
+
+
+dataKVFF        = loadCSV('SineWave_KVFF_110bar_0.05freq_04.05.26.csv');
+
 
 
 dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_22.04.26.csv');
@@ -60,11 +63,15 @@ grid off
 xlim([12, 82])
 xlabel('Time [s]')
 ylabel('Signal [-]')
-title('Valve \& Control Signals (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
+title('Valve \& Control Signals (110 bar, 0.05 Hz)', 'FontWeight', 'normal')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.060;
+lg.Position(1) = lg.Position(1) + 0.090;
 lg.Position(2) = lg.Position(2) - 0.019;
 saveFigure(hfig1, 'AllSignals')
+
+
+
+
 
 
 
@@ -170,26 +177,14 @@ hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([12, 100]);
-title('Sinusoidal Trajectory (100 bar, 0.05 Hz)')
+xlim([12, 82]);
+title('Sinusoidal Trajectory (110 bar, 0.05 Hz)')
 xlabel('Time [s]')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.045;
 lg.Position(2) = lg.Position(2) - 0.01;
 saveFigure(hfig5, 'SineRefAndPos')
-
-% Max deviation between xRef and pistonPosition
-t_start = 10;   
-t_end   = 100;  
-mask = dataKVFF.fTimer >= t_start & dataKVFF.fTimer <= t_end;
-xRef = dataKVFF.fXRef(mask);
-xPos = dataKVFF.fPistonPosition(mask);
-t_masked = dataKVFF.fTimer(mask);
-deviation = abs(xRef - xPos);
-[maxDev, idx] = max(deviation);
-tMaxDev = t_masked(idx);
-fprintf('Max deviation: %.4f m at t = %.2f s\n', maxDev, tMaxDev);
 
 
 
@@ -238,6 +233,13 @@ lg.Position(1) = lg.Position(1) + 0.045;
 lg.Position(2) = lg.Position(2) - 0.01;
 
 saveFigure(hfig_ref, 'XRef_XDotRef_Subplot')
+
+
+
+
+
+
+
 
 %% Beregn FF-bidrag prosent on average
 % Fjern rader der fU er nær null OG fTimer < 10

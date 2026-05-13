@@ -29,9 +29,9 @@ END_VAR
 // Initializes fPxOld to avoid gradient spike
 IF bFirstCycle THEN
     IF G_OPC.fU < 0.0 THEN
-        fPxOld := G_OPC.fPa;
+        fPxOld := G_OPC.fPa;	
     ELSIF G_OPC.fU > 0.0 THEN
-        fPxOld := G_OPC.fPb;
+        fPxOld := G_OPC.fPb;  
     ELSE
         fPxOld := 0.0;
     END_IF
@@ -40,9 +40,9 @@ END_IF
 
 // Pressure chosen based on direction
 IF G_OPC.fU < 0.0 THEN
-    fPx := G_OPC.fPa;           					// Upwards direction: Pa 
+    fPx := -G_OPC.fPa;           							// Upwards direction: Pa
 ELSIF G_OPC.fU > 0.0 THEN
-    fPx := G_OPC.fPb;           					// Downwards direction: Pb 
+    fPx := G_OPC.fPb;           							// Downwards direction: Pb  
 ELSE
     fPx := 0.0;
 END_IF

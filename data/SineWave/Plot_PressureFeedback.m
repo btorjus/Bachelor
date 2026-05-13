@@ -10,8 +10,13 @@ clc; clear; close all;
 
 %data1    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
 %data1     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-%%data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
-data1       = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
+%data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+%data1       = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
+%data1        = loadCSV('SineWave_KVFF_110bar_0.05freq_04.05.26.csv');
+%data1        = loadCSV('SineWave_KVFF_120bar_0.05freq_04.05.26.csv');
+data1        = loadCSV('-Pa_120bar_0.05_13.05.26.csv');
+data12        = loadCSV('pB_120bar_0.05_13.05.26.csv');
+
 %data1     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 data_manual = loadCSV('ManualDriving_04.05.26_Backup.csv');
@@ -21,13 +26,15 @@ data3    = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
 
 % Smoothing function
 idxPF = data1.fTimer >= 14 & data1.fTimer <= 80;
-windowSize = 50;
+windowSize = 1;
 posSmooth  = movmean(data1.fPistonPosition(idxPF), windowSize);
 pxSmooth   = movmean(data1.fPx(idxPF),             windowSize);
 gradSmooth = movmean(data1.fPxGrad(idxPF),         windowSize);
 upfbSmooth = movmean(data1.fUpfb(idxPF),           windowSize);
 uSmooth    = movmean(data1.fU(idxPF),              windowSize);
 posref     = movmean(data1.fXRef(idxPF),           windowSize);
+paSmooth = movmean(data1.fPaFiltered(idxPF), windowSize);
+pbSmooth = movmean(data1.fPbFiltered(idxPF), windowSize);
 t = data1.fTimer(idxPF);
 
 % Colors
@@ -40,6 +47,13 @@ C_green =  '#2ECC71';
 C_purple = '#A020F0';
 C_black  = [0.1608, 0.1294, 0.1216];
 
+%C_red    = [0.9490, 0.0196, 0.0196];
+%C_blue   = '#5FC2D9';
+%C_green  = '#03A688';
+%C_yellow = '#F29F05';
+%C_orange = '#F27405';
+%C_purple = '#A020F0';
+%C_black  = [0.1608, 0.1294, 0.1216];
 
 %% Fig1
 % Lower reversal point
@@ -56,7 +70,8 @@ title('Cylinder Position (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
 xlabel('Time [s]')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) - 0.06;
+lg.Position(1) = lg.Position(1) - 0.07;
+lg.Position(2) = lg.Position(1) + 0.06;
 saveFigure(hfig1, 'SineReversalPoint')
 
 
@@ -164,11 +179,16 @@ lg.Position(1) = lg.Position(1) + 0.05;
 %lg.Position(2) = lg.Position(2) - 0.03;
 saveFigure(hfig4, 'PF_Position_Signal')
 
-%% Fig 5
+%% Fig 5 pressure smoothed
 % Selected pressure and pressure gradient
 hfig5 = figure;
 subplot(2,1,1)
 plot(t, pxSmooth, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$p_x$')
+
+hold on
+plot(t, pbSmooth,  '-', 'Color', C_orange, 'LineWidth', 1.5, 'DisplayName', '$p_b$')
+plot(t, paSmooth,  '-', 'Color', C_red,   'LineWidth', 1.5, 'DisplayName', '$p_a$')
+
 xlim([14, 70])
 ylim([-5, 95])
 grid off;
@@ -189,8 +209,74 @@ ylabel('Gradient [bar/s]')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.07;
 %lg.Position(2) = lg.Position(2) - 0.03;
+x|
+saveFigure(hfig5, 'PF_CompletePressure')
+%% Fig 5 pressure not smoothed
+% Selected pressure and pressure gradient
+hfig5 = figure;
+subplot(2,1,1)
+plot(t, data1.fPx(idxPF),         '-', 'Color', C_blue,   'LineWidth', 1.5, 'DisplayName', '$p_x$')
+xlim([14, 70])
+ylim([-5, 105])
+grid off;
+title('Pressure Feedback (120 bar, 0.05 Hz) - Selected Pressure')
+ylabel('Pressure [bar]')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.05;
+
+subplot(2,1,2)
+plot(t, data1.fPxGrad(idxPF), '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
+xlim([14, 70])
+ylim([-1500, 1400])
+grid off;
+title('Pressure Feedback (120 bar, 0.05 Hz) - Pressure Gradient')
+xlabel('Time [s]')
+ylabel('Gradient [bar/s]')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.07;
 
 saveFigure(hfig5, 'PF_CompletePressure')
+
+
+%% Fig 55
+hfig55 = figure;
+plot(t, data1.fPa(idxPF), '-', 'Color', C_green,  'LineWidth', 1.5, 'DisplayName', '$p_{A}$')
+hold on
+plot(t, data1.fPb(idxPF), '-', 'Color', C_orange, 'LineWidth', 1.5, 'DisplayName', '$p_{B}$')
+plot(t, data1.fPx(idxPF), '-', 'Color', C_blue,   'LineWidth', 1.5, 'DisplayName', '$p_x$')
+hold off
+xlim([14, 70])
+ylim([-5, 110])
+grid off;
+title('Pressure Feedback (120 bar, 0.05 Hz) - Selected Pressure', 'FontWeight', 'normal')
+xlabel('Time [s]')
+ylabel('Pressure [bar]')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.11;
+lg.Position(2) = lg.Position(2) - 0.05;
+saveFigure(hfig55, 'PF_PressurePaPbPx')
+
+%% Fig11
+% All Control Signals
+
+fU_Smooth = movmean(data1.fU, 1);
+hfig11 = figure;
+plot(data1.fTimer, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
+hold on
+plot(data1.fTimer, data1.fU_FF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
+plot(data1.fTimer, data1.fUpfb, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(data1.fTimer, data1.fPID, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+hold off
+grid off
+xlim([12, 82])
+xlabel('Time [s]')
+ylabel('Signal [-]')
+title('Valve \& Control Signals (120 bar, 0.05 Hz)', 'FontWeight', 'normal')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.090;
+lg.Position(2) = lg.Position(2) - 0.019;
+saveFigure(hfig11, 'AllSignals')
+
 
 %% Fig 6
 % Selected pressure and pressure gradient
@@ -333,7 +419,7 @@ end
 
 function saveFigure(hfig, fname)
     picturewidth = 20;
-    hw_ratio = 0.9;
+    hw_ratio = 0.65;
     set(findall(hfig, '-property', 'FontSize'),             'FontSize', 15)
     set(findall(hfig, '-property', 'Box'),                  'Box', 'off')
     set(findall(hfig, '-property', 'Interpreter'),          'Interpreter', 'latex')

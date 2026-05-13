@@ -6,8 +6,11 @@ clc; clear; close all;
 % Loading csv
 
 %dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
-dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
+%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %dataKVFF     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+
+dataKVFF        = loadCSV('SineWave_KVFF_110bar_0.05freq_04.05.26.csv');
+%dataKVFF        = loadCSV('SineWave_KVFF_120bar_0.05freq_04.05.26.csv');
 
 
 dataNoFF    = loadCSV('SineWave_NoFF_PF_KVFF_100bar_0.05freq_31.03.26.csv');
@@ -47,6 +50,8 @@ COL_position = 'fPistonPosition';
 
 VEL_SMOOTH_SPAN   = 800;        % glattevindu [samples]
 VEL_SMOOTH_METHOD = 'gaussian';  % 'sgolay' | 'movmean' | 'gaussian'
+
+
 
 
 
@@ -91,6 +96,33 @@ lg.Position(1) = lg.Position(1) + 0.065;
 lg.Position(2) = lg.Position(2) - 0.019;
 saveFigure(hfig1, 'Subplot_NoFF')
 
+
+%% Fig11
+% All Control Signals
+
+fU_Smooth = movmean(dataKVFF.fU, 1);
+hfig11 = figure;
+plot(dataKVFF.fTimer, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
+hold on
+plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
+plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+hold off
+grid off
+xlim([12, 82])
+xlabel('Time [s]')
+ylabel('Signal [-]')
+title('Valve \& Control Signals (120 bar, 0.025 Hz)', 'FontWeight', 'normal')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.090;
+lg.Position(2) = lg.Position(2) - 0.019;
+saveFigure(hfig11, 'AllSignals')
+
+
+
+
+
+
 %% Fig2
 % Sine trajectory and speed + speed ref
 mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 97;
@@ -113,7 +145,7 @@ grid off;
 xlim([12, 105]);
 %xlim([12,90])
 
-title('Active Kv FF (100 bar, 0.05 Hz)')
+title('Active Kv FF (120 bar, 0.025 Hz)')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.035;
@@ -139,6 +171,8 @@ ylabel('Velocity [m/s]')
 lg = legend('Interpreter', 'latex')
 lg.Position(1) = lg.Position(1) + 0.055;
 saveFigure(hfig2, 'Subplot_KVFF')
+
+
 
 
 
