@@ -1,8 +1,8 @@
 clc; clear; close all;
 
 %% Load data
-% Measured (real system) - 0.05 Hz, speed threshold 0.02
-dataKVFF = loadCSV('../SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_23.04.26.csv');
+% Measured (real system) - 0.075 Hz, speed threshold 0.02
+dataKVFF = loadCSV('../SineWave_KVFF_100bar_0.075freq_04.05.26.csv');
 
 % Sign convention: real system uses opposite sign for control signals
 dataKVFF.fU     = -dataKVFF.fU;
@@ -12,16 +12,16 @@ dataKVFF.fUpfb  = -dataKVFF.fUpfb;
 
 % Pressure aliases (project convention)
 dataKVFF.fPS  = dataKVFF.fPsFiltered;
-dataKVFF.fPA1 = dataKVFF.fPaLower;       % DCV -> CBV
-dataKVFF.fPA2 = dataKVFF.fPa;            % CBV -> cylinder bore
-dataKVFF.fPB  = dataKVFF.fPb;            % rod side
+dataKVFF.fPA1 = dataKVFF.fPaLowerFiltered;       % DCV -> CBV
+dataKVFF.fPA2 = dataKVFF.fPaFiltered;            % CBV -> cylinder bore
+dataKVFF.fPB  = dataKVFF.fPbFiltered;            % rod side
 
-% Simulation (Simscape) - matching 0.05 Hz case
-dataSim = loadSim('SineWave_KVFF_100Bar_0.05freq_14kp_050526_Simulink.mat');
+% Simulation (Simscape) - matching 0.075 Hz case
+dataSim = loadSim('SineWave_KVFF_100Bar_0.075freq_8kp_110526_Simulink.mat');
 
 % Time alignment - shift sim forward if its trajectory starts at t=0
 % (Measured trajectory begins around t=30 s)
-t_offset = -3;
+t_offset = -1.33;
 dataSim.fTimer = dataSim.fTimer + t_offset;
 
 %% Colors
@@ -36,32 +36,32 @@ C_black  = [0.1608, 0.1294, 0.1216];
 hfig1 = figure;
 plot(dataKVFF.fTimer, dataKVFF.fXRef, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(dataKVFF.fTimer, dataKVFF.fPistonPosition, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', '$x_{meas}$')
-plot(dataSim.fTimer,  dataSim.fPistonPosition,  '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$x_{sim}$')
+plot(dataKVFF.fTimer, dataKVFF.fPistonPosition, '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', '$x_{meas}$')
+plot(dataSim.fTimer,  dataSim.fPistonPosition,  '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$x_{sim}$')
 hold off
 grid off
-xlim([45, 49])
+xlim([44, 46.75])
 xlabel('Time [s]')
 ylabel('Position [m]')
-title('Position Tracking - Measured vs.\ Simulated (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
+title('Position Tracking - Measured vs.\ Simulated (100 bar, 0.075 Hz)', 'FontWeight', 'normal')
 legend('location', 'northeast', 'Interpreter', 'latex')
 formatFigure(hfig1)
-saveFigure(hfig1, 'PositionComparison')
+saveFigure(hfig1, 'PositionComparison075')
 
 %% Fig2 - Total valve signal comparison
 hfig2 = figure;
-plot(dataKVFF.fTimer, dataKVFF.fU, '-', 'Color', C_yellow,  'LineWidth', 1.5, 'DisplayName', 'Measured $u$')
+plot(dataKVFF.fTimer, dataKVFF.fU, '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', 'Measured $u$')
 hold on
 plot(dataSim.fTimer,  dataSim.fU,  '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
 hold off
 grid off
-xlim([30, 75])
+xlim([30, 65])
 xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Total Valve Signal - Measured vs.\ Simulated', 'FontWeight', 'normal')
 legend('location', 'northeast', 'Interpreter', 'latex')
 formatFigure(hfig2)
-% saveFigure(hfig2, 'USignalComparison')
+% saveFigure(hfig2, 'USignalComparison075')
 
 %% Fig3 - Control components subplot
 hfig3 = figure;
@@ -70,7 +70,7 @@ plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_red,  'LineWidth', 1.5, 'D
 hold on
 plot(dataSim.fTimer,  dataSim.fU_FF, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$u_{sim}$')
 hold off
-xlim([30, 75])
+xlim([30, 65])
 ylabel('$u_{FF}$ [-]')
 title('Control Signal Components')
 legend('Location','northwest')
@@ -80,7 +80,7 @@ plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
 plot(dataSim.fTimer,  dataSim.fPID, '-', 'Color', C_lblue, 'LineWidth', 1.5)
 hold off
-xlim([30, 75])
+xlim([30, 65])
 ylabel('$u_{PID}$ [-]')
 
 subplot(3,1,3)
@@ -88,11 +88,11 @@ plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
 plot(dataSim.fTimer,  dataSim.fUpfb, '-', 'Color', C_lblue, 'LineWidth', 1.5)
 hold off
-xlim([30, 75])
+xlim([30, 65])
 xlabel('Time [s]')
 ylabel('$u_{PFB}$ [-]')
 formatFigure(hfig3)
-saveFigure(hfig3, 'ControlComponentsComparison')
+saveFigure(hfig3, 'ControlComponentsComparison075')
 
 %% Fig4 - Position + total signal subplot
 mask = dataKVFF.fTimer <= 200;
@@ -104,8 +104,8 @@ plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask),'-', 'Color', C_red, 
 plot(dataSim.fTimer,        dataSim.fPistonPosition,       '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Simulated')
 hold off
 grid off
-xlim([30, 75])
-title('Sinusoidal Trajectory (100 bar, 0.05 Hz)')
+xlim([30, 65])
+title('Sinusoidal Trajectory (100 bar, 0.075 Hz)')
 ylabel('Position [m]')
 legend('Location','best')
 
@@ -115,12 +115,12 @@ hold on
 plot(dataSim.fTimer,        dataSim.fU,        '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
 hold off
 grid off
-xlim([30, 75])
+xlim([30, 65])
 xlabel('Time [s]')
 ylabel('Signal [-]')
 legend('Location','best')
 formatFigure(hfig4)
-% saveFigure(hfig4, 'AllSignals_Comparison_Subplot')
+% saveFigure(hfig4, 'AllSignals_Comparison_Subplot075')
 
 %% Fig5 - Pressure comparison
 hfig5 = figure;
@@ -129,18 +129,18 @@ plot(dataKVFF.fTimer, dataKVFF.fPS,    '-', 'Color', C_red,  'LineWidth', 1.5, '
 hold on
 plot(dataSim.fTimer,  dataSim.fPS/1e5, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$p_{sim}$')
 hold off
-xlim([30, 75])
+xlim([30, 65])
 ylim([90, 110])
 ylabel('$p_s$ [bar]')
-title('Pressure Comparison (100 bar, 0.05 Hz)')
-legend('Location','southwest', 'NumColumns',2)
+title('Pressure Comparison (100 bar, 0.075 Hz)')
+legend('Location','northwest', 'NumColumns',2)
 
 subplot(4,1,2)
 plot(dataKVFF.fTimer, dataKVFF.fPA1,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
 plot(dataSim.fTimer,  dataSim.fPA1/1e5, '-', 'Color', C_lblue, 'LineWidth', 1.5)
 hold off
-xlim([30, 75])
+xlim([30, 65])
 %ylim([0, 150])
 ylabel('$p_{A1}$ [bar]')
 
@@ -149,8 +149,8 @@ plot(dataKVFF.fTimer, dataKVFF.fPA2,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
 plot(dataSim.fTimer,  dataSim.fPA2, '-', 'Color', C_lblue, 'LineWidth', 1.5)
 hold off
-xlim([30, 75])
-%ylim([0, 100])
+xlim([30, 65])
+%ylim([0, 150])
 ylabel('$p_{A2}$ [bar]')
 
 subplot(4,1,4)
@@ -158,12 +158,12 @@ plot(dataKVFF.fTimer, dataKVFF.fPB,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
 plot(dataSim.fTimer,  dataSim.fPB, '-', 'Color', C_lblue, 'LineWidth', 1.5)
 hold off
-xlim([30, 75])
-%ylim([0, 100])
+xlim([30, 65])
+%ylim([0, 60])
 xlabel('Time [s]')
 ylabel('$p_B$ [bar]')
 formatFigure(hfig5)
-saveFigure(hfig5, 'PressureComparison')
+saveFigure(hfig5, 'PressureComparison075')
 
 %% FF/PID/PFB contribution (Measured)
 valid_idx = (abs(dataKVFF.fU) > 0.01) & (dataKVFF.fTimer > 10);
