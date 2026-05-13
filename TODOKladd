@@ -419,3 +419,64 @@ Payload, arm, arm supports, fixed pivot, cylinder (actuator), endplates etc.
 - start pos burde implimenteres i refereanse bane slik at vi har smooth start også.
 
 - Fortsett å samenligne simulering
+
+- plutselig pumpetrykk endring test, burde følge samme refereanse
+- plutslig endring i last
+
+- Flytt Kim sin del før model and simulation
+Min filtrering med lavpasser mye lavere en fysisk systemet
+
+For å vise at pfb fungerer er det signalene som er viktig å vise eller hastighet eller noe annet?
+
+/// Møte /// 0705
+Spør om DCV section til Kim og Meg 
+
+- legg til ekte bilder som hjelper leseren i å forstå. av kran plc osv
+
+- er på topp og på vei ned er den mest ustablis så test der
+
+- skriv om hvorda nkraften er lagt på ikke moi
+- nevn at retur arealene er dobbelt så store
+-- se på kapittel fem pressure gradient
+- har ikke med retning på vinkel halvsiker hva som er positivt 
+- flytt equations i kapittel fire?? nå er FBD kapittel 6 som ikke er bra for friskjonsdelen
+- Les over eq delen, sjekk at alt er greit, vet det er noe rart med x'cm og xcm har glemt å merke
+- Kombi av last og source
+- supply drop til 0 så tilbakew
+--- Dette vil ikke fungerer bra med hvordan referanse vår er satt opp for cbv vil stoppe krana når trykket faller, men referanasen vil fortsette. 
+- Tester med 
+
+
+-Fiks niplene på simulink blokkene 
+
+- Økene frekvens er er god test.
+
+- Appendix har jeg ikke plassert noe i
+
+- Problemstilling er relevant, i hydraulic at du kan miste respons og egenfrekvens. når oljestivheten forsvinner eller den egffektive oljestivheten, gass i olje.
+prøv å sett den godt ned til 600mpa og 6000bar. 
+måle beta
+
+lag et volum og styr trykket til å rampe oppo 50 bar eller 100 og ser hvor bolk modules ender, hvis den går opp til maksså kan vi ikke bruke . sammelign med appendix til hydraulic til michael
+liquid properties sensor
+
+
+---- plott på nytt den dærre validation med ny bar 120 
+
+
+
+
+skriv generelt om at det er obust når det ikke endrer seg så mye når man endrer på ting
+mindre robust er trykktilbakekobling, det er mulig siden det er differensiert. siden man måler egentlig trykket
+det er en mer følsom metode som skal ta utenom svigninger dynamiskt
+derfor mindre robust
+etter vår mening er trykktilbakekobling en mindre robust metode som krever mer tuning
+kan risikere at når ting skjer som når oljen blir varm elelr andre ting endrer seg at det krever mer tuning
+må ha en ide om hvorfor det skjedde 
+
+mulig ventilen reager for langsomt. 
+
+ikke konkluder for firkantet, førtste metoden kan mulig fikses med å ha sepperat gain og mer tuning
+
+
+---- fiks pressure gradient i simulering og plot. 
