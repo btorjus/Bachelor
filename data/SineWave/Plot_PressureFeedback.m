@@ -10,8 +10,11 @@ clc; clear; close all;
 
 %data1    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
 %data1     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+%%data1       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+data1       = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %data1     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+
+data_manual = loadCSV('ManualDriving_04.05.26_Backup.csv');
 
 data2    = loadCSV('SineWave_NoPF_KVFF_100bar_0.05freq_26.03.26.csv');
 data3    = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
@@ -136,20 +139,20 @@ subplot(2,1,1)
 plot(t, posref, '-', 'Color', C_black,'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
 plot(t, posSmooth, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
-xlim([54, 62])
-ylim([0.048, 0.1])
+xlim([64, 72])
+ylim([0.3, 0.355])
 grid off;
 title('Pressure Feedback (100 bar, 0.05 Hz) - Cylinder Position')
 ylabel('Position [m]')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.04;
 %lg.Position(2) = lg.Position(2) - 0.03;
-
 subplot(2,1,2)
-plot(t, uSmooth,    '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
+idx = t <= 71;
+plot(t(idx), uSmooth(idx),    '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(t, upfbSmooth, '-',  'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
-xlim([54, 62])
+plot(t(idx), upfbSmooth(idx), '-', 'Color', C_red,   'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+xlim([64, 72])
 ylim([-0.9, 0.6])
 hold off
 grid off;
@@ -176,7 +179,7 @@ lg.Position(1) = lg.Position(1) + 0.05;
 %lg.Position(2) = lg.Position(2) - 0.03;
 
 subplot(2,1,2)
-plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p_x$')
+plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
 xlim([14, 70])
 ylim([-1500, 1400])
 grid off;
@@ -194,8 +197,8 @@ saveFigure(hfig5, 'PF_CompletePressure')
 hfig6 = figure;
 subplot(2,1,1)
 plot(t, pxSmooth, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$p_x$')
-xlim([55, 59])
-ylim([20, 95])
+xlim([65, 69])
+ylim([-10, 80])
 grid off;
 title('Pressure Feedback (100 bar, 0.05 Hz) - Selected Pressure')
 ylabel('Pressure [bar]')
@@ -204,9 +207,9 @@ lg.Position(1) = lg.Position(1) + 0.07;
 lg.Position(2) = lg.Position(2) + 0.015;
 
 subplot(2,1,2)
-plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p_x$')
-xlim([55, 59])
-ylim([-300, 1400])
+plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
+xlim([65, 69])
+ylim([-1500, 400])
 grid off;
 title('Pressure Feedback (100 bar, 0.05 Hz) - Pressure Gradient')
 xlabel('Time [s]')
@@ -224,7 +227,7 @@ saveFigure(hfig6, 'PF_Pressure_Gradient')
 
 
 %% Fig7
-% Sammenligning av data3 (øverst) og data1 (nederst)
+% Comparison PF turns off
 idx3 = data3.fTimer >= 6 & data3.fTimer <= 82;
 idx1 = data1.fTimer >= 6 & data1.fTimer <= 82;
 
@@ -272,6 +275,48 @@ lg.Position(1) = lg.Position(1) + 0.055;
 lg.Position(2) = lg.Position(2) + 0.015;
 
 saveFigure(hfig7, 'PF_PFB_TurnOff')
+
+
+%% Fig8
+% Manual Driving and Return to home
+hfig8 = figure;
+plot(data_manual.fTimer, data_manual.fPistonPosition, '-', 'Color', C_red, 'LineWidth', 3, 'DisplayName', '$x$')
+hold on
+% Legg til etter fill/xline-linjene, før hold off
+fill(nan, nan, C_black, 'FaceAlpha', 0.08, 'EdgeColor', 'none', 'DisplayName', 'Return-to-Home')
+
+% Shaded region and border lines
+yLims = ylim;
+fill([54.0, 63.3, 63.3, 54.0], [yLims(1), yLims(1), yLims(2), yLims(2)], ...
+    C_black, 'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off')
+xline(54.0, '-', 'Color', C_black, 'LineWidth', 0.8, 'Alpha', 0.4, 'HandleVisibility', 'off')
+xline(63.3, '-', 'Color', C_black, 'LineWidth', 0.8, 'Alpha', 0.4, 'HandleVisibility', 'off')
+
+% Label centered in shaded region at the bottom
+text(mean([54.0, 63.3]), yLims(1) + 0.3, '', ...
+    'Color', C_black, 'FontSize', 10, 'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'bottom', 'Interpreter', 'none')
+
+xlim([0,85])
+hold off
+grid off
+title('Cylinder Position (100 bar) - Manual Operation', 'FontWeight', 'normal')
+xlabel('Time [s]')
+ylabel('Position [m]')
+lg = legend('Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.03;
+lg.Position(2) = lg.Position(1) - 0.05;
+saveFigure(hfig8, 'ManualDriving')
+
+
+
+
+
+
+
+
+
+
 
 
 

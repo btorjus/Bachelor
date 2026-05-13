@@ -2,21 +2,17 @@ clc; clear; close all;
 % Ctrl R for comment
 % Ctrl T for uncomment
 
-% Loading csv
-%dataKVFF    = loadCSV('SineWave_PF_KVFF_100bar_0.05freq_26.03.26.csv');
-%dataKVFF = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_20.04.26.csv');
-%dataKVFF    = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_23.04.26.csv');
-%dataKVFF    = loadCSV('SineWave_PaLower_PF_KVFF_100bar_0.05freq_21.04.26.csv');
-%dataKVFF  = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-%dataKVFF  = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
 
-%dataKVFF    = loadCSV('SineWave_speedtreshold0.005_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-%dataKVFF     = loadCSV('SineWave_speedtreshold0.008_KvFF_PF_100bar_0.025freq_24.04.26.csv');
-dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.05freq_24.04.26.csv');
+% Loading csv
+
+%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
+dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %dataKVFF     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
+
 dataNoFF    = loadCSV('SineWave_NoFF_PF_KVFF_100bar_0.05freq_31.03.26.csv');
-dataNoPosFB = loadCSV('SineWave_NoPositionFeedback_PF_KVFF_100bar_0.05freq_31.03.26.csv');
+%%dataNoPosFB = loadCSV('SineWave_NoPositionFeedback_PF_KVFF_100bar_0.05freq_31.03.26.csv');
+dataNoPosFB = loadCSV('SineWave_NoPID_100bar_0.05freq_04.05.26.csv');
 %dataNaiveFF = loadCSV('SineWave_OtherFF_PF_100bar_0.05freq_31.03.26.csv');
 %dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_21.04.26.csv');
 dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_22.04.26.csv');
@@ -97,7 +93,7 @@ saveFigure(hfig1, 'Subplot_NoFF')
 
 %% Fig2
 % Sine trajectory and speed + speed ref
-mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 110;
+mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 97;
 
 t_KVFF   = dataKVFF.fTimer(mask);
 pos_KVFF = dataKVFF.fPistonPosition(mask);
@@ -112,7 +108,11 @@ hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([45, 130]);
+
+%xlim([12, 160]);
+xlim([12, 105]);
+%xlim([12,90])
+
 title('Active Kv FF (100 bar, 0.05 Hz)')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
@@ -124,8 +124,16 @@ hold on
 plot(dataKVFF.fTimer(mask), vSmoothKVFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
 hold off
 grid off
-xlim([45, 130]);
-ylim([-0.06, 0.06])
+
+%xlim([12, 165]);
+%ylim([-0.03, 0.03]);
+
+xlim([12, 105]);
+ylim([-0.06, 0.06]);
+
+%xlim([12,90]);
+%ylim([-0.075, 0.075]);
+
 xlabel('Time [s]')
 ylabel('Velocity [m/s]')
 lg = legend('Interpreter', 'latex')
@@ -133,32 +141,68 @@ lg.Position(1) = lg.Position(1) + 0.055;
 saveFigure(hfig2, 'Subplot_KVFF')
 
 
-%% Fig3
-% KvFF contribution
-fU_Smooth = movmean(dataKVFF.fU, 1000);
-hfig3 = figure;
-plot(dataKVFF.fTimer, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 2, 'DisplayName', '$u$')
+
+
+%% Fig10
+mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 97;
+t_KVFF = dataKVFF.fTimer(mask);
+
+fU_Smooth = movmean(dataKVFF.fU(mask), 1);
+hfig10 = figure;
+plot(t_KVFF, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF}$')
-%plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', '#F92672', 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
-%plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', '#2ECC71', 'LineWidth', 1.5, 'DisplayName', '$u_{PF}$')
+plot(t_KVFF, dataKVFF.fU_FF(mask), '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
+plot(t_KVFF, dataKVFF.fUpfb(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(t_KVFF, dataKVFF.fPID(mask), '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
 hold off
 grid off
-xlim([45, 105])
+
+%xlim([12, 170]);
+xlim([12, 105])
+%xlim([12,90])
+
+xlabel('Time [s]')
+ylabel('Signal [-]')
+title('Valve \& Control Signals (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.060;
+lg.Position(2) = lg.Position(2) - 0.019;
+saveFigure(hfig10, 'AllSignals_KVFF')
+
+
+
+
+%% Fig3
+
+% KvFF contribution
+mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 97;
+t_KVFF = dataKVFF.fTimer(mask);
+
+fU_Smooth = movmean(dataKVFF.fU(mask), 1000);
+hfig3 = figure;
+plot(t_KVFF, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 2, 'DisplayName', '$u$')
+hold on
+plot(t_KVFF, dataKVFF.fU_FF(mask), '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF}$')
+hold off
+grid off
+xlim([12, 105])
 xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Valve Signals, Active Kv FF (100 bar, 0.05 Hz)')
 lg = legend('Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.10;
-%lg.Position(2) = lg.Position(2) - 0.019;
 saveFigure(hfig3, 'KvFF_Contribution')
+
+
+
+
 
 
 
 %% Fig4
 % Position Feedback drifting
-idxNoPosFB = dataNoPosFB.fTimer >= 0 & dataNoPosFB.fTimer <= 187;
-idxKVFF    = dataKVFF.fTimer    >= 0 & dataKVFF.fTimer    <= 85;
+idxNoPosFB = dataNoPosFB.fTimer >= 0 & dataNoPosFB.fTimer <= 95;
+idxKVFF    = dataKVFF.fTimer    >= 0 & dataKVFF.fTimer    <= 95;
 
 hfig4 = figure;
 subplot(2,1,1)
@@ -169,8 +213,10 @@ hold off
 grid off;
 title('No Position Feedback (100 bar, 0.05 Hz)')
 ylabel('Position [m]')
-xlim([27,197])
-lg = legend('location', 'northwest', 'Interpreter', 'latex');
+%xlim([27,197])
+xlim([10,100])
+ylim([-0.01,0.35])
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.05;
 lg.Position(2) = lg.Position(2) - 0.01;
 
@@ -183,9 +229,10 @@ grid off;
 title('Active Position Feedback (100 bar, 0.05 Hz)')
 xlabel('Time [s]')
 ylabel('Position [m]')
-xlim([8,85])
-ylim([0.04,0.5])
-lg = legend('location', 'northwest', 'Interpreter', 'latex');
+%xlim([8,85])
+xlim([10,100])
+ylim([0.03,0.4])
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.05;
 lg.Position(2) = lg.Position(2) - 0.01;
 
@@ -271,7 +318,7 @@ saveFigure(hfig6, 'PID_Signal_Short')
 %% Fig7
 % Sine trajectory and speed Naive FF
 
-mask = dataNaiveFF.fTimer >= 20 & dataNaiveFF.fTimer <= 110;
+mask = dataNaiveFF.fTimer >= 20 & dataNaiveFF.fTimer <= 97;
 
 t_NaiveFF   = dataNaiveFF.fTimer(mask);
 pos_NaiveFF = dataNaiveFF.fPistonPosition(mask);
@@ -285,7 +332,8 @@ hold on
 plot(dataNaiveFF.fTimer(mask), dataNaiveFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([45, 130]);
+%xlim([45, 130]);
+xlim([27, 107]);
 title('Active Nominal FF (100 bar, 0.05 Hz)')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
@@ -297,7 +345,8 @@ hold on
 plot(dataNaiveFF.fTimer(mask), vSmoothNaiveFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
 hold off
 grid off
-xlim([45, 130]);
+%xlim([27, 130]);
+xlim([27, 107]);
 ylim([-0.06, 0.06])
 xlabel('Time [s]')
 ylabel('Velocity [m/s]')
@@ -327,26 +376,32 @@ saveFigure(hfig8, 'NaiveFF_Contribution')
 
 
 %% Fig9
+
 % NaiveFF - PID Signal
-maskNaive = dataNaiveFF.fTimer >= 0 & dataNaiveFF.fTimer <= 110;
+maskNaive = dataNaiveFF.fTimer >= 0 & dataNaiveFF.fTimer <= 97;
+t_Naive = dataNaiveFF.fTimer(maskNaive);
 
 hfig9 = figure;
-plot(dataNaiveFF.fTimer(maskNaive), dataNaiveFF.fU(maskNaive), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
+plot(t_Naive, dataNaiveFF.fU(maskNaive), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(dataNaiveFF.fTimer, dataNaiveFF.fUpfb, '-', 'Color', C_red, 'LineWidth', 2, 'DisplayName', '$u_{PFB}$')
-plot(dataNaiveFF.fTimer(maskNaive), dataNaiveFF.fPID(maskNaive), '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
-plot(dataNaiveFF.fTimer, dataNaiveFF.fU_FF_Naive, '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF  nominal}$')
+plot(t_Naive, dataNaiveFF.fUpfb(maskNaive), '-', 'Color', C_red, 'LineWidth', 2, 'DisplayName', '$u_{PFB}$')
+plot(t_Naive, dataNaiveFF.fPID(maskNaive), '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+plot(t_Naive, dataNaiveFF.fU_FF_Naive(maskNaive), '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF  nominal}$')
 hold off
 grid off;
 xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Valve Signals, Nominal FF (100 bar, 0.05 Hz)')
-xlim([45, 105])
+xlim([27, 107]);
 ylim([-0.85, 0.6])
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.08;
-
 saveFigure(hfig9, 'PID_Signal_NaiveFF')
+
+
+
+
+
 
 
 %% FF-bidrag når farten er høyest (fTimer ≈ 82)
