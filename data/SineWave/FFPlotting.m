@@ -4,7 +4,7 @@ clc; clear; close all;
 
 % 100bar
 %dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
-dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
+dataKVFF        = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
 %dataKVFF     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 % 120bar
