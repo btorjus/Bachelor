@@ -18,7 +18,7 @@ orifice_area_up = [1.1603918835830638E-7 5.7071556399722429E-7 9.022553441804741
 u_plot = [0, 0.25, 0.30:0.05:1.00];
 
 hfig = figure;
-plot(u_plot, orifice_area_up * 1e6 , '-o', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Up');
+plot(u_plot, orifice_area_up * 1e6 , '-o', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', 'Up');
 hold on;
 plot(u_plot, orifice_area_down * 1e6, '-o', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', 'Down');
 xlabel('Control signal $u$ [-]');
