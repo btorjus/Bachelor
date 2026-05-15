@@ -166,6 +166,44 @@ ylabel('$p_B$ [bar]')
 formatFigure(hfig5)
 saveFigure(hfig5, 'PressureComparison075')
 
+%% Validation metrics
+t_win = [30, 65];
+
+% Signal definitions: {label, latex, unit, x_meas, x_sim}
+sigs = { ...
+    'Position',  'x',      'm',   dataKVFF.fPistonPosition, dataSim.fPistonPosition; ...
+    'Valve u',   'u',      '-',   dataKVFF.fU,              dataSim.fU; ...
+    'Supply',    'p_s',    'bar', dataKVFF.fPS,             dataSim.fPS/1e5;   ...   % sim Pa -> bar
+    'DCV-CBV',   'p_{A1}', 'bar', dataKVFF.fPA1,            dataSim.fPA1/1e5;  ...   % sim Pa -> bar
+    'Bore',      'p_{A2}', 'bar', dataKVFF.fPA2,            dataSim.fPA2;      ...   % already bar
+    'Rod',       'p_B',    'bar', dataKVFF.fPB,             dataSim.fPB;       ...   % already bar
+};
+
+idxM = (dataKVFF.fTimer >= t_win(1)) & (dataKVFF.fTimer <= t_win(2));
+tMw  = dataKVFF.fTimer(idxM);
+results = zeros(size(sigs,1), 6);
+
+fprintf('\n=== Validation metrics (t = %g..%g s) ===\n', t_win(1), t_win(2));
+fprintf('%-10s %-5s %9s %9s %9s %9s %9s %9s\n', ...
+    'Signal','Unit','pk_meas','pk_sim','rms_meas','rms_sim','pk_err','rms_err');
+[tSimU, iaSim] = unique(dataSim.fTimer);
+for k = 1:size(sigs,1)
+    xMw = sigs{k,4}(idxM);
+    xSi = interp1(tSimU, sigs{k,5}(iaSim), tMw, 'linear');
+    err = xMw - xSi;
+    results(k,:) = [max(abs(xMw)), max(abs(xSi)), ...
+                    sqrt(mean(xMw.^2)), sqrt(mean(xSi.^2)), ...
+                    max(abs(err)), sqrt(mean(err.^2))];
+    fprintf('%-10s %-5s %9.3f %9.3f %9.3f %9.3f %9.3f %9.3f\n', ...
+        sigs{k,1}, sigs{k,3}, results(k,:));
+end
+
+fprintf('\n=== LaTeX table rows ===\n');
+for k = 1:size(sigs,1)
+    fprintf('$%s$ [%s] & %.3f & %.3f & %.3f & %.3f & %.3f & %.3f \\\\\n', ...
+        sigs{k,2}, sigs{k,3}, results(k,:));
+end
+
 %% FF/PID/PFB contribution (Measured)
 valid_idx = (abs(dataKVFF.fU) > 0.01) & (dataKVFF.fTimer > 10);
 FF_pct  = (abs(dataKVFF.fU_FF(valid_idx))  ./ abs(dataKVFF.fU(valid_idx))) * 100;

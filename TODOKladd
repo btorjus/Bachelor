@@ -506,3 +506,12 @@ controll kapittel litt om filososifen bak koden
 structured text func blokker osv.
 control implementatin er bare regulering
 forenklet simulink modell ikke skjermbilder: Topology
+
+
+- gjør on alle \subsubseciton* til \paragraph?
+
+- endre til sinus invers
+- fix figur. legg til abc og x' y'
+- fiks farge på plot 
+- abstrac, discussion og conclution
+- appendix ting
