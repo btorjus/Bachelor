@@ -3,14 +3,15 @@ clc; clear; close all;
 % Ctrl T to uncomment
 
 % 100bar
-%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
-dataKVFF        = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
-%dataKVFF     = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+%dataKVFF           = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
+%dataKVFF           = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
+%dataKVFF           = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
+%dataKVFF            = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 % 120bar
-%dataKVFF    = loadCSV('-Pa_120bar_0.075_13.05.26.csv');
-%dataKVFF    = loadCSV('-Pa_120bar_0.05_13.05.26.csv');
-%dataKVFF    = loadCSV('pB_120bar_0.025_13.05.26.csv');
+dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_120bar_0.05_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_120bar_0.075_14.05.26.csv');
 
 % Other
 dataNoFF    = loadCSV('SineWave_NoFF_PF_KVFF_100bar_0.05freq_31.03.26.csv');
@@ -39,6 +40,19 @@ COL_position = 'fPistonPosition';
 
 VEL_SMOOTH_SPAN   = 800;        % Smoothing
 VEL_SMOOTH_METHOD = 'gaussian';  % 'sgolay' | 'movmean' | 'gaussian'
+
+% Smoothing function
+idxPF = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 150;
+windowSize = 50;
+posSmooth  = movmean(dataKVFF.fPistonPosition(idxPF), windowSize);
+pxSmooth   = movmean(dataKVFF.fPx(idxPF),             windowSize);
+gradSmooth = movmean(dataKVFF.fPxGrad(idxPF),         windowSize);
+upfbSmooth = movmean(dataKVFF.fUpfb(idxPF),           windowSize);
+uSmooth    = movmean(dataKVFF.fU(idxPF),              windowSize);
+posref     = movmean(dataKVFF.fXRef(idxPF),           windowSize);
+paSmooth = movmean(dataKVFF.fPaFiltered(idxPF), windowSize);
+pbSmooth = movmean(dataKVFF.fPbFiltered(idxPF), windowSize);
+t = dataKVFF.fTimer(idxPF);
 
 
 %% Fig1 
@@ -90,19 +104,20 @@ plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red, 'LineWidth', 1.5, 'Di
 plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
 hold off
 grid off
-xlim([22, 130])
+xlim([13, 130])
+ylim([-0.5,0.4])
 xlabel('Time [s]')
 ylabel('Signal [-]')
 title('Valve \& Control Signals (120 bar, 0.025 Hz)', 'FontWeight', 'normal')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.090;
 lg.Position(2) = lg.Position(2) - 0.019;
-saveFigure(hfig2, 'AllSignals')
+saveFigure(hfig2, 'AAAllSignals')
 
 
 %% Fig3
 % KVFF Sine trajectory and speed + speed ref
-mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 117;
+mask = dataKVFF.fTimer >= 0 & dataKVFF.fTimer <= 116;
 t_KVFF   = dataKVFF.fTimer(mask);
 pos_KVFF = dataKVFF.fPistonPosition(mask);
 vSmoothKVFF = smoothdata(gradient(pos_KVFF, t_KVFF), VEL_SMOOTH_METHOD, VEL_SMOOTH_SPAN);
@@ -114,7 +129,7 @@ hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([22, 130])
+xlim([13, 130])
 ylim([0.025,0.37])
 title('Active Kv FF (120 bar, 0.025 Hz)')
 ylabel('Position [m]')
@@ -127,13 +142,40 @@ hold on
 plot(dataKVFF.fTimer(mask), vSmoothKVFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
 hold off
 grid off
-xlim([22, 130])
+xlim([13, 130])
 ylim([-0.03, 0.03]);
 xlabel('Time [s]')
 ylabel('Velocity [m/s]')
 lg = legend('Interpreter', 'latex')
 lg.Position(1) = lg.Position(1) + 0.055;
-saveFigure(hfig3, 'Subplot_KVFF')
+saveFigure(hfig3, 'AASubplot_KVFF')
+
+%% Fig xx 
+% Selected pressure and pressure gradient
+hfig5 = figure;
+subplot(2,1,1)
+plot(t, pxSmooth, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$p_x$')
+xlim([13, 130])
+ylim([-100, 50])
+grid off;
+title('(120 bar, 0.025 Hz) - Selected Pressure')
+ylabel('Pressure [bar]')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.05;
+%lg.Position(2) = lg.Position(2) - 0.03;
+
+subplot(2,1,2)
+plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
+xlim([13, 130])
+ylim([-2300, 1500])
+grid off;
+title('(120 bar, 0.025 Hz) - Pressure Gradient')
+xlabel('Time [s]')
+ylabel('Gradient [bar/s]')
+lg = legend('location', 'northeast', 'Interpreter', 'latex');
+lg.Position(1) = lg.Position(1) + 0.07;
+%lg.Position(2) = lg.Position(2) - 0.03;
+saveFigure(hfig5, 'AAPF_CompletePressure')
 
 
 %% Fig4
