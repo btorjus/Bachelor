@@ -480,3 +480,29 @@ ikke konkluder for firkantet, førtste metoden kan mulig fikses med å ha sepper
 
 
 ---- fiks pressure gradient i simulering og plot. 
+
+gå gjennom ebbis pdf om rapport
+
+Spør michael om plassering av cbv strukurelt
+Friksjons greia står rart
+Bilder av ting
+pressure gradient.
+hydraulic schamatics
+mekanikken FBD
+video hjelp
+sammfunnsperspekt
+
+/// møte 1405/////
+lag 4a 4b
+ekspermintell opstilling, hvordan ser denneut
+gjentor hvilke sensorer og kommunikasjon
+hva motar vi og gir tilbake
+liten nomiclatru om signaler inn og ut
+forklar hvilke sensorer
+liten kapittel 
+generell teori og hva som er bra å forstå til control implementiaiton
+hva slags leketøy har vi
+controll kapittel litt om filososifen bak koden
+structured text func blokker osv.
+control implementatin er bare regulering
+forenklet simulink modell ikke skjermbilder: Topology

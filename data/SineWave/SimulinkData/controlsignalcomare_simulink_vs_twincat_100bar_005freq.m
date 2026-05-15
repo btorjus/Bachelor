@@ -36,7 +36,7 @@ C_black  = [0.1608, 0.1294, 0.1216];
 hfig1 = figure;
 plot(dataKVFF.fTimer, dataKVFF.fXRef, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
-plot(dataKVFF.fTimer, dataKVFF.fPistonPosition, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', '$x_{meas}$')
+plot(dataKVFF.fTimer, dataKVFF.fPistonPosition, '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', '$x_{meas}$')
 plot(dataSim.fTimer,  dataSim.fPistonPosition,  '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$x_{sim}$')
 hold off
 grid off
@@ -50,9 +50,9 @@ saveFigure(hfig1, 'PositionComparison')
 
 %% Fig2 - Total valve signal comparison
 hfig2 = figure;
-plot(dataKVFF.fTimer, dataKVFF.fU, '-', 'Color', C_yellow,  'LineWidth', 1.5, 'DisplayName', 'Measured $u$')
+plot(dataKVFF.fTimer, dataKVFF.fU, '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', 'Measured $u$')
 hold on
-plot(dataSim.fTimer,  dataSim.fU,  '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
+plot(dataSim.fTimer,  dataSim.fU,  '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
 hold off
 grid off
 xlim([30, 75])
@@ -68,7 +68,7 @@ hfig3 = figure;
 subplot(3,1,1)
 plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', '$u_{meas}$')
 hold on
-plot(dataSim.fTimer,  dataSim.fU_FF, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$u_{sim}$')
+plot(dataSim.fTimer,  dataSim.fU_FF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{sim}$')
 hold off
 xlim([30, 75])
 ylabel('$u_{FF}$ [-]')
@@ -78,7 +78,7 @@ legend('Location','northwest')
 subplot(3,1,2)
 plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
-plot(dataSim.fTimer,  dataSim.fPID, '-', 'Color', C_lblue, 'LineWidth', 1.5)
+plot(dataSim.fTimer,  dataSim.fPID, '-', 'Color', C_blue, 'LineWidth', 1.5)
 hold off
 xlim([30, 75])
 ylabel('$u_{PID}$ [-]')
@@ -86,7 +86,7 @@ ylabel('$u_{PID}$ [-]')
 subplot(3,1,3)
 plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
-plot(dataSim.fTimer,  dataSim.fUpfb, '-', 'Color', C_lblue, 'LineWidth', 1.5)
+plot(dataSim.fTimer,  dataSim.fUpfb, '-', 'Color', C_blue, 'LineWidth', 1.5)
 hold off
 xlim([30, 75])
 xlabel('Time [s]')
@@ -101,7 +101,7 @@ subplot(2,1,1)
 plot(dataKVFF.fTimer(mask), dataKVFF.fXRef(mask),          '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$x_{ref}$')
 hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask),'-', 'Color', C_red,   'LineWidth', 1.5, 'DisplayName', 'Measured')
-plot(dataSim.fTimer,        dataSim.fPistonPosition,       '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Simulated')
+plot(dataSim.fTimer,        dataSim.fPistonPosition,       '-', 'Color', C_blue,  'LineWidth', 1.5, 'DisplayName', 'Simulated')
 hold off
 grid off
 xlim([30, 75])
@@ -112,7 +112,7 @@ legend('Location','best')
 subplot(2,1,2)
 plot(dataKVFF.fTimer(mask), dataKVFF.fU(mask), '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', 'Measured $u$')
 hold on
-plot(dataSim.fTimer,        dataSim.fU,        '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
+plot(dataSim.fTimer,        dataSim.fU,        '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', 'Simulated $u$')
 hold off
 grid off
 xlim([30, 75])
@@ -127,7 +127,7 @@ hfig5 = figure;
 subplot(4,1,1)
 plot(dataKVFF.fTimer, dataKVFF.fPS,    '-', 'Color', C_red,  'LineWidth', 1.5, 'DisplayName', '$p_{meas}$')
 hold on
-plot(dataSim.fTimer,  dataSim.fPS/1e5, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$p_{sim}$')
+plot(dataSim.fTimer,  dataSim.fPS/1e5, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$p_{sim}$')
 hold off
 xlim([30, 75])
 ylim([90, 110])
@@ -138,7 +138,7 @@ legend('Location','southwest', 'NumColumns',2)
 subplot(4,1,2)
 plot(dataKVFF.fTimer, dataKVFF.fPA1,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
-plot(dataSim.fTimer,  dataSim.fPA1/1e5, '-', 'Color', C_lblue, 'LineWidth', 1.5)
+plot(dataSim.fTimer,  dataSim.fPA1/1e5, '-', 'Color', C_blue, 'LineWidth', 1.5)
 hold off
 xlim([30, 75])
 %ylim([0, 150])
@@ -147,7 +147,7 @@ ylabel('$p_{A1}$ [bar]')
 subplot(4,1,3)
 plot(dataKVFF.fTimer, dataKVFF.fPA2,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
-plot(dataSim.fTimer,  dataSim.fPA2, '-', 'Color', C_lblue, 'LineWidth', 1.5)
+plot(dataSim.fTimer,  dataSim.fPA2, '-', 'Color', C_blue, 'LineWidth', 1.5)
 hold off
 xlim([30, 75])
 %ylim([0, 100])
@@ -156,7 +156,7 @@ ylabel('$p_{A2}$ [bar]')
 subplot(4,1,4)
 plot(dataKVFF.fTimer, dataKVFF.fPB,    '-', 'Color', C_red,  'LineWidth', 1.5)
 hold on
-plot(dataSim.fTimer,  dataSim.fPB, '-', 'Color', C_lblue, 'LineWidth', 1.5)
+plot(dataSim.fTimer,  dataSim.fPB, '-', 'Color', C_blue, 'LineWidth', 1.5)
 hold off
 xlim([30, 75])
 %ylim([0, 100])
@@ -225,7 +225,7 @@ end
 
 function saveFigure(hfig, fname)
     picturewidth = 20;
-    hw_ratio = 0.65;
+    hw_ratio = 0.35;
     formatFigure(hfig)
     set(hfig, 'Units', 'centimeters', 'Position', [3 3 picturewidth hw_ratio*picturewidth])
     pos = get(hfig, 'Position');
