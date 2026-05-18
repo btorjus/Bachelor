@@ -1,15 +1,13 @@
 clc; clear; close all;
-% Ctrl R to comment
-% Ctrl T to uncomment
 
 % 100bar
-%dataKVFF           = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
-%dataKVFF           = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
-%dataKVFF           = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
+dataKVFF     = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
 %dataKVFF            = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 % 120bar
-dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_120bar_0.05_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_120bar_0.075_14.05.26.csv');
 
@@ -17,6 +15,7 @@ dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
 dataNoFF    = loadCSV('SineWave_NoFF_PF_KVFF_100bar_0.05freq_31.03.26.csv');
 dataNoPosFB = loadCSV('SineWave_NoPID_100bar_0.05freq_04.05.26.csv');
 dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_22.04.26.csv');
+
 
 % Colors
 C_red    = [0.9490, 0.1020, 0.0000];
@@ -149,33 +148,6 @@ ylabel('Velocity [m/s]')
 lg = legend('Interpreter', 'latex')
 lg.Position(1) = lg.Position(1) + 0.055;
 saveFigure(hfig3, 'AASubplot_KVFF')
-
-%% Fig xx 
-% Selected pressure and pressure gradient
-hfig5 = figure;
-subplot(2,1,1)
-plot(t, pxSmooth, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$p_x$')
-xlim([13, 130])
-ylim([-100, 50])
-grid off;
-title('(120 bar, 0.025 Hz) - Selected Pressure')
-ylabel('Pressure [bar]')
-lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.05;
-%lg.Position(2) = lg.Position(2) - 0.03;
-
-subplot(2,1,2)
-plot(t, gradSmooth, '-', 'Color', C_purple, 'LineWidth', 1.5, 'DisplayName', '$\nabla p$')
-xlim([13, 130])
-ylim([-2300, 1500])
-grid off;
-title('(120 bar, 0.025 Hz) - Pressure Gradient')
-xlabel('Time [s]')
-ylabel('Gradient [bar/s]')
-lg = legend('location', 'northeast', 'Interpreter', 'latex');
-lg.Position(1) = lg.Position(1) + 0.07;
-%lg.Position(2) = lg.Position(2) - 0.03;
-saveFigure(hfig5, 'AAPF_CompletePressure')
 
 
 %% Fig4

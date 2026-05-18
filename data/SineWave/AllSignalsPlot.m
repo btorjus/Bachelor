@@ -1,15 +1,13 @@
 clc; clear; close all;
-% Ctrl R to comment
-% Ctrl T to uncomment
 
 % 100bar
-%dataKVFF       = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
+dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
 %dataKVFF       = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
 % 120bar
 %dataKVFF       = loadCSV('-Pa_120bar_0.075_13.05.26.csv');
-dataKVFF        = loadCSV('-Pa_120bar_0.05_13.05.26.csv');
+%dataKVFF       = loadCSV('-Pa_120bar_0.05_13.05.26.csv');
 %dataKVFF       = loadCSV('pB_120bar_0.025_13.05.26.csv');
 
 % Other
@@ -50,7 +48,7 @@ title('Valve \& Control Signals (120 bar, 0.05 Hz)', 'FontWeight', 'normal')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.090;
 lg.Position(2) = lg.Position(2) - 0.019;
-saveFigure(hfig1, 'AllSignals_120')
+saveFigure(hfig1, 'AllSignals')
 
 
 %% Fig2
@@ -288,7 +286,7 @@ fprintf('\n');
 fprintf('NaiveFF-bidrag: %.14f%%\n', min_ff_pct_naive);
 
 
-%% NaiveFF contribution at high speed (fTimer = 62)
+%% NaiveFF contribution at high speed (set value for timer)
 [~, idx_max_speed_naive] = min(abs(dataNaiveFF.fTimer - 62));
 
 time_at_max_speed_naive  = dataNaiveFF.fTimer(idx_max_speed_naive);
