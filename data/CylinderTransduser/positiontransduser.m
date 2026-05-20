@@ -54,5 +54,3 @@ set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidt
 figpos = get(hfig,'Position');
 set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[figpos(3), figpos(4)])
 print(hfig, fname, '-dpdf', '-vector', '-fillpage')
-
-%fiks er stygg

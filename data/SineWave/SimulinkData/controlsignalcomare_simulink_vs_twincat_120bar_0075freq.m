@@ -20,8 +20,7 @@ dataKVFF.fPB  = dataKVFF.fPb;            % rod side
 % Simulation (Simscape) - matching 0.075 Hz case
 dataSim = loadSim('SineWave_KVFF_120Bar_0.075freq_8kp_110526_Simulink.mat');
 
-% Time alignment - shift sim forward if its trajectory starts at t=0
-% (Measured trajectory begins around t=30 s)
+% Time alignment
 t_offset = -1.33;
 dataSim.fTimer = dataSim.fTimer + t_offset;
 
