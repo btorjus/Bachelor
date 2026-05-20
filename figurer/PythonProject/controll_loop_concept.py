@@ -96,6 +96,7 @@ def line(ax, xs, ys):
 fig, ax = plt.subplots(figsize=(fig_w_in, fig_w_in * hw_ratio))
 ax.set_xlim(0, 20)
 ax.set_ylim(0, 8.5)
+ax.set_ylim(0, 8.5)
 ax.set_aspect('equal')
 ax.axis('off')
 
@@ -103,17 +104,17 @@ ax.axis('off')
 y_top, y_mid, y_bot = 6.8, 4.2, 1.2
 
 x_in      = 0.6
-x_err     = 3.2
-x_ctrl    = 5.2
+x_err     = 1.8       # was 3.2
+x_ctrl    = 4.2       # was 5.2
 x_comb    = 7.8
 x_psum    = 10.6
 x_sys     = 13.7
 x_tap     = 17.2
 x_meas    = 18.55
 x_comp    = 11.0
-x_pfb_blk = 12.85
+x_pfb_blk = 13.4      # was 12.85
 
-W_ctrl, H_ctrl = 1.65, 1.0
+W_ctrl, H_ctrl = 2.25, 1.0   # was 1.65
 W_sys,  H_sys  = 2.7, 1.35
 W_pfb,  H_pfb  = 2.75, 1.15
 W_comp, H_comp = 2.20, 1.0
@@ -124,9 +125,9 @@ ax.text(x_in - 0.2, y_top, 'Reference\nvelocity',
         ha='right', va='center')
 arrow(ax, x_in, y_top, x_ctrl - W_ctrl/2, y_top)
 add_block(ax, x_ctrl, y_top, W_ctrl, H_ctrl,
-          lines=['Feed-forward', 'model'])
+          lines=['Feed-', 'forward'])
 line(ax, [x_ctrl + W_ctrl/2, x_comb], [y_top, y_top])
-ax.text((x_ctrl + W_ctrl/2 + x_comb)/2, y_top + 0.32,
+ax.text((x_ctrl + W_ctrl/2 + x_comb)/2 + 0.4, y_top + 0.40,
         'Feed-forward\ncontribution', ha='center', va='bottom')
 arrow(ax, x_comb, y_top, x_comb, y_mid + r_sum)
 
@@ -138,12 +139,12 @@ add_sum(ax, x_err, y_mid, signs={'left': '+', 'bottom': '−'})
 
 # %% Feedback controller -> feedback contribution -> combiner
 arrow(ax, x_err + r_sum, y_mid, x_ctrl - W_ctrl/2, y_mid)
-ax.text((x_err + r_sum + x_ctrl - W_ctrl/2)/2, y_mid + 0.32,
-        'Position\nerror', ha='center', va='bottom')
+ax.text((x_err + r_sum + x_ctrl - W_ctrl/2)/2 - 0.2, y_mid + 0.55,
+        'Error', ha='center', va='bottom')
 add_block(ax, x_ctrl, y_mid, W_ctrl, H_ctrl,
           lines=['Feedback', 'controller'])
 arrow(ax, x_ctrl + W_ctrl/2, y_mid, x_comb - r_sum, y_mid)
-ax.text((x_ctrl + W_ctrl/2 + x_comb)/2, y_mid + 0.32,
+ax.text((x_ctrl + W_ctrl/2 + x_comb)/2, y_mid + 0.55,
         'Feedback\ncontribution', ha='center', va='bottom')
 add_sum(ax, x_comb, y_mid, signs={'left': '+', 'top': '+'})
 
@@ -185,7 +186,7 @@ arrow(ax, x_pfb_bend2, y_pfb_bend2, x_pfb_in, y_pfb_in)
 add_block(ax, x_pfb_blk, y_top, W_pfb, H_pfb,
           lines=['Pressure', 'feedback'])
 line(ax, [x_pfb_blk - W_pfb/2, x_psum], [y_top, y_top])
-ax.text((x_pfb_blk - W_pfb/2 + x_psum)/2 - 0.25, y_top + 0.34,
+ax.text((x_pfb_blk - W_pfb/2 + x_psum)/2 - 0.8  , y_top + 0.4,
         'Pressure-feedback\ncontribution', ha='center', va='bottom')
 arrow(ax, x_psum, y_top, x_psum, y_mid + r_sum)
 
