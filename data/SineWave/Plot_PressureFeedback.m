@@ -1,10 +1,11 @@
 clc; clear; close all;
 
 % 100bar
-dataKVFF     = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
+%dataKVFF     = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+dataKVFF    = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 
 % 120bar
 %dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
@@ -31,22 +32,24 @@ pbSmooth = movmean(dataKVFF.fPbFiltered(idxPF), windowSize);
 t = dataKVFF.fTimer(idxPF);
 
 % Colors
-C_red    = [0.9490, 0.1020, 0.0000];
-C_lblue   = '#5FC2D9';
-C_blue  = '#1E90FF';
+C_red    = [0.9490, 0.0196, 0.0196];
+C_lblue   = '#03A688';
+C_blue  = '#5FC2D9';
 C_yellow = '#F29F05';
 C_orange = '#F27405';
 C_green =  '#2ECC71';
 C_purple = '#A020F0';
 C_black  = [0.1608, 0.1294, 0.1216];
 
-%C_red    = [0.9490, 0.0196, 0.0196];
-%C_blue   = '#5FC2D9';
-%C_green  = '#03A688';
-%C_yellow = '#F29F05';
-%C_orange = '#F27405';
-%C_purple = '#A020F0';
-%C_black  = [0.1608, 0.1294, 0.1216];
+
+% C_red    = [0.9490, 0.1020, 0.0000];
+% C_lblue   = '#5FC2D9';
+% C_blue  = '#1E90FF';
+% C_yellow = '#F29F05';
+% C_orange = '#F27405';
+% C_green =  '#2ECC71';
+% C_purple = '#A020F0';
+% C_black  = [0.1608, 0.1294, 0.1216];
 
 
 %% Fig1
@@ -121,7 +124,7 @@ lg.Position(2) = lg.Position(2) - 0.03;
 subplot(2,1,2)
 plot(t, uSmooth,    '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(t, upfbSmooth, '-',  'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(t, upfbSmooth, '-',  'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
 xlim([14, 89])
 ylim([-0.9, 0.6])
 hold off
@@ -155,7 +158,7 @@ subplot(2,1,2)
 idx = t <= 71;
 plot(t(idx), uSmooth(idx),    '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(t(idx), upfbSmooth(idx), '-', 'Color', C_red,   'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(t(idx), upfbSmooth(idx), '-', 'Color', C_blue,   'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
 xlim([64, 72])
 ylim([-0.9, 0.6])
 hold off
@@ -340,7 +343,7 @@ end
 
 function saveFigure(hfig, fname)
     picturewidth = 20;
-    hw_ratio = 0.65;
+    hw_ratio = 0.75;
     set(findall(hfig, '-property', 'FontSize'),             'FontSize', 15)
     set(findall(hfig, '-property', 'Box'),                  'Box', 'off')
     set(findall(hfig, '-property', 'Interpreter'),          'Interpreter', 'latex')

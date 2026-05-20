@@ -1,13 +1,15 @@
 clc; clear; close all;
 
 % 100bar
-dataKVFF     = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
-%dataKVFF            = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+
+%dataKVFF    = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
+%dataKVFF    = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 
 % 120bar
-%dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
+dataKVFF    = loadCSV('SineWave_120bar_0.025_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_120bar_0.05_14.05.26.csv');
 %dataKVFF    = loadCSV('SineWave_120bar_0.075_14.05.26.csv');
 
@@ -18,14 +20,23 @@ dataNaiveFF = loadCSV('SineWave_NaiveFF_PF_100bar_0.05freq_22.04.26.csv');
 
 
 % Colors
-C_red    = [0.9490, 0.1020, 0.0000];
-C_lblue   = '#5FC2D9';
-C_blue  = '#1E90FF';
+C_red    = [0.9490, 0.0196, 0.0196];
+C_lblue   = '#03A688';
+C_blue  = '#5FC2D9';
 C_yellow = '#F29F05';
 C_orange = '#F27405';
 C_green =  '#2ECC71';
 C_purple = '#A020F0';
 C_black  = [0.1608, 0.1294, 0.1216];
+
+% C_red    = [0.9490, 0.1020, 0.0000];
+% C_lblue   = '#5FC2D9';
+% C_blue  = '#1E90FF';
+% C_yellow = '#F29F05';
+% C_orange = '#F27405';
+% C_green =  '#2ECC71';
+% C_purple = '#A020F0';
+% C_black  = [0.1608, 0.1294, 0.1216];
 
 % Speed calculation
 COL_time     = 'fTimer';
@@ -79,7 +90,7 @@ lg.Position(2) = lg.Position(2) + 0.02;
 subplot(2,1,2)
 plot(dataNoFF.fTimer(idx), dataNoFF.fXDotRef(idx), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{ref}$')
 hold on
-plot(dataNoFF.fTimer(idx), vSmoothNoFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
+plot(dataNoFF.fTimer(idx), vSmoothNoFF, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}$')
 hold off
 grid off
 ylim([-0.06, 0.06])
@@ -92,26 +103,30 @@ lg.Position(2) = lg.Position(2) - 0.019;
 saveFigure(hfig1, 'Subplot_NoFF')
 
 
+
 %% Fig2
 % KVFF All Control Signals
-fU_Smooth = movmean(dataKVFF.fU, 1);
+mask2 = dataKVFF.fTimer >= 12 & dataKVFF.fTimer <= 97;
+t_fig2 = dataKVFF.fTimer(mask2);
+
 hfig2 = figure;
-plot(dataKVFF.fTimer, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
+plot(t_fig2, dataKVFF.fU(mask2), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
-plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
-plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+plot(t_fig2, dataKVFF.fU_FF(mask2), '-', 'Color', C_orange, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
+plot(t_fig2, dataKVFF.fUpfb(mask2), '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(t_fig2, dataKVFF.fPID(mask2), '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
 hold off
+xlim([12, 105])
+%xlim([13, 130])
+%ylim([-0.5,0.4])
 grid off
-xlim([13, 130])
-ylim([-0.5,0.4])
 xlabel('Time [s]')
 ylabel('Signal [-]')
-title('Valve \& Control Signals (120 bar, 0.025 Hz)', 'FontWeight', 'normal')
+title('Valve \& Control Signals (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
 lg = legend('location', 'northeast', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.090;
 lg.Position(2) = lg.Position(2) - 0.019;
-saveFigure(hfig2, 'AAAllSignals')
+saveFigure(hfig2, 'AllSignals2')
 
 
 %% Fig3
@@ -128,8 +143,17 @@ hold on
 plot(dataKVFF.fTimer(mask), dataKVFF.fPistonPosition(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$x$')
 hold off
 grid off;
-xlim([13, 130])
+
+xlim([22, 125])
+%xlim([35, 85])
+%xlim([15, 45])
+
+xlim([12.5, 125])
+%xlim([12, 65])
+%xlim([9, 45])
+    
 ylim([0.025,0.37])
+
 title('Active Kv FF (120 bar, 0.025 Hz)')
 ylabel('Position [m]')
 lg = legend('Interpreter', 'latex');
@@ -138,16 +162,27 @@ lg.Position(1) = lg.Position(1) + 0.035;
 subplot(2,1,2)
 plot(dataKVFF.fTimer(mask), dataKVFF.fXDotRef(mask), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{ref}$')
 hold on
-plot(dataKVFF.fTimer(mask), vSmoothKVFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
+plot(dataKVFF.fTimer(mask), vSmoothKVFF, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}$')
 hold off
 grid off
-xlim([13, 130])
+
+xlim([22, 125])
+%xlim([35, 85])
+%xlim([15, 45])
+
+xlim([12.5, 125])
+%xlim([12, 65])
+%xlim([9, 45])
+
 ylim([-0.03, 0.03]);
+%ylim([-0.05, 0.05]);
+%ylim([-0.08, 0.08]);
+
 xlabel('Time [s]')
 ylabel('Velocity [m/s]')
 lg = legend('Interpreter', 'latex')
 lg.Position(1) = lg.Position(1) + 0.055;
-saveFigure(hfig3, 'AASubplot_KVFF')
+saveFigure(hfig3, 'Subplot_KVFF')
 
 
 %% Fig4
@@ -303,7 +338,7 @@ lg.Position(1) = lg.Position(1) + 0.04;
 subplot(2,1,2)
 plot(dataNaiveFF.fTimer(mask), dataNaiveFF.fXDotRef(mask), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{ref}$')
 hold on
-plot(dataNaiveFF.fTimer(mask), vSmoothNaiveFF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}_{actual}$')
+plot(dataNaiveFF.fTimer(mask), vSmoothNaiveFF, '-', 'Color', C_lblue, 'LineWidth', 1.5, 'DisplayName', '$\dot{x}$')
 hold off
 grid off
 %xlim([27, 130]);
@@ -324,9 +359,9 @@ t_Naive = dataNaiveFF.fTimer(maskNaive);
 hfig9 = figure;
 plot(t_Naive, dataNaiveFF.fU(maskNaive), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(t_Naive, dataNaiveFF.fUpfb(maskNaive), '-', 'Color', C_red, 'LineWidth', 2, 'DisplayName', '$u_{PFB}$')
-plot(t_Naive, dataNaiveFF.fPID(maskNaive), '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
-plot(t_Naive, dataNaiveFF.fU_FF_Naive(maskNaive), '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF  nominal}$')
+plot(t_Naive, dataNaiveFF.fUpfb(maskNaive), '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{PFB}$')
+plot(t_Naive, dataNaiveFF.fPID(maskNaive), '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+plot(t_Naive, dataNaiveFF.fU_FF_Naive(maskNaive), '-', 'Color', C_orange, 'LineWidth', 2, 'DisplayName', '$u_{FF  nominal}$')
 hold off
 grid off;
 xlabel('Time [s]')
