@@ -1,9 +1,15 @@
 clc; clear; close all;
 
 % Pressure filter calculation
+
 % Filter constants
+
 fNum = 0.003137;
 fDen = 0.9969;
+ 
+ % fNum = 0.0009995;
+ % fDen = -0.999;
+
 
 % Initial conditions
 s = 0;      

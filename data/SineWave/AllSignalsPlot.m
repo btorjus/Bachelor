@@ -1,7 +1,12 @@
 clc; clear; close all;
 
 % 100bar
-dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
+%dataKVFF     = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
+dataKVFF    = loadCSV('SineWave_100bar_0.05_14.05.26.csv');
+%dataKVFF    = loadCSV('SineWave_100bar_0.075_14.05.26.csv');
+% 
+%dataKVFF        = loadCSV('SineWave_KVFF_100bar_0.025freq_04.05.26.csv');
+%dataKVFF        = loadCSV('SineWave_100bar_0.025_14.05.26.csv');
 %dataKVFF       = loadCSV('SineWave_KVFF_100bar_0.05freq_04.05.26(2).csv');
 %dataKVFF       = loadCSV('SineWave_speedtreshold0.02_KvFF_PF_100bar_0.075freq_24.04.26.csv');
 
@@ -16,6 +21,16 @@ dataRamp        = loadCSV('Ramp_04.05.26.csv');
 
 
 % Colors
+% C_red    = [0.9490, 0.0196, 0.0196];
+% C_lblue   = '#03A688';
+% C_blue  = '#5FC2D9';
+% C_yellow = '#F29F05';
+% C_orange = '#F27405';
+% C_green =  '#2ECC71';
+% C_purple = '#A020F0';
+% C_black  = [0.1608, 0.1294, 0.1216];
+
+
 C_red    = [0.9490, 0.1020, 0.0000];
 C_lblue   = '#5FC2D9';
 C_blue  = '#1E90FF';
@@ -93,23 +108,23 @@ fU_Smooth = movmean(dataKVFF.fU, 1);
 hfig3 = figure;
 plot(dataKVFF.fTimer, fU_Smooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$u$')
 hold on
-plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
-plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
-plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
-xline(67.332, '--', 'Color', C_orange, 'LineWidth', 1.5, 'HandleVisibility', 'off')
-text(67.332 + 0.05, 0.45, '$t = 67.33$ s', 'Interpreter', 'latex', 'FontSize', 15, 'Color', C_orange)
+plot(dataKVFF.fTimer, dataKVFF.fU_FF, '-', 'Color', C_orange, 'LineWidth', 1.5, 'DisplayName', '$u_{FF}$')
+plot(dataKVFF.fTimer, dataKVFF.fUpfb, '-', 'Color', C_blue, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(dataKVFF.fTimer, dataKVFF.fPID, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+xline(67.332, '--', 'Color', C_purple, 'LineWidth', 1.5, 'HandleVisibility', 'off')
+text(67.332 + 0.05, 0.45, '$t = 67.33$ s', 'Interpreter', 'latex', 'FontSize', 15, 'Color', C_purple)
 hold off
 grid off
-ylim([-0.1, 0.5])
-xlim([64,75])
+ylim([-0.1, 0.35])
+xlim([130,139])
 xlabel('Time [s]')
 ylabel('Signal [-]')
-title('Valve \& Control Signals (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
+title('Valve \& Control Signals (100 bar, 0.025 Hz)', 'FontWeight', 'normal')
 lg = legend('location', 'northwest', 'Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) + 0.060;
 lg.Position(2) = lg.Position(2) - 0.019;
 saveFigure(hfig3, 'AllSignals_LowPercent')
-
+    
 
 %% Fig4
 % Ramp Trajectory
@@ -215,6 +230,168 @@ lg = legend('Interpreter', 'latex');
 lg.Position(1) = lg.Position(1) - 0.04;
 
 saveFigure(hfig7, 'AllSignals_NaiveFF_Combined')
+
+
+%% Fig8 
+% Metering-in Pressure Drop Plot 
+idxPF = dataKVFF.fTimer >= 1 & dataKVFF.fTimer <= 88;
+windowSize = 250;
+psSmooth = movmean(dataKVFF.fPs(idxPF), windowSize);
+pbSmooth = movmean(dataKVFF.fPb(idxPF), windowSize);
+pxSmooth = movmean(dataKVFF.fPb(idxPF), windowSize);
+t = dataKVFF.fTimer(idxPF);
+dp_metering = psSmooth - pbSmooth;
+
+hfig8 = figure;
+plot(t, dp_metering, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$p_S - p_B$')
+hold on
+plot(t, psSmooth, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$p_S$')
+plot(t, pxSmooth, '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', '$p_B$')
+hold off
+grid off
+xlim([32, 92])
+ylim([-1, 110])
+xlabel('Time [s]')
+ylabel('Pressure [bar]')
+title('Metering-in Pressure Drop (100 bar, 0.025 Hz)', 'FontWeight', 'normal')
+lg = legend('Interpreter', 'latex', 'Location', 'best');
+lg.Position(1) = lg.Position(1) + 0.1;
+saveFigure(hfig8, 'MeteringInPressureDrop')
+
+
+%% Fig8 - Three subplot: Control Signals + Metering Pressure Drops
+idxPF = dataKVFF.fTimer >= 1 & dataKVFF.fTimer <= 88;
+windowSize = 250;
+
+% Smooth the data
+psSmooth = movmean(dataKVFF.fPs(idxPF), windowSize);
+pbSmooth = movmean(dataKVFF.fPb(idxPF), windowSize);
+paSmooth = movmean(dataKVFF.fPa(idxPF), windowSize);
+pxSmooth = movmean(dataKVFF.fPx(idxPF), windowSize);
+t = dataKVFF.fTimer(idxPF);
+
+% Calculate pressure drops - correct metering based on direction
+dp_metering_B = psSmooth - pbSmooth;
+dp_metering_A = psSmooth - paSmooth;
+
+% Composite: show correct metering drop based on direction
+xdotRef_idx = dataKVFF.fXDotRef(idxPF);
+dp_metering_correct = zeros(size(t));
+for i = 1:length(t)
+    if xdotRef_idx(i) >= 0  % Ekstenderer - metering is on port A
+        dp_metering_correct(i) = paSmooth(i) - psSmooth(i);  % Pressure drop across A orifice
+    else  % Retraherer - metering is on port B
+        dp_metering_correct(i) = pbSmooth(i) - psSmooth(i);  % Pressure drop across B orifice
+    end
+end
+
+hfig8 = figure;
+
+% Subplot 1: Control Signals (from Fig2)
+subplot(3,1,1)
+fU_Smooth_KVFF = movmean(dataKVFF.fU, 1);
+mask = dataKVFF.fTimer <= 88;
+plot(dataKVFF.fTimer(mask), fU_Smooth_KVFF(mask), '-', 'Color', C_black, 'LineWidth', 2, 'DisplayName', '$u$')
+hold on
+plot(dataKVFF.fTimer(mask), dataKVFF.fU_FF(mask), '-', 'Color', C_blue, 'LineWidth', 2, 'DisplayName', '$u_{FF}$')
+plot(dataKVFF.fTimer(mask), dataKVFF.fUpfb(mask), '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$u_{PFB}$')
+plot(dataKVFF.fTimer(mask), dataKVFF.fPID(mask), '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$u_{PID}$')
+hold off
+grid off
+xlim([32, 92])
+ylim([-0.85, 0.5])
+ylabel('Signal [-]')
+title('Valve \& Control Signals (100 bar, 0.05 Hz)', 'FontWeight', 'normal')
+lg = legend('Interpreter', 'latex', 'Location', 'northeast');
+lg.Position(1) = lg.Position(1) + 0.1;
+
+% Subplot 2: Metering Pressure Drop (pS - pB)
+subplot(3,1,2)
+plot(t, dp_metering_B, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$p_S - p_B$')
+hold on
+plot(t, psSmooth, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$p_S$')
+hold off
+grid off
+xlim([32, 92])
+ylim([65, 110])
+ylabel('Pressure [bar]')
+title('Metering-in Pressure Drop ($p_S - p_B$)', 'Interpreter', 'latex')
+lg = legend('Interpreter', 'latex', 'Location', 'best');
+lg.Position(1) = lg.Position(1) + 0.1;
+
+% Subplot 3: Metering Pressure Drop (pS - pA) - Correct direction
+subplot(3,1,3)
+plot(t, dp_metering_A, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$p_S - p_{A1}$')
+hold on
+plot(t, psSmooth, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$p_S$')
+hold off
+grid off
+xlim([32, 92])
+ylim([-1, 110])
+xlabel('Time [s]')
+ylabel('Pressure [bar]')
+title('Metering-in Pressure Drop ($p_S - p_{A1}$)', 'Interpreter', 'latex')
+lg = legend('Interpreter', 'latex', 'Location', 'best');
+lg.Position(1) = lg.Position(1) + 0.1;
+
+saveFigure(hfig8, 'MeteringInPressureDrop_Combined')
+
+
+%% Fig9 
+% Metering Pressure Drop (pS - pB)
+idxPF9 = dataKVFF.fTimer >= 1 & dataKVFF.fTimer <= 88;
+windowSize9 = 150;
+
+psSmooth9 = movmean(dataKVFF.fPs(idxPF9), windowSize9);
+pbSmooth9 = movmean(dataKVFF.fPb(idxPF9), windowSize9);
+pxSmooth9 = movmean(dataKVFF.fPx(idxPF9), windowSize9);
+t9 = dataKVFF.fTimer(idxPF9);
+
+dp_metering_B9 = psSmooth9 - pbSmooth9;
+
+hfig9 = figure;
+plot(t9, dp_metering_B9, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$p_S - p_B$')
+hold on
+plot(t9, psSmooth9, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$p_S$')
+plot(dataKVFF.fTimer, dataKVFF.fFlow, '-', 'Color', C_green, 'LineWidth', 1.5, 'DisplayName', '$Flow$')
+hold off
+grid off
+xlim([66.9, 77.2])
+ylim([65, 110])
+xlabel('Time [s]')
+ylabel('Pressure [bar]')
+title('Metering-in Pressure Drop ($p_S - p_B$)', 'Interpreter', 'latex')
+lg = legend('Interpreter', 'latex', 'Location', 'best');
+lg.Position(1) = lg.Position(1) + 0.1;
+saveFigure(hfig9, 'MeteringInPressureDrop_pS_pB')
+
+
+%% Fig10 
+% Metering Pressure Drop (pS - pA1)
+idxPF10 = dataKVFF.fTimer >= 1 & dataKVFF.fTimer <= 88;
+windowSize10 = 250;
+
+psSmooth10 = movmean(dataKVFF.fPs(idxPF10), windowSize10);
+paSmooth10 = movmean(dataKVFF.fPa(idxPF10), windowSize10);
+pxSmooth10 = movmean(dataKVFF.fPx(idxPF10), windowSize10);
+t10 = dataKVFF.fTimer(idxPF10);
+
+dp_metering_A10 = psSmooth10 - paSmooth10;
+
+hfig10 = figure;
+plot(t10, dp_metering_A10, '-', 'Color', C_red, 'LineWidth', 1.5, 'DisplayName', '$p_S - p_{A1}$')
+hold on
+plot(t10, psSmooth10, '-', 'Color', C_yellow, 'LineWidth', 1.5, 'DisplayName', '$p_S$')
+hold off
+grid off
+xlim([76.8, 87.3])
+ylim([-1, 120])
+xlabel('Time [s]')
+ylabel('Pressure [bar]')
+title('Metering-in Pressure Drop ($p_S - p_{A1}$)', 'Interpreter', 'latex')
+lg = legend('Interpreter', 'latex', 'Location', 'best');
+lg.Position(1) = lg.Position(1) + 0.1;
+saveFigure(hfig10, 'MeteringInPressureDrop_pS_pA')
 
 
 %% FF least percentage
