@@ -72,7 +72,7 @@ plot(Kv_lin_up,    spool_lin_up,   '-', 'Color', C_red, 'LineWidth', 1.5, 'Displ
 plot(-Kv_lin_down, spool_lin_down, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
 hold off;
 xlabel('$K_v$ [L/min/bar$^{0.5}$]');
-ylabel('Spool position (norm.)');
+ylabel('$u_\mathrm{spool}$');
 legend('Location', 'north');
 title('Linear approximation')
 
@@ -85,7 +85,7 @@ plot(-Kv_lin_down,  spool_lin_down,  '-', 'Color', C_lblue,  'LineWidth', 1.5, '
 plot(-Kv_poly_down, spool_poly_down, '-', 'Color', C_lblue,  'LineWidth', 1.5, 'DisplayName', 'Down (Port B)');
 hold off;
 xlabel('$K_v$ [L/min/bar$^{0.5}$]');
-ylabel('Spool position (norm.)');
+ylabel('$u_\mathrm{spool}$');
 legend('Location', 'north');
 title('Combined characterization')
 

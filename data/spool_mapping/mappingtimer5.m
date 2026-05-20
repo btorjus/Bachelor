@@ -121,10 +121,8 @@ for i = 1:numel(allRuns)
 
     % Piston kinematics
     pos     = T{:,COL_position};
-    %vel     = smoothdata(gradient(pos, t), VEL_SMOOTH_METHOD, VEL_SMOOTH_SPAN); % SE om jeg kan gjøre vel enda mer stabil. bare ta hele greia og regn hastiget
+    %vel     = smoothdata(gradient(pos, t), VEL_SMOOTH_METHOD, VEL_SMOOTH_SPAN);
     
-    %tester ved å lage en ramp for hastigheten istende, pvel og vel er nå
-    %nye det gamle er smothdata oplegget
     p_vel = polyfit(t, pos, 1); 
     vel   = repmat(p_vel(1), size(t));
     if strcmp(dirn,'Up'), Q_piston = A*vel; else, Q_piston = Aa*vel; end
@@ -159,7 +157,7 @@ if ~isempty(DEBUG_RUN)
 
     nexttile
     plot(r.t, r.spool, 'Color', C_black, 'LineWidth', 1.2); grid on
-    ylabel('Spool position (norm.)')
+    ylabel('$u_\mathrm{spool}$')
     title(sprintf('Run %d: %s | %d bar | %d\\%% | window %.1f--%.1f s', ...
         DEBUG_RUN, r.direction, r.pressure, r.signal, T1, T2))
 
@@ -209,7 +207,7 @@ scatter(upSpool, upKvP*Kv_display_factor, 3, C_red,  'filled', 'DisplayName', '$
 xFit = linspace(min(upSpool), max(upSpool), 300);
 plot(xFit, polyval(pA_Kv_of_spool_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
 hold off; grid on
-xlabel('Spool position (norm.)'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
+xlabel('$u_\mathrm{spool}$'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
 title(sprintf('Port A (Up) $-$ %d bar', targetPressure)); legend('Location','northwest');
 
 subplot(2,1,2);
@@ -218,7 +216,7 @@ scatter(dnSpool, dnKvP*Kv_display_factor, 3, C_red,  'filled', 'DisplayName', '$
 xFit = linspace(min(dnSpool), max(dnSpool), 300);
 plot(xFit, polyval(pB_Kv_of_spool_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
 hold off; grid on
-xlabel('Spool position (norm.)'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
+xlabel('$u_\mathrm{spool}$'); ylabel('$K_v$ (L/min/bar$^{0.5}$)')
 title(sprintf('Port B (Down) $-$ %d bar', targetPressure)); legend('Location','northwest');
 
 applyFigureExportTemplate(hfig, picturewidth, 0.65, EXPORT_fontsize);
@@ -233,7 +231,7 @@ scatter(upKvP*Kv_display_factor, upSpool, 3, C_red,  'filled', 'DisplayName', '$
 xFit = linspace(prctileFinite([upKvF;upKvP]*Kv_display_factor,1), prctileFinite([upKvF;upKvP]*Kv_display_factor,99), 400);
 plot(xFit, polyval(pUp_spool_of_Kv_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
 hold off; grid off
-xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('Spool position (norm.)')
+xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('$u_\mathrm{spool}$')
 title(sprintf('Port A (Up) $-$ %d bar', targetPressure)); legend('Location','southeast');
 
 subplot(2,1,2);
@@ -242,7 +240,7 @@ scatter(dnKvP*Kv_display_factor, dnSpool, 3, C_red,  'filled', 'DisplayName', '$
 xFit = linspace(prctileFinite([dnKvF;dnKvP]*Kv_display_factor,1), prctileFinite([dnKvF;dnKvP]*Kv_display_factor,99), 400);
 plot(xFit, polyval(pDown_spool_of_Kv_120, xFit), '-', 'Color', C_black, 'LineWidth', 1.5, 'DisplayName', 'Polynomial fit');
 hold off; grid off
-xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('Spool position (norm.)')
+xlabel('$K_v$ [L/min/bar$^{0.5}$]'); ylabel('$u_\mathrm{spool}$')
 title(sprintf('Port B (Down) $-$ %d bar', targetPressure)); legend('Location','southeast');
 
 applyFigureExportTemplate(hfig, picturewidth, 0.65, EXPORT_fontsize);
